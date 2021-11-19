@@ -1,4 +1,4 @@
-package com.example.hospitalmanage.Constant;
+package com.example.hospitalmanage.constant;
 
 public class AuthorityConstant {
 

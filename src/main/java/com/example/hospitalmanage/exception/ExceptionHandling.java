@@ -1,9 +1,8 @@
-package com.example.hospitalmanage.exception.domain;
+package com.example.hospitalmanage.exception;
 
 import com.auth0.jwt.exceptions.TokenExpiredException;
-import com.example.hospitalmanage.Constant.HandlingExceptionConstant;
 import com.example.hospitalmanage.domain.HttpResponse;
-import javassist.NotFoundException;
+import com.example.hospitalmanage.exception.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
@@ -17,13 +16,12 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.server.MethodNotAllowedException;
 
 import javax.persistence.NoResultException;
 import java.io.IOException;
 import java.util.Objects;
 
-import static com.example.hospitalmanage.Constant.HandlingExceptionConstant.*;
+import static com.example.hospitalmanage.constant.HandlingExceptionConstant.*;
 import static org.springframework.http.HttpStatus.*;
 
 @RestControllerAdvice
@@ -50,7 +48,10 @@ public class ExceptionHandling {
     public ResponseEntity<HttpResponse> accountIsLocked() {
         return createHttpResponse(UNAUTHORIZED, ACCOUNT_LOCKED);
     }
-
+    @ExceptionHandler(PasswordNotValidException.class)
+    public ResponseEntity<HttpResponse> passwordIsNotValid() {
+        return createHttpResponse(UNAUTHORIZED, PASSWORD_IS_NOT_VALID);
+    }
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<HttpResponse> accessDeniedException() {
         return createHttpResponse(FORBIDDEN, NOT_ENOUGH_PERMISSION);

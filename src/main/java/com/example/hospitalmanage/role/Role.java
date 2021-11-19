@@ -1,6 +1,6 @@
 package com.example.hospitalmanage.role;
 
-import static com.example.hospitalmanage.Constant.AuthorityConstant.*;
+import static com.example.hospitalmanage.constant.AuthorityConstant.*;
 
 public enum Role {
 

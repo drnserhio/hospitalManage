@@ -1,10 +1,8 @@
 package com.example.hospitalmanage.configuration;
 
-import com.example.hospitalmanage.domain.UserPrincipal;
 import com.example.hospitalmanage.filter.JwtAccessDeniedHandler;
 import com.example.hospitalmanage.filter.JwtAuthenticationEntryPoint;
 import com.example.hospitalmanage.filter.JwtAuthorizationFilter;
-import com.example.hospitalmanage.service.impl.UserServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -19,7 +17,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import static com.example.hospitalmanage.Constant.SecurityConstant.*;
+import static com.example.hospitalmanage.constant.SecurityConstant.*;
 
 @Configuration
 @EnableWebSecurity

@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import static com.example.hospitalmanage.Constant.SecurityConstant.*;
+import static com.example.hospitalmanage.constant.SecurityConstant.*;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 

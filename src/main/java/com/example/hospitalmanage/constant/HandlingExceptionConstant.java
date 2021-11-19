@@ -1,4 +1,4 @@
-package com.example.hospitalmanage.Constant;
+package com.example.hospitalmanage.constant;
 
 public class HandlingExceptionConstant {
 
@@ -11,4 +11,5 @@ public class HandlingExceptionConstant {
     public static final String NOT_ENOUGH_PERMISSION = "You do not have enough permission";
     public static final String ERROR_PATH_HANDLER = "/error";
     public static final String IS_NOT_MAPPING_THIS_URL = "There is not mapping this URL";
+    public static final String PASSWORD_IS_NOT_VALID = "Your password is not valid: ";
 }

@@ -1,4 +1,4 @@
-package com.example.hospitalmanage.Constant;
+package com.example.hospitalmanage.constant;
 
 public class UserImplConstant {
     public static final String USER_NOT_FOUND_BY_USERNAME = "User was not found with username: ";

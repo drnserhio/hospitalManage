@@ -5,8 +5,6 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.example.hospitalmanage.domain.UserPrincipal;
-import lombok.AllArgsConstructor;
-import org.apache.catalina.LifecycleState;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,12 +16,11 @@ import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.example.hospitalmanage.Constant.SecurityConstant.*;
+import static com.example.hospitalmanage.constant.SecurityConstant.*;
 import static java.util.Arrays.stream;
 
 @Component

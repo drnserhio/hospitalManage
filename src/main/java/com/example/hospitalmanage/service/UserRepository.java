@@ -1,4 +1,4 @@
-package com.example.hospitalmanage.service.impl;
+package com.example.hospitalmanage.service;
 
 import com.example.hospitalmanage.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;

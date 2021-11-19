@@ -2,23 +2,21 @@ package com.example.hospitalmanage.resource;
 
 import com.example.hospitalmanage.domain.User;
 import com.example.hospitalmanage.domain.UserPrincipal;
-import com.example.hospitalmanage.exception.domain.ExceptionHandling;
-import com.example.hospitalmanage.service.impl.UserService;
+import com.example.hospitalmanage.exception.ExceptionHandling;
+import com.example.hospitalmanage.service.UserService;
 import com.example.hospitalmanage.util.JwtTokenProvider;
 import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import static com.example.hospitalmanage.Constant.SecurityConstant.JWT_TOKEN_HEADER;
+import javax.mail.MessagingException;
+import java.io.IOException;
+
+import static com.example.hospitalmanage.constant.SecurityConstant.JWT_TOKEN_HEADER;
 import static org.springframework.http.HttpStatus.OK;
 
 @RestController
@@ -32,7 +30,8 @@ public class UserResource extends ExceptionHandling {
 
     @PostMapping("/register")
     public ResponseEntity<User> register(
-            @RequestBody User user) {
+            @RequestBody User user)
+            throws MessagingException {
        User newUser = userService.register(
                 user.getFirstname(),
                 user.getLastname(),
@@ -52,6 +51,60 @@ public class UserResource extends ExceptionHandling {
         HttpHeaders jwtHeaders = getJwtHeader(userPrincipal);
         return new ResponseEntity<>(loginUser, jwtHeaders, OK);
     }
+
+    @PostMapping("/add")
+    public ResponseEntity<User> addNewUser(
+            @RequestParam("firstname") String firstname,
+            @RequestParam("lastname") String lastname,
+            @RequestParam("username") String username,
+            @RequestParam("email") String email,
+            @RequestParam("password") String password,
+            @RequestParam("role") String role,
+            @RequestParam("isNonLocked") String isNonLocked,
+            @RequestParam("isActive") String isActive,
+            @RequestParam("profileImage") MultipartFile profileImage)
+            throws IOException {
+        User newUser = userService.addNewUser(
+                firstname,
+                lastname,
+                username,
+                email,
+                password,
+                role,
+                Boolean.parseBoolean(isNonLocked),
+                Boolean.parseBoolean(isActive),
+                profileImage
+        );
+        return new ResponseEntity<>(newUser, OK);
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<User> updateUser(
+           @RequestParam("currentUsername") String currentUsername,
+           @RequestParam("newFirstname") String newFirstname,
+           @RequestParam("newLastname") String newLastname,
+           @RequestParam("newUsername") String newUsername,
+           @RequestParam("newEmail") String newEmail,
+           @RequestParam("newRole") String newrRole,
+           @RequestParam("isNonLocked") String isNonLocked,
+           @RequestParam("isActive") String isActive,
+           @RequestParam("profileImage") MultipartFile profileImage)
+            throws IOException {
+        User updateUser = userService.updateUser(
+                currentUsername,
+                newFirstname,
+                newLastname,
+                newUsername,
+                newEmail,
+                newrRole,
+                Boolean.parseBoolean(isNonLocked),
+                Boolean.parseBoolean(isActive),
+                profileImage
+        );
+        return new ResponseEntity<>(updateUser, OK);
+    }
+
+
 
     private void authentificated(String username, String password) {
         authenticationManager
