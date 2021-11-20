@@ -23,7 +23,7 @@ public class EmailService {
     public void sendMessage(String firstname, String lastname, String email)
             throws MessagingException {
         Message message = creatMail(firstname,email);
-        SMTPTransport smtpTransport = (SMTPTransport) getEmailSession().getTransport();
+        SMTPTransport smtpTransport = (SMTPTransport) getEmailSession().getTransport(SIMPLE_MAIL_TRANSFER_PROTOCOL);
         smtpTransport.connect(GMAIL_SMTP_SERVER, USERNAME, PASSWORD);
         smtpTransport.sendMessage(message, message.getAllRecipients());
         smtpTransport.close();
@@ -34,7 +34,7 @@ public class EmailService {
        javax.mail.Message message = new MimeMessage(getEmailSession());
        message.setFrom(new InternetAddress(FROM_EMAIL));
        message.setRecipients(javax.mail.Message.RecipientType.TO, InternetAddress.parse(email, false));
-       message.setRecipients(javax.mail.Message.RecipientType.TO, InternetAddress.parse(CC_EMAIL, false));
+       message.setRecipients(javax.mail.Message.RecipientType.TO, InternetAddress.parse(email, false));
        message.setSubject(EMAIL_SUBJECT);
        message.setText(
                "Hello " +  firstname +

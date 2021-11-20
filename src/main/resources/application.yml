@@ -2,7 +2,7 @@ jwt:
   secter: '[a-zA-Z0-9._]@+$Guidelines89797987forAlpabeticalArraNumeralsandOtherSybo$'
 
 server:
-  port: 2323
+  port: 2345
   error:
     path: /error
 spring:
@@ -10,10 +10,13 @@ spring:
     url: jdbc:mysql://localhost:3306/hospitalDB
     username: root
     password:
+  mvc:
+    format:
+      date-time: yyyy-MM-dd HH:mm:ss
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL5InnoDBDialect

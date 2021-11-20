@@ -3,6 +3,7 @@ package com.example.hospitalmanage.service.impl;
 import com.example.hospitalmanage.domain.User;
 import com.example.hospitalmanage.domain.UserPrincipal;
 import com.example.hospitalmanage.exception.domain.EmailExistsException;
+import com.example.hospitalmanage.exception.domain.PasswordNotValidException;
 import com.example.hospitalmanage.exception.domain.UserNameExistsException;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
 import com.example.hospitalmanage.role.Role;
@@ -34,8 +35,10 @@ import java.util.Date;
 import java.util.List;
 
 import static com.example.hospitalmanage.constant.FileConstant.*;
+import static com.example.hospitalmanage.constant.HandlingExceptionConstant.PASSWORD_IS_NOT_VALID;
 import static com.example.hospitalmanage.constant.UserImplConstant.*;
 import static com.example.hospitalmanage.role.Role.ROLE_USER;
+import static org.apache.commons.lang3.StringUtils.*;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 @Service
@@ -59,7 +62,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             throw new UsernameNotFoundException(USER_NOT_FOUND_BY_USERNAME + username);
         } else {
             user.setLastLoginDateDisplay(user.getLastLoginDate());
-            user.setLastLoginDate(LocalDateTime.now());
+            user.setLastLoginDate(new Date());
             userRepository.save(user);
             LOGGER.info(FOUND_USER_BY_USERNAME);
             UserPrincipal userPrincipal = new UserPrincipal(user);
@@ -74,7 +77,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                          String username,
                          String email,
                          String password)
-            throws MessagingException {
+            throws MessagingException, UserNotFoundException, UserNameExistsException, EmailExistsException {
         validationNewUsernameAndEmail(EMPTY, username, email);
         User user = new User();
         user.setUserId(generateUserId());
@@ -104,7 +107,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                            String role,
                            boolean isNonLocked,
                            boolean isActive,
-                           MultipartFile profileImage) throws IOException {
+                           MultipartFile profileImage) throws IOException, UserNotFoundException, UserNameExistsException, EmailExistsException, MessagingException {
         validationNewUsernameAndEmail(EMPTY, username, email);
         User user = new User();
         user.setUserId(generateUserId());
@@ -121,6 +124,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         user.setProfileImageUrl(getTemporaryProfileImageUrl(username));
         userRepository.save(user);
         saveProfileImage(user, profileImage);
+        emailService.sendMessage(firstname, lastname, email);
         LOGGER.info("New user password + " + password);
         return user;
     }
@@ -135,13 +139,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                            boolean isNonLocked,
                            boolean isActive,
                            MultipartFile profileImage)
-            throws IOException {
+            throws IOException, UserNotFoundException, UserNameExistsException, EmailExistsException {
        User user = validationNewUsernameAndEmail(currentUsername, newUsername, newEmail);
         user.setFirstname(newFirstname);
         user.setLastname(newLastname);
         user.setUsername(newUsername);
-        user.setEmail(newEmail);
         user.setJoindDate(new Date());
+        user.setEmail(newEmail);
         user.setIsActive(isActive);
         user.setIsNotLocked(isNonLocked);
         user.setRole(getRoleEnumName(role).name());
@@ -152,7 +156,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         //change userPrifile
         return user;
     }
-
 
     @Override
     public void deleteUser(long id) {
@@ -176,11 +179,49 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return null;
     }
 
+    @Override
+    public User changePassByUsernameAndOldPassword(String currentUsername, String oldPassword, String newPassword)
+            throws UserNotFoundException, PasswordNotValidException {
+        User user = findUserByUsername(currentUsername);
+        if (user == null) {
+            throw new UserNotFoundException(USER_NOT_FOUND_BY_USERNAME + currentUsername);
+        }
+        if(validOldPassword(user.getPassword(), oldPassword)) {
+            user.setPassword(bCryptPasswordEncoder.encode(newPassword));
+        }
+        return user;
+    }
 
-    private User validationNewUsernameAndEmail(String currentUsername, String newUsername, String newEmail) {
+    private boolean validOldPassword(String userPassword, String oldPassword)
+            throws PasswordNotValidException {
+
+        if (bCryptPasswordEncoder.matches(oldPassword, userPassword)) {
+            return true;
+        } else  {
+            throw new PasswordNotValidException(PASSWORD_IS_NOT_VALID + oldPassword);
+        }
+    }
+
+    @Override
+    public User updateUserTimeVisitByUsername(String currentUsername, LocalDateTime timeVisit)
+            throws UserNotFoundException {
+        LOGGER.info(currentUsername , " " + timeVisit);
+        User user = findUserByUsername(currentUsername);
+        if (user == null) {
+            throw new UserNotFoundException(USER_NOT_FOUND_BY_USERNAME + currentUsername);
+        }
+        user.setTimeToVisitAt(LocalDateTime.of(timeVisit.toLocalDate(), timeVisit.toLocalTime()));
+        userRepository.save(user);
+        LOGGER.info("Time visit created");
+        return user;
+    }
+
+
+    private User validationNewUsernameAndEmail(String currentUsername, String newUsername, String newEmail)
+    throws UserNotFoundException, UserNameExistsException, EmailExistsException, UserNameExistsException {
         User userByUsername = findUserByUsername(newUsername);
         User userByEmail = findUserByEmail(newEmail);
-        if (StringUtils.isNotBlank(currentUsername)) {
+        if (isNotBlank(currentUsername)) {
             User currentUser = findUserByUsername(currentUsername);
             if (currentUser == null) {
                 throw new UserNotFoundException(USER_NOT_FOUND_BY_USERNAME + currentUsername);
@@ -219,12 +260,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
 
     }
-
-//    private void validOldPassword(String oldPassword, String password) {
-//        if (!bCryptPasswordEncoder.encode(oldPassword).equals(password)) {
-//            throw new PasswordNotValidException(PASSWORD_IS_NOT_VALID + oldPassword);
-//        }
-//    }
 
     private String setProfileImage(String username) {
         return ServletUriComponentsBuilder.fromCurrentContextPath().path(

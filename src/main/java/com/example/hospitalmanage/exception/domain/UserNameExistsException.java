@@ -1,6 +1,6 @@
 package com.example.hospitalmanage.exception.domain;
 
-public class UserNameExistsException extends RuntimeException{
+public class UserNameExistsException extends Exception{
     public UserNameExistsException(String message) {
         super(message);
     }

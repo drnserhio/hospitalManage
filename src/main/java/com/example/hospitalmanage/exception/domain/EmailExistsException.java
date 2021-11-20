@@ -1,6 +1,6 @@
 package com.example.hospitalmanage.exception.domain;
 
-public class EmailExistsException extends RuntimeException{
+public class EmailExistsException extends Exception{
     public EmailExistsException(String message) {
         super(message);
     }
