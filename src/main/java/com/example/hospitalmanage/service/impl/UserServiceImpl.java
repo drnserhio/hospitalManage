@@ -1,7 +1,7 @@
 package com.example.hospitalmanage.service.impl;
 
-import com.example.hospitalmanage.domain.User;
-import com.example.hospitalmanage.domain.UserPrincipal;
+import com.example.hospitalmanage.model.User;
+import com.example.hospitalmanage.model.UserPrincipal;
 import com.example.hospitalmanage.exception.domain.EmailExistsException;
 import com.example.hospitalmanage.exception.domain.PasswordNotValidException;
 import com.example.hospitalmanage.exception.domain.UserNameExistsException;
@@ -12,10 +12,10 @@ import com.example.hospitalmanage.service.UserService;
 import com.example.hospitalmanage.util.JwtTokenProvider;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
@@ -131,21 +132,21 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public User updateUser(String currentUsername,
-                           String newFirstname,
-                           String newLastname,
-                           String newUsername,
-                           String newEmail,
+                           String firstname,
+                           String lastname,
+                           String username,
+                           String email,
                            String role,
                            boolean isNonLocked,
                            boolean isActive,
                            MultipartFile profileImage)
             throws IOException, UserNotFoundException, UserNameExistsException, EmailExistsException {
-       User user = validationNewUsernameAndEmail(currentUsername, newUsername, newEmail);
-        user.setFirstname(newFirstname);
-        user.setLastname(newLastname);
-        user.setUsername(newUsername);
+       User user = validationNewUsernameAndEmail(currentUsername, username, email);
+        user.setFirstname(firstname);
+        user.setLastname(lastname);
+        user.setUsername(username);
         user.setJoindDate(new Date());
-        user.setEmail(newEmail);
+        user.setEmail(email);
         user.setIsActive(isActive);
         user.setIsNotLocked(isNonLocked);
         user.setRole(getRoleEnumName(role).name());
@@ -173,15 +174,17 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 //    }
 
     @Override
-    public User updateProfileImage(String username, MultipartFile profileImage) throws IOException {
-        User user = findUserByUsername(username);
+    public User updateProfileImage(String username, MultipartFile profileImage)
+            throws IOException, UserNotFoundException, UserNameExistsException, EmailExistsException {
+        User user = validationNewUsernameAndEmail(username, null, null);
         saveProfileImage(user,profileImage);
-        return null;
+        return user;
     }
 
     @Override
-    public User changePassByUsernameAndOldPassword(String currentUsername, String oldPassword, String newPassword)
+    public User changePassByUsernameAndOldPassword(String oldPassword, String newPassword)
             throws UserNotFoundException, PasswordNotValidException {
+        String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = findUserByUsername(currentUsername);
         if (user == null) {
             throw new UserNotFoundException(USER_NOT_FOUND_BY_USERNAME + currentUsername);
@@ -213,6 +216,40 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         user.setTimeToVisitAt(LocalDateTime.of(timeVisit.toLocalDate(), timeVisit.toLocalTime()));
         userRepository.save(user);
         LOGGER.info("Time visit created");
+        return user;
+    }
+
+
+    public List<User> getRoleUser() {
+        return userRepository.getRoleUser();
+    }
+
+    @Override
+    public User updateProfile(String currentUsername,
+                              String firstname,
+                              String lastname,
+                              String patronomic,
+                              String age,
+                              String username,
+                              String email,
+                              String QRCODE,
+                              String address,
+                              String infoAboutComplaint,
+                              String infoAboutSick)
+            throws MessagingException {
+        User user = findUserByUsername(currentUsername);
+        user.setFirstname(firstname);
+        user.setLastname(lastname);
+        user.setPatronomic(patronomic);
+        user.setAge(Integer.parseInt(age));
+        user.setUsername(username);
+        user.setEmail(email);
+        user.setQRCODE(QRCODE);
+        user.setAddress(address);
+        user.setInfoAboutComplaint(infoAboutComplaint);
+        user.setInfoAboutSick(infoAboutSick);
+        userRepository.save(user);
+        emailService.sendMessage(firstname,lastname,email);
         return user;
     }
 

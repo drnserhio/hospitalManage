@@ -1,8 +1,8 @@
 package com.example.hospitalmanage.resource;
 
-import com.example.hospitalmanage.domain.HttpResponse;
-import com.example.hospitalmanage.domain.User;
-import com.example.hospitalmanage.domain.UserPrincipal;
+import com.example.hospitalmanage.model.HttpResponse;
+import com.example.hospitalmanage.model.User;
+import com.example.hospitalmanage.model.UserPrincipal;
 import com.example.hospitalmanage.exception.ExceptionHandling;
 import com.example.hospitalmanage.exception.domain.EmailExistsException;
 import com.example.hospitalmanage.exception.domain.PasswordNotValidException;
@@ -29,6 +29,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static com.example.hospitalmanage.constant.FileConstant.*;
 import static com.example.hospitalmanage.constant.SecurityConstant.JWT_TOKEN_HEADER;
@@ -100,10 +101,10 @@ public class UserResource extends ExceptionHandling {
     @PutMapping("/update")
     public ResponseEntity<User> updateUser(
            @RequestParam("currentUsername") String currentUsername,
-           @RequestParam("newFirstname") String newFirstname,
-           @RequestParam("newLastname") String newLastname,
-           @RequestParam("newUsername") String newUsername,
-           @RequestParam("newEmail") String newEmail,
+           @RequestParam("firstname") String firstname,
+           @RequestParam("lastname") String lastname,
+           @RequestParam("username") String username,
+           @RequestParam("email") String email,
            @RequestParam("role") String role,
            @RequestParam("isNonLocked") String isNonLocked,
            @RequestParam("isActive") String isActive,
@@ -111,10 +112,10 @@ public class UserResource extends ExceptionHandling {
             throws IOException, UserNotFoundException, UserNameExistsException, EmailExistsException {
         User updateUser = userService.updateUser(
                 currentUsername,
-                newFirstname,
-                newLastname,
-                newUsername,
-                newEmail,
+                firstname,
+                lastname,
+                username,
+                email,
                 role,
                 Boolean.parseBoolean(isNonLocked),
                 Boolean.parseBoolean(isActive),
@@ -122,6 +123,37 @@ public class UserResource extends ExceptionHandling {
         );
         return new ResponseEntity<>(updateUser, OK);
     }
+
+    @PutMapping("/updateProfile")
+    public ResponseEntity<User> updateProfile(
+            @RequestParam("currentUsername") String currentUsername,
+            @RequestParam(value = "firstname", required = false) String firstname,
+            @RequestParam(value = "lastname", required = false) String lastname,
+            @RequestParam(value = "patronomic", required = false) String patronomic,
+            @RequestParam(value = "age", required = false) String age,
+            @RequestParam(value = "username",required = false) String username,
+            @RequestParam(value = "email", required = false) String email,
+//            @RequestParam("password") String password,
+            @RequestParam(value = "QRCODE", required = false) String QRCODE,
+            @RequestParam(value = "address", required = false) String address,
+            @RequestParam(value = "infoAboutComplaint", required = false) String infoAboutComplaint,
+            @RequestParam(value = "infoAboutSick", required = false) String infoAboutSick
+    ) throws MessagingException {
+        User user = userService.updateProfile(
+                currentUsername,
+                firstname,
+                lastname,
+                patronomic,
+                age,
+                username,
+                email,
+                QRCODE,
+                address,
+                infoAboutComplaint,
+                infoAboutSick);
+        return new ResponseEntity<>(user, OK);
+    }
+
 
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasAnyAuthority('user:delete')")
@@ -161,9 +193,33 @@ public class UserResource extends ExceptionHandling {
         return Files.readAllBytes(Paths.get(USER_FOLDER + username + FORWARD_SLASH + filename));
     }
 
+    @PostMapping("/updateProfileImage")
+    public ResponseEntity<User> updateProfileImage(
+            @RequestParam("username") String username,
+            @RequestParam(value = "profileImage", required = false) MultipartFile profileImage)
+            throws IOException, UserNotFoundException, UserNameExistsException, EmailExistsException {
+        User user = userService.updateProfileImage(username, profileImage);
+     return new ResponseEntity<>(user, OK);
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<List<User>> getUsers() {
+        List<User> users = userService.getRoleUser();
+        return new ResponseEntity<>(users, OK);
+    }
+
+
+
     ///------->>>> Doctor
 
-
+//    @PutMapping("/update/patient")
+//    public ResponseEntity<User> changeInformationAboutStateUser(
+//            @RequestParam("currentUsername") String currentUsername,
+//            @RequestParam(value = "investigationAboutBody", required = false) String investigationAboutBody,
+//            @RequestParam(value = "treatment", required = false) String treatment,
+//            @RequestParam(value = "gospitalization", required = false) String gospitalization) {
+//
+//    }
 
 
     ///------->>>>
@@ -188,11 +244,10 @@ public class UserResource extends ExceptionHandling {
     @PutMapping("/changepass")
     @PreAuthorize("hasAnyAuthority('user:change-pass')")
     public ResponseEntity<User> changePassByUsernameAndOldPassword(
-            @RequestParam("currentUsername") String currentUsername,
             @RequestParam("oldPassword") String oldPassword,
             @RequestParam("newPassword") String newPassword)
             throws UserNotFoundException, PasswordNotValidException {
-        User user = userService.changePassByUsernameAndOldPassword(currentUsername, oldPassword, newPassword);
+        User user = userService.changePassByUsernameAndOldPassword(oldPassword, newPassword);
         return new ResponseEntity<>(user, OK);
     }
 

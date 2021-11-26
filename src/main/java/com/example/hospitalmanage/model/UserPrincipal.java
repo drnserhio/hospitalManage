@@ -1,4 +1,4 @@
-package com.example.hospitalmanage.domain;
+package com.example.hospitalmanage.model;
 
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;

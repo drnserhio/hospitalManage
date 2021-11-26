@@ -1,7 +1,6 @@
-package com.example.hospitalmanage.domain;
+package com.example.hospitalmanage.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
 

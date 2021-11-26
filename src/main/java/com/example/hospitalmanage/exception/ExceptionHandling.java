@@ -1,7 +1,7 @@
 package com.example.hospitalmanage.exception;
 
 import com.auth0.jwt.exceptions.TokenExpiredException;
-import com.example.hospitalmanage.domain.HttpResponse;
+import com.example.hospitalmanage.model.HttpResponse;
 import com.example.hospitalmanage.exception.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

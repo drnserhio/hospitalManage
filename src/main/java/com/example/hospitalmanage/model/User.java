@@ -1,4 +1,4 @@
-package com.example.hospitalmanage.domain;
+package com.example.hospitalmanage.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -39,17 +39,15 @@ public class User {
     private String QRCODE; // role user
     private String infoAboutSick; // болезни перенесенные(role user )
     private String infoDiagnosis; // диагноз ( чем а даный момент болен после исследования role doctror
-    private String investigationAboutBody; //исследование secretary
+    //enum create investigation
+    //private String investigationAboutBody; //исследование secretary
     private String treatment; // лечение // change after visit treatment (doctor) чем лечить role doctor
     private String gospitalization; // role doctor
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
+
     private Date joindDate;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
     private Date lastLoginDate;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
     private Date lastLoginDateDisplay;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
     private LocalDateTime timeToVisitAt;
 
     private String role;
