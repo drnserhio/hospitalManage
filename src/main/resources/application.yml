@@ -2,7 +2,7 @@ jwt:
   secter: '[a-zA-Z0-9._]@+$Guidelines89797987forAlpabeticalArraNumeralsandOtherSybo$'
 
 server:
-  port: 2357
+  port: 2377
   error:
     path: /error
 spring:

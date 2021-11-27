@@ -39,6 +39,7 @@ import static com.example.hospitalmanage.constant.FileConstant.*;
 import static com.example.hospitalmanage.constant.HandlingExceptionConstant.PASSWORD_IS_NOT_VALID;
 import static com.example.hospitalmanage.constant.UserImplConstant.*;
 import static com.example.hospitalmanage.role.Role.ROLE_USER;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.apache.commons.lang3.StringUtils.*;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
@@ -253,7 +254,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return user;
     }
 
-
     private User validationNewUsernameAndEmail(String currentUsername, String newUsername, String newEmail)
     throws UserNotFoundException, UserNameExistsException, EmailExistsException, UserNameExistsException {
         User userByUsername = findUserByUsername(newUsername);
@@ -286,12 +286,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         if (profileImage != null) {
             Path userFolder = Paths.get(USER_FOLDER + user.getUsername())
                     .toAbsolutePath().normalize();
-            if (Files.exists(userFolder)) {
+            if (!Files.exists(userFolder)) {
                 Files.createDirectories(userFolder);
                 LOGGER.info(DIRECTORY_CREATED + userFolder);
             }
             Files.deleteIfExists(Paths.get(userFolder + user.getUsername() + DOT +JPG_EXSTENSION));
-            Files.copy(profileImage.getInputStream(), userFolder.resolve(user.getUsername() + DOT + JPG_EXSTENSION));
+            Files.copy(profileImage.getInputStream(), userFolder.resolve(user.getUsername() + DOT + JPG_EXSTENSION), REPLACE_EXISTING);
             user.setProfileImageUrl(setProfileImage(user.getUsername()));
             LOGGER.info(FILE_SAVED_IN_FILE_SYSTEM + profileImage.getOriginalFilename());
         }
@@ -329,8 +329,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return userRepository.findByUsername(useraname);
     }
 
+
     @Override
-    public List<User> getUsers() {
+    public List<User> getAllUserSystem() {
         return userRepository.findAll();
     }
+
 }

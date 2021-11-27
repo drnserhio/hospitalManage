@@ -169,26 +169,28 @@ public class UserResource extends ExceptionHandling {
         return new ResponseEntity<>(userByUsername, OK);
     }
 
-    @GetMapping(path = "image/profile/{username}", produces = IMAGE_JPEG_VALUE)
-    public byte[] getTempProfileImage(
-            @PathVariable("username") String username)
+    @GetMapping(path = "/image/profile/{username}", produces = IMAGE_JPEG_VALUE)
+    public byte[] getTempProfileImage(@PathVariable("username") String username)
             throws IOException {
         URL url = new URL(TEMP_PROFILE_IMAGE_BASE_URL + username);
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        try(InputStream inputStream = url.openStream()) {
-            int read;
-            byte[] bytes = new byte[1024];
-            while ((read = inputStream.read(bytes)) > 0) {
-                byteArrayOutputStream.write(bytes, 0 , read);
+        try (InputStream inputStream = url.openStream()) {
+            int bytesRead;
+            byte[] chunk = new byte[1024];
+            while ((bytesRead = inputStream.read(chunk)) > 0) {
+                byteArrayOutputStream.write(chunk, 0, bytesRead);
             }
+
         }
         return byteArrayOutputStream.toByteArray();
     }
 
+
+
     @GetMapping(path = "image/{username}/{filename}", produces = IMAGE_JPEG_VALUE)
     public byte[] getProfileImage(
             @PathVariable("username") String username,
-            @PathVariable("profileImage") String filename) throws IOException {
+            @PathVariable("filename") String filename) throws IOException {
 
         return Files.readAllBytes(Paths.get(USER_FOLDER + username + FORWARD_SLASH + filename));
     }
@@ -249,6 +251,17 @@ public class UserResource extends ExceptionHandling {
             throws UserNotFoundException, PasswordNotValidException {
         User user = userService.changePassByUsernameAndOldPassword(oldPassword, newPassword);
         return new ResponseEntity<>(user, OK);
+    }
+
+
+    /////---->>>>>
+
+    ///------->>>> Admin
+
+    @GetMapping("/systemusers")
+    public ResponseEntity<List<User>> getAllUserSystem() {
+        List<User> allUsersSystem = userService.getAllUserSystem();
+        return new ResponseEntity<>(allUsersSystem, OK);
     }
 
 

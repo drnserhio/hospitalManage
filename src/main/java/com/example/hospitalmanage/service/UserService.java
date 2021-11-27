@@ -18,8 +18,6 @@ public interface UserService {
     User findUserByEmail(String email);
     User findUserByUsername(String useraname);
 
-    List<User> getUsers();
-
     User register(String firstname, String lastname, String username, String email, String password) throws MessagingException, UserNotFoundException, UserNameExistsException, EmailExistsException;
 
     User addNewUser(String firstname,
@@ -67,4 +65,7 @@ public interface UserService {
                        String address,
                        String infoAboutComplaint,
                        String infoAboutSick) throws MessagingException;
+
+
+    List<User> getAllUserSystem();
 }
