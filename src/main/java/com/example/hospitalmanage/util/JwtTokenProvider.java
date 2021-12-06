@@ -29,8 +29,6 @@ public class JwtTokenProvider {
     @Value("${jwt.secter}")
     private String secret;
 
-
-    //jwt generate ->>>>
     public String generateJwtToken(UserPrincipal userPrincipal) {
         String[] claims = getClaimsFromUser(userPrincipal);
         return JWT.create().withIssuer(GET_DRN_SERHIO).withAudience(GET_ARRAYS_ADMINISTRATION)
@@ -47,7 +45,6 @@ public class JwtTokenProvider {
         }
         return autorities.toArray(new String[0]);
     }
-    ///->>>>>
 
     public List<GrantedAuthority> getAuthorities(String token) {
        String[]claims = getClaimsForToken(token);

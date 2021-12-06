@@ -12,8 +12,10 @@ import com.example.hospitalmanage.service.UserService;
 import com.example.hospitalmanage.util.JwtTokenProvider;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
+import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.MessagingException;
+import javax.xml.bind.JAXBException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -154,7 +157,6 @@ public class UserResource extends ExceptionHandling {
         return new ResponseEntity<>(user, OK);
     }
 
-
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasAnyAuthority('user:delete')")
     public ResponseEntity<HttpResponse> deleteUser(
@@ -185,14 +187,25 @@ public class UserResource extends ExceptionHandling {
         return byteArrayOutputStream.toByteArray();
     }
 
-
-
     @GetMapping(path = "image/{username}/{filename}", produces = IMAGE_JPEG_VALUE)
     public byte[] getProfileImage(
             @PathVariable("username") String username,
             @PathVariable("filename") String filename) throws IOException {
 
         return Files.readAllBytes(Paths.get(USER_FOLDER + username + FORWARD_SLASH + filename));
+    }
+
+    @PostMapping("/change-state")
+    public ResponseEntity<User> updateState(
+            @RequestParam(value = "username") String username,
+            @RequestParam(value = "infoDiagnosis", required = false) String infoDiagnosis,
+            @RequestParam(value = "treatment", required = false) String treatment,
+            @RequestParam(value = "gospitalization", required = false) String gospitalization) {
+        return new ResponseEntity<>(userService.updateState(
+                username,
+                infoDiagnosis,
+                treatment,
+                gospitalization), OK);
     }
 
     @PostMapping("/updateProfileImage")
@@ -204,30 +217,7 @@ public class UserResource extends ExceptionHandling {
      return new ResponseEntity<>(user, OK);
     }
 
-    @GetMapping("/list")
-    public ResponseEntity<List<User>> getUsers() {
-        List<User> users = userService.getRoleUser();
-        return new ResponseEntity<>(users, OK);
-    }
-
-
-
-    ///------->>>> Doctor
-
-//    @PutMapping("/update/patient")
-//    public ResponseEntity<User> changeInformationAboutStateUser(
-//            @RequestParam("currentUsername") String currentUsername,
-//            @RequestParam(value = "investigationAboutBody", required = false) String investigationAboutBody,
-//            @RequestParam(value = "treatment", required = false) String treatment,
-//            @RequestParam(value = "gospitalization", required = false) String gospitalization) {
-//
-//    }
-
-
-    ///------->>>>
-
-    ///----->>>> Secretary
-    @PutMapping("/updatetime")
+    @PutMapping("/timevisit")
     @PreAuthorize("hasRole('ROLE_SECRETARY')")
     public ResponseEntity<User> updateUserTimeVisitByUsername(
             @RequestParam("currentUsername") String currentUsername,
@@ -237,11 +227,6 @@ public class UserResource extends ExceptionHandling {
         User updateUser = userService.updateUserTimeVisitByUsername(currentUsername, timeVisit);
         return new ResponseEntity<>(updateUser, OK);
     }
-
-    ////------>>>>>>>
-
-
-   ///------->>>> User
 
     @PutMapping("/changepass")
     @PreAuthorize("hasAnyAuthority('user:change-pass')")
@@ -253,19 +238,24 @@ public class UserResource extends ExceptionHandling {
         return new ResponseEntity<>(user, OK);
     }
 
+    @GetMapping( "/document/{username}")
+    public ResponseEntity<byte[]> getDocument(
+            @PathVariable("username") String username)
+            throws Exception {
+        return new ResponseEntity<>(userService.getDocument(username), OK);
+    }
 
-    /////---->>>>>
-
-    ///------->>>> Admin
+    @GetMapping("/list")
+    public ResponseEntity<List<User>> getUsers() {
+        List<User> users = userService.getRoleUser();
+        return new ResponseEntity<>(users, OK);
+    }
 
     @GetMapping("/systemusers")
     public ResponseEntity<List<User>> getAllUserSystem() {
         List<User> allUsersSystem = userService.getAllUserSystem();
         return new ResponseEntity<>(allUsersSystem, OK);
     }
-
-
-    /////---->>>>>
 
     private void authentificated(String username, String password) {
         authenticationManager

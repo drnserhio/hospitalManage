@@ -11,4 +11,8 @@ public class FileConstant {
     public static final String FORWARD_SLASH = "/";
     public static final String TEMP_PROFILE_IMAGE_BASE_URL = "https://robohash.org/";
 
+//    Document
+    public static final String DOCUMENT_FORMAT = "docx";
+    public static final String DOCUMENT_FOLDER = System.getProperty("user.home") + "/document/patient/";
+
 }

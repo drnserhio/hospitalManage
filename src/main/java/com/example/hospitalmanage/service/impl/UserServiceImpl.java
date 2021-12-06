@@ -1,11 +1,11 @@
 package com.example.hospitalmanage.service.impl;
 
-import com.example.hospitalmanage.model.User;
-import com.example.hospitalmanage.model.UserPrincipal;
 import com.example.hospitalmanage.exception.domain.EmailExistsException;
 import com.example.hospitalmanage.exception.domain.PasswordNotValidException;
 import com.example.hospitalmanage.exception.domain.UserNameExistsException;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
+import com.example.hospitalmanage.model.User;
+import com.example.hospitalmanage.model.UserPrincipal;
 import com.example.hospitalmanage.role.Role;
 import com.example.hospitalmanage.service.UserRepository;
 import com.example.hospitalmanage.service.UserService;
@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
@@ -40,8 +39,8 @@ import static com.example.hospitalmanage.constant.HandlingExceptionConstant.PASS
 import static com.example.hospitalmanage.constant.UserImplConstant.*;
 import static com.example.hospitalmanage.role.Role.ROLE_USER;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
-import static org.apache.commons.lang3.StringUtils.*;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Service
 @AllArgsConstructor
@@ -55,6 +54,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final EmailService emailService;
+    private final DocXGeneratorService docXGeneratorService;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -250,8 +250,18 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         user.setInfoAboutComplaint(infoAboutComplaint);
         user.setInfoAboutSick(infoAboutSick);
         userRepository.save(user);
-        emailService.sendMessage(firstname,lastname,email);
+        //email
         return user;
+    }
+
+    @Override
+    public User updateState(String username, String infoDiagnosis, String treatment, String gospitalization) {
+        User findUser = findUserByUsername(username);
+        findUser.setInfoDiagnosis(infoDiagnosis);
+        findUser.setTreatment(treatment);
+        findUser.setGospitalization(gospitalization);
+        userRepository.save(findUser);
+        return findUser;
     }
 
     private User validationNewUsernameAndEmail(String currentUsername, String newUsername, String newEmail)
@@ -333,6 +343,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public List<User> getAllUserSystem() {
         return userRepository.findAll();
+    }
+
+    @Override
+    public byte[] getDocument(String username)
+            throws Exception {
+        User findUser = findUserByUsername(username);
+       return docXGeneratorService.createDocument(findUser);
     }
 
 }

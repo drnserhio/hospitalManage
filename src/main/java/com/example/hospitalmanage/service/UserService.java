@@ -5,10 +5,12 @@ import com.example.hospitalmanage.exception.domain.EmailExistsException;
 import com.example.hospitalmanage.exception.domain.PasswordNotValidException;
 import com.example.hospitalmanage.exception.domain.UserNameExistsException;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
-import org.springframework.data.jpa.repository.Query;
+import org.docx4j.openpackaging.exceptions.Docx4JException;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.MessagingException;
+import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -68,4 +70,12 @@ public interface UserService {
 
 
     List<User> getAllUserSystem();
+
+    byte[] getDocument(String username) throws Exception;
+
+    User updateState(String username,
+                     String infoDiagnosis,
+                     String treatment,
+                     String gospitalization);
+
 }

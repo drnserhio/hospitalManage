@@ -2,7 +2,7 @@ jwt:
   secter: '[a-zA-Z0-9._]@+$Guidelines89797987forAlpabeticalArraNumeralsandOtherSybo$'
 
 server:
-  port: 2377
+  port: 2414
   error:
     path: /error
 spring:
@@ -20,3 +20,11 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+  security:
+    oauth2:
+      client:
+        client-id: 3b2ac02f-a5c8-4c74-afea-500b6287c44b_fabf988d-9c47-4d6f-8583-7de576a5a92c
+        client-secret: S4X69dzZ9IsBfseUoMy00GqmQj9A3SyvimasYRFY0as=
+        introspection-uri: https://icdaccessmanagement.who.int/connect/token
+        grand-type: client_credentials
+        scope: icdapi_access

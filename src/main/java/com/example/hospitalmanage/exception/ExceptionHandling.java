@@ -33,6 +33,7 @@ public class ExceptionHandling {
         return createHttpResponse(NOT_FOUND, IS_NOT_MAPPING_THIS_URL);
     }
 
+
     @ExceptionHandler(DisabledException.class)
     public ResponseEntity<HttpResponse> accountIsDisabled() {
         return createHttpResponse(BAD_REQUEST, ACCOUNT_DISABLED);
@@ -101,6 +102,7 @@ public class ExceptionHandling {
     public ResponseEntity<HttpResponse> userNameExistsException(UserNameExistsException e) {
         return createHttpResponse(BAD_REQUEST, e.getMessage());
     }
+
 
     private ResponseEntity<HttpResponse> createHttpResponse(HttpStatus status, String message) {
         return new ResponseEntity<>(
