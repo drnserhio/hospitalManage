@@ -2,7 +2,7 @@ package com.example.hospitalmanage.service.impl;
 
 
 import com.example.hospitalmanage.model.icd.ICD;
-import com.example.hospitalmanage.service.TitleRepository;
+import com.example.hospitalmanage.service.ICDRepository;
 import com.example.hospitalmanage.util.OAuthTokenProvider;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,7 +23,7 @@ public class ICDService {
 
     private OAuthTokenProvider oAuthTokenProvider;
     private RestTemplate restTemplate;
-    private TitleRepository titleRepository;
+    private ICDRepository ICDRepository;
 
     public ICD getCodeICD(String code) throws IOException {
         HttpEntity<String > entity = new HttpEntity<>(getOAuthHeader());
@@ -36,10 +36,10 @@ public class ICDService {
     }
 
     private ICD isICDHasInBase(String code, String language, String value) {
-        ICD icd = titleRepository.findByCode(code.toLowerCase());
+        ICD icd = ICDRepository.findByCode(code.toLowerCase());
         if (Objects.isNull(icd)) {
             ICD createICD = new ICD(code.toLowerCase(), language, value);
-            titleRepository.save(createICD);
+            ICDRepository.save(createICD);
             return createICD;
         }
         return icd;

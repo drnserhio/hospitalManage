@@ -5,6 +5,7 @@ import com.example.hospitalmanage.exception.domain.EmailExistsException;
 import com.example.hospitalmanage.exception.domain.PasswordNotValidException;
 import com.example.hospitalmanage.exception.domain.UserNameExistsException;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
+import com.example.hospitalmanage.model.icd.ICD;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.multipart.MultipartFile;
@@ -49,11 +50,6 @@ public interface UserService {
   User updateProfileImage(String username, MultipartFile profileImage) throws IOException, UserNotFoundException, UserNameExistsException, EmailExistsException;
 
 
-
-    User changePassByUsernameAndOldPassword(String oldPassword, String newPassword) throws UserNotFoundException, PasswordNotValidException;
-    User updateUserTimeVisitByUsername(String currentUsername, LocalDateTime timeVisit) throws UserNotFoundException;
-
-
     List<User> getRoleUser();
 
     User updateProfile(String currentUsername,
@@ -71,11 +67,5 @@ public interface UserService {
 
     List<User> getAllUserSystem();
 
-    byte[] getDocument(String username) throws Exception;
-
-    User updateState(String username,
-                     String infoDiagnosis,
-                     String treatment,
-                     String gospitalization);
 
 }

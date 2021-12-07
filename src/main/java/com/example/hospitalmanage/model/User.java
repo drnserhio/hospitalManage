@@ -1,16 +1,14 @@
 package com.example.hospitalmanage.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.example.hospitalmanage.model.icd.ICD;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.Set;
 
 @Data
 @Entity
@@ -40,7 +38,8 @@ public class User {
     private String infoAboutSick; // болезни перенесенные(role user )
     private String infoDiagnosis; // диагноз ( чем а даный момент болен после исследования role doctror
     //enum create investigation
-    //private String investigationAboutBody; //исследование secretary
+    @OneToMany(cascade = CascadeType.ALL)
+    private Set<ICD> diagnosis; //исследование secretary
     private String treatment; // лечение // change after visit treatment (doctor) чем лечить role doctor
     private String gospitalization; // role doctor
 

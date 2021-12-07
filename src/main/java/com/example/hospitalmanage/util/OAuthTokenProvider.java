@@ -98,11 +98,6 @@ public class OAuthTokenProvider {
 
 
     public String getToken() throws IOException {
-        if (StringUtils.isNoneEmpty(token) ||
-                Objects.nonNull(token) ||
-                    !isTokenExpired(token) ) {
-            return token;
-        }
         createTokenICD();
         return token;
     }

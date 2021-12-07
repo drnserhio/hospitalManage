@@ -6,6 +6,7 @@ import com.example.hospitalmanage.exception.domain.UserNameExistsException;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
 import com.example.hospitalmanage.model.User;
 import com.example.hospitalmanage.model.UserPrincipal;
+import com.example.hospitalmanage.model.icd.ICD;
 import com.example.hospitalmanage.role.Role;
 import com.example.hospitalmanage.service.UserRepository;
 import com.example.hospitalmanage.service.UserService;
@@ -26,13 +27,14 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.mail.MessagingException;
+import javax.persistence.NoResultException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.example.hospitalmanage.constant.FileConstant.*;
 import static com.example.hospitalmanage.constant.HandlingExceptionConstant.PASSWORD_IS_NOT_VALID;
@@ -182,44 +184,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return user;
     }
 
-    @Override
-    public User changePassByUsernameAndOldPassword(String oldPassword, String newPassword)
-            throws UserNotFoundException, PasswordNotValidException {
-        String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = findUserByUsername(currentUsername);
-        if (user == null) {
-            throw new UserNotFoundException(USER_NOT_FOUND_BY_USERNAME + currentUsername);
-        }
-        if(validOldPassword(user.getPassword(), oldPassword)) {
-            user.setPassword(bCryptPasswordEncoder.encode(newPassword));
-        }
-        return user;
-    }
-
-    private boolean validOldPassword(String userPassword, String oldPassword)
-            throws PasswordNotValidException {
-
-        if (bCryptPasswordEncoder.matches(oldPassword, userPassword)) {
-            return true;
-        } else  {
-            throw new PasswordNotValidException(PASSWORD_IS_NOT_VALID + oldPassword);
-        }
-    }
-
-    @Override
-    public User updateUserTimeVisitByUsername(String currentUsername, LocalDateTime timeVisit)
-            throws UserNotFoundException {
-        LOGGER.info(currentUsername , " " + timeVisit);
-        User user = findUserByUsername(currentUsername);
-        if (user == null) {
-            throw new UserNotFoundException(USER_NOT_FOUND_BY_USERNAME + currentUsername);
-        }
-        user.setTimeToVisitAt(LocalDateTime.of(timeVisit.toLocalDate(), timeVisit.toLocalTime()));
-        userRepository.save(user);
-        LOGGER.info("Time visit created");
-        return user;
-    }
-
 
     public List<User> getRoleUser() {
         return userRepository.getRoleUser();
@@ -254,15 +218,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return user;
     }
 
-    @Override
-    public User updateState(String username, String infoDiagnosis, String treatment, String gospitalization) {
-        User findUser = findUserByUsername(username);
-        findUser.setInfoDiagnosis(infoDiagnosis);
-        findUser.setTreatment(treatment);
-        findUser.setGospitalization(gospitalization);
-        userRepository.save(findUser);
-        return findUser;
-    }
 
     private User validationNewUsernameAndEmail(String currentUsername, String newUsername, String newEmail)
     throws UserNotFoundException, UserNameExistsException, EmailExistsException, UserNameExistsException {
@@ -345,11 +300,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return userRepository.findAll();
     }
 
-    @Override
-    public byte[] getDocument(String username)
-            throws Exception {
-        User findUser = findUserByUsername(username);
-       return docXGeneratorService.createDocument(findUser);
-    }
+
 
 }

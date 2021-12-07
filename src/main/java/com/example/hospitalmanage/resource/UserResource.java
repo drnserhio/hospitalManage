@@ -8,14 +8,14 @@ import com.example.hospitalmanage.exception.domain.EmailExistsException;
 import com.example.hospitalmanage.exception.domain.PasswordNotValidException;
 import com.example.hospitalmanage.exception.domain.UserNameExistsException;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
+import com.example.hospitalmanage.model.icd.ICD;
+import com.example.hospitalmanage.service.impl.ProfileService;
 import com.example.hospitalmanage.service.UserService;
 import com.example.hospitalmanage.util.JwtTokenProvider;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
-import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.MessagingException;
-import javax.xml.bind.JAXBException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,6 +49,7 @@ public class UserResource extends ExceptionHandling {
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
+    private final ProfileService profileService;
 
     @PostMapping("/register")
     public ResponseEntity<User> register(
@@ -127,36 +127,6 @@ public class UserResource extends ExceptionHandling {
         return new ResponseEntity<>(updateUser, OK);
     }
 
-    @PutMapping("/updateProfile")
-    public ResponseEntity<User> updateProfile(
-            @RequestParam("currentUsername") String currentUsername,
-            @RequestParam(value = "firstname", required = false) String firstname,
-            @RequestParam(value = "lastname", required = false) String lastname,
-            @RequestParam(value = "patronomic", required = false) String patronomic,
-            @RequestParam(value = "age", required = false) String age,
-            @RequestParam(value = "username",required = false) String username,
-            @RequestParam(value = "email", required = false) String email,
-//            @RequestParam("password") String password,
-            @RequestParam(value = "QRCODE", required = false) String QRCODE,
-            @RequestParam(value = "address", required = false) String address,
-            @RequestParam(value = "infoAboutComplaint", required = false) String infoAboutComplaint,
-            @RequestParam(value = "infoAboutSick", required = false) String infoAboutSick
-    ) throws MessagingException {
-        User user = userService.updateProfile(
-                currentUsername,
-                firstname,
-                lastname,
-                patronomic,
-                age,
-                username,
-                email,
-                QRCODE,
-                address,
-                infoAboutComplaint,
-                infoAboutSick);
-        return new ResponseEntity<>(user, OK);
-    }
-
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasAnyAuthority('user:delete')")
     public ResponseEntity<HttpResponse> deleteUser(
@@ -195,19 +165,6 @@ public class UserResource extends ExceptionHandling {
         return Files.readAllBytes(Paths.get(USER_FOLDER + username + FORWARD_SLASH + filename));
     }
 
-    @PostMapping("/change-state")
-    public ResponseEntity<User> updateState(
-            @RequestParam(value = "username") String username,
-            @RequestParam(value = "infoDiagnosis", required = false) String infoDiagnosis,
-            @RequestParam(value = "treatment", required = false) String treatment,
-            @RequestParam(value = "gospitalization", required = false) String gospitalization) {
-        return new ResponseEntity<>(userService.updateState(
-                username,
-                infoDiagnosis,
-                treatment,
-                gospitalization), OK);
-    }
-
     @PostMapping("/updateProfileImage")
     public ResponseEntity<User> updateProfileImage(
             @RequestParam("username") String username,
@@ -217,33 +174,16 @@ public class UserResource extends ExceptionHandling {
      return new ResponseEntity<>(user, OK);
     }
 
-    @PutMapping("/timevisit")
-    @PreAuthorize("hasRole('ROLE_SECRETARY')")
-    public ResponseEntity<User> updateUserTimeVisitByUsername(
-            @RequestParam("currentUsername") String currentUsername,
-            @RequestParam("timeVisit")
-            @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss") LocalDateTime timeVisit)
-            throws UserNotFoundException {
-        User updateUser = userService.updateUserTimeVisitByUsername(currentUsername, timeVisit);
-        return new ResponseEntity<>(updateUser, OK);
-    }
-
     @PutMapping("/changepass")
     @PreAuthorize("hasAnyAuthority('user:change-pass')")
     public ResponseEntity<User> changePassByUsernameAndOldPassword(
             @RequestParam("oldPassword") String oldPassword,
             @RequestParam("newPassword") String newPassword)
             throws UserNotFoundException, PasswordNotValidException {
-        User user = userService.changePassByUsernameAndOldPassword(oldPassword, newPassword);
+        User user = profileService.changePassByUsernameAndOldPassword(oldPassword, newPassword);
         return new ResponseEntity<>(user, OK);
     }
 
-    @GetMapping( "/document/{username}")
-    public ResponseEntity<byte[]> getDocument(
-            @PathVariable("username") String username)
-            throws Exception {
-        return new ResponseEntity<>(userService.getDocument(username), OK);
-    }
 
     @GetMapping("/list")
     public ResponseEntity<List<User>> getUsers() {
