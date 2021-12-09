@@ -112,11 +112,11 @@ public class ProfileResource extends ExceptionHandling {
         return new ResponseEntity<>(user, OK);
     }
 
-    @PostMapping("/change/gospitalization/{username}")
-    public ResponseEntity<User> changeGospitaliztion(
+    @PostMapping("/change/hospitalization/{username}")
+    public ResponseEntity<User> changeHospitaliztion(
             @PathVariable("username") String username,
-            @RequestParam String gospitalization) {
-        User user = profileService.changeGospitalisation(username, Boolean.parseBoolean(gospitalization));
+            @RequestBody String hospitalization) {
+        User user = profileService.changeHospitalisation(username, hospitalization);
         return new ResponseEntity<>(user, OK);
     }
 

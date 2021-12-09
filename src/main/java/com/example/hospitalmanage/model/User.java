@@ -44,7 +44,7 @@ public class User {
     private Set<AnalyzeICDDate> diagnosis; //исследование secretary
     @OneToMany(cascade = CascadeType.ALL)
     private List<Treatment> treatment; // лечение // change after visit treatment (doctor) чем лечить role doctor
-    private Boolean gospitalization; // role doctor
+    private Boolean hospiztalization; // role doctor
 
 
     private Date joindDate;

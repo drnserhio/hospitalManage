@@ -9,9 +9,6 @@ import com.example.hospitalmanage.model.icd.ICD;
 import com.example.hospitalmanage.service.ICDRepository;
 import com.example.hospitalmanage.service.UserRepository;
 import com.example.hospitalmanage.service.UserService;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import lombok.AllArgsConstructor;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -134,8 +131,7 @@ public class ProfileService {
 
     private String JsonToStringNameTreatment(String treatmentNotice) {
         JSONObject jsonObject = new JSONObject(treatmentNotice);
-        String treatmentSave = jsonObject.getString("treatment");
-        return treatmentSave;
+        return jsonObject.getString("treatment");
     }
 
     public User deleteAllTreatment(String username) {
@@ -163,10 +159,16 @@ public class ProfileService {
         return treatment;
     }
 
-    public User changeGospitalisation(String username, Boolean gospitalization) {
+    public User changeHospitalisation(String username, String hospitalization) {
         User user = userService.findUserByUsername(username);
-        user.setGospitalization(gospitalization);
+        user.setHospiztalization(jsonToBoolean(hospitalization));
         userRepository.save(user);
         return user;
+    }
+
+    private boolean jsonToBoolean(String hospitalization) {
+        JSONObject jsonObject = new JSONObject(hospitalization);
+        boolean isHospitalization = Boolean.parseBoolean(jsonObject.getString("hospitalization"));
+        return isHospitalization;
     }
 }
