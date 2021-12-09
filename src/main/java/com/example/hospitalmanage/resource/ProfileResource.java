@@ -90,16 +90,34 @@ public class ProfileResource extends ExceptionHandling {
         return new ResponseEntity<>(updateUser, OK);
     }
 
-    @PostMapping("/change-state")
-    public ResponseEntity<User> updateState(
-            @RequestParam(value = "username") String username,
-            @RequestParam(value = "infoDiagnosis", required = false) String infoDiagnosis,
-            @RequestParam(value = "treatment", required = false) String treatment,
-            @RequestParam(value = "gospitalization", required = false) String gospitalization) {
-        return new ResponseEntity<>(profileService.updateState(
-                username,
-                infoDiagnosis,
-                treatment,
-                gospitalization), OK);
+    @PostMapping("/add-treatment/{username}")
+    public ResponseEntity<User> addTreatment(
+            @PathVariable("username") String username,
+            @RequestBody String treatment) {
+        User user = profileService.addTreatment(username, treatment);
+        return new ResponseEntity<>(user, OK);
     }
+
+    @DeleteMapping("/del/all/treatment/{username}")
+    public ResponseEntity<User> deleteAllTreatment(
+            @PathVariable("username") String username) {
+        User user = profileService.deleteAllTreatment(username);
+        return new ResponseEntity<>(user, OK);
+    }
+    @DeleteMapping("/del/choose/treatment/{username}/{id}")
+    public ResponseEntity<User> deleteChooseTreatment(
+            @PathVariable("username") String username,
+            @PathVariable("id") Long id) {
+        User user = profileService.deleteChooseTreatment(username, id);
+        return new ResponseEntity<>(user, OK);
+    }
+
+    @PostMapping("/change/gospitalization/{username}")
+    public ResponseEntity<User> changeGospitaliztion(
+            @PathVariable("username") String username,
+            @RequestParam String gospitalization) {
+        User user = profileService.changeGospitalisation(username, Boolean.parseBoolean(gospitalization));
+        return new ResponseEntity<>(user, OK);
+    }
+
 }

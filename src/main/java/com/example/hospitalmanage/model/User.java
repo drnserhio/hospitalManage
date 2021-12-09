@@ -1,5 +1,6 @@
 package com.example.hospitalmanage.model;
 
+import com.example.hospitalmanage.model.icd.AnalyzeICDDate;
 import com.example.hospitalmanage.model.icd.ICD;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -39,9 +41,10 @@ public class User {
     private String infoDiagnosis; // диагноз ( чем а даный момент болен после исследования role doctror
     //enum create investigation
     @OneToMany(cascade = CascadeType.ALL)
-    private Set<ICD> diagnosis; //исследование secretary
-    private String treatment; // лечение // change after visit treatment (doctor) чем лечить role doctor
-    private String gospitalization; // role doctor
+    private Set<AnalyzeICDDate> diagnosis; //исследование secretary
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Treatment> treatment; // лечение // change after visit treatment (doctor) чем лечить role doctor
+    private Boolean gospitalization; // role doctor
 
 
     private Date joindDate;

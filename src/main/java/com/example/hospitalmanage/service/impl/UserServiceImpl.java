@@ -56,7 +56,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final EmailService emailService;
-    private final DocXGeneratorService docXGeneratorService;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

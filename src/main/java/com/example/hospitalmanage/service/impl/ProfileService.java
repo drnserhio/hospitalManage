@@ -2,12 +2,18 @@ package com.example.hospitalmanage.service.impl;
 
 import com.example.hospitalmanage.exception.domain.PasswordNotValidException;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
+import com.example.hospitalmanage.model.Treatment;
 import com.example.hospitalmanage.model.User;
+import com.example.hospitalmanage.model.icd.AnalyzeICDDate;
 import com.example.hospitalmanage.model.icd.ICD;
 import com.example.hospitalmanage.service.ICDRepository;
 import com.example.hospitalmanage.service.UserRepository;
 import com.example.hospitalmanage.service.UserService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import lombok.AllArgsConstructor;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,10 +22,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.NoResultException;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.example.hospitalmanage.constant.HandlingExceptionConstant.PASSWORD_IS_NOT_VALID;
@@ -42,15 +45,6 @@ public class ProfileService {
         return docXGeneratorService.createDocument(findUser);
     }
 
-    public User updateState(String username, String infoDiagnosis, String treatment, String gospitalization) {
-        User findUser = userService.findUserByUsername(username);
-        findUser.setInfoDiagnosis(infoDiagnosis);
-        findUser.setTreatment(treatment);
-        findUser.setGospitalization(gospitalization);
-        userRepository.save(findUser);
-        return findUser;
-    }
-
     public User updateUserTimeVisitByUsername(String currentUsername, LocalDateTime timeVisit)
             throws UserNotFoundException {
         LOGGER.info(currentUsername , " " + timeVisit);
@@ -66,23 +60,27 @@ public class ProfileService {
 
     public User addDiagnosis(String username, List<ICD> diagnosis) {
         User findUser = userService.findUserByUsername(username);
-        Set<ICD> icds = convertToSet(diagnosis);
+        Set<AnalyzeICDDate> icds = convertToSet(diagnosis);
 
-        Set<ICD> d = findUser.getDiagnosis();
-        for (ICD icd : icds) {
-            d.add(icd);
+        Set<AnalyzeICDDate> d = findUser.getDiagnosis();
+        for (AnalyzeICDDate icd : icds) {
+            if (d.equals(icd)) {
+                continue;
+            } else {
+                d.add(icd);
+            }
         }
         findUser.setDiagnosis(d);
         userRepository.save(findUser);
         return findUser;
     }
 
-    private Set<ICD> convertToSet(List<ICD> diagnosis) {
+    private Set<AnalyzeICDDate> convertToSet(List<ICD> diagnosis) {
         if (diagnosis.size() < 0 ||
                 Objects.isNull(diagnosis)) {
             throw new NoResultException("Diagnosis list send empty");
         }
-        return diagnosis.stream().collect(Collectors.toSet());
+        return diagnosis.stream().map(icd -> new AnalyzeICDDate(icd, new Date())).collect(Collectors.toSet());
     }
 
     public User changePassByUsernameAndOldPassword(String oldPassword, String newPassword)
@@ -117,7 +115,7 @@ public class ProfileService {
 
     public User deleteDiagnos(String username, String code) {
         User findUser = userService.findUserByUsername(username);
-        ICD icd = findUser.getDiagnosis().stream().filter(c -> c.getCode().equals(code)).findFirst().get();
+        AnalyzeICDDate icd = findUser.getDiagnosis().stream().filter(c -> c.getIcd().getCode().equals(code)).findFirst().get();
         if (Objects.isNull(icd)) {
             throw new NoResultException("Didn't find ICD for patient");
         }
@@ -126,5 +124,49 @@ public class ProfileService {
         return findUser;
     }
 
+    public User addTreatment(String username, String treatmentJson) {
+        User user = userService.findUserByUsername(username);
+        String treatmentSave = JsonToStringNameTreatment(treatmentJson);
+        user.getTreatment().add(new Treatment(treatmentSave, new Date()));
+        userRepository.save(user);
+        return user;
+    }
 
+    private String JsonToStringNameTreatment(String treatmentNotice) {
+        JSONObject jsonObject = new JSONObject(treatmentNotice);
+        String treatmentSave = jsonObject.getString("treatment");
+        return treatmentSave;
+    }
+
+    public User deleteAllTreatment(String username) {
+        User user = userService.findUserByUsername(username);
+        user.setTreatment(new ArrayList<>());
+        userRepository.save(user);
+        return user;
+    }
+
+    public User deleteChooseTreatment(String username, Long id) {
+        User user = userService.findUserByUsername(username);
+        List<Treatment> treatments = deleteTreatmentInDataBase(user.getTreatment(), id);
+        user.setTreatment(treatments);
+        userRepository.save(user);
+        return user;
+    }
+
+    private List<Treatment> deleteTreatmentInDataBase(List<Treatment> treatment, Long id) {
+
+        Treatment treatmentDelete = treatment.stream().filter(t -> t.getId().equals(id)).findFirst().get();
+        if (treatmentDelete == null) {
+            throw new NoResultException("Not treatment in list treatments");
+        }
+        treatment.remove(treatmentDelete);
+        return treatment;
+    }
+
+    public User changeGospitalisation(String username, Boolean gospitalization) {
+        User user = userService.findUserByUsername(username);
+        user.setGospitalization(gospitalization);
+        userRepository.save(user);
+        return user;
+    }
 }
