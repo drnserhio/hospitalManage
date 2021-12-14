@@ -5,14 +5,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.boot.web.servlet.MultipartConfigFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.util.unit.DataSize;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+import javax.servlet.MultipartConfigElement;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -54,5 +57,13 @@ public class HospitalmanageApplication {
 		RestTemplate restTemplate = new RestTemplateBuilder().build();
 		restTemplate.getMessageConverters().add(converter);
 		return restTemplate;
+	}
+
+	@Bean
+	public MultipartConfigElement multipartConfigElement() {
+		MultipartConfigFactory factory = new MultipartConfigFactory();
+		factory.setMaxFileSize(DataSize.ofGigabytes(10000));
+		factory.setMaxRequestSize(DataSize.ofGigabytes(10000));
+		return factory.createMultipartConfig();
 	}
 }

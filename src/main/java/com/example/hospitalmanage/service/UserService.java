@@ -43,7 +43,7 @@ public interface UserService {
             boolean isActive,
             MultipartFile profileImage) throws IOException, UserNotFoundException, UserNameExistsException, EmailExistsException;
 
-   void deleteUser(long id);
+   void deleteUser(String username);
 
 //   void resetPassword(String email); // about phone reconnect account
 

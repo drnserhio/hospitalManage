@@ -1,7 +1,8 @@
 package com.example.hospitalmanage.model;
 
 import com.example.hospitalmanage.model.icd.AnalyzeICDDate;
-import com.example.hospitalmanage.model.icd.ICD;
+import com.example.hospitalmanage.model.video.Video;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,11 +21,13 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Long id;
     private String userId;
     private String username;
     private String profileImageUrl;
     private String email;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
 
@@ -45,6 +48,8 @@ public class User {
     @OneToMany(cascade = CascadeType.ALL)
     private List<Treatment> treatment; // лечение // change after visit treatment (doctor) чем лечить role doctor
     private Boolean hospiztalization; // role doctor
+    @OneToMany(cascade = CascadeType.ALL)
+    private Set<Video> videoFiles;
 
 
     private Date joindDate;
