@@ -8,11 +8,9 @@ import com.example.hospitalmanage.exception.domain.EmailExistsException;
 import com.example.hospitalmanage.exception.domain.PasswordNotValidException;
 import com.example.hospitalmanage.exception.domain.UserNameExistsException;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
-import com.example.hospitalmanage.model.icd.ICD;
 import com.example.hospitalmanage.service.impl.ProfileService;
 import com.example.hospitalmanage.service.UserService;
 import com.example.hospitalmanage.util.JwtTokenProvider;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -30,13 +28,12 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import static com.example.hospitalmanage.constant.FileConstant.*;
 import static com.example.hospitalmanage.constant.SecurityConstant.JWT_TOKEN_HEADER;
-import static org.springframework.http.HttpStatus.NO_CONTENT;
-import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 
 @RestController
@@ -76,6 +73,7 @@ public class UserResource extends ExceptionHandling {
     }
 
     @PostMapping("/add")
+    @PreAuthorize("hasRole('ROLE_SUPER_ADMIN')")
     public ResponseEntity<User> addNewUser(
             @RequestParam("firstname") String firstname,
             @RequestParam("lastname") String lastname,
@@ -102,6 +100,7 @@ public class UserResource extends ExceptionHandling {
     }
 
     @PutMapping("/update")
+    @PreAuthorize("hasRole('ROLE_SUPER_ADMIN, ROLE_USER, ROLE_DOCTOR, ROLE_SECRETAR, ROLE_ADMIN')")
     public ResponseEntity<User> updateUser(
            @RequestParam("currentUsername") String currentUsername,
            @RequestParam("firstname") String firstname,
@@ -141,7 +140,9 @@ public class UserResource extends ExceptionHandling {
         return new ResponseEntity<>(userByUsername, OK);
     }
 
+
     @GetMapping(path = "/image/profile/{username}", produces = IMAGE_JPEG_VALUE)
+    @PreAuthorize("hasRole('ROLE_SUPER_ADMIN, ROLE_USER, ROLE_DOCTOR, ROLE_SECRETAR, ROLE_ADMIN')")
     public byte[] getTempProfileImage(@PathVariable("username") String username)
             throws IOException {
         URL url = new URL(TEMP_PROFILE_IMAGE_BASE_URL + username);
@@ -158,6 +159,7 @@ public class UserResource extends ExceptionHandling {
     }
 
     @GetMapping(path = "image/{username}/{filename}", produces = IMAGE_JPEG_VALUE)
+    @PreAuthorize("hasRole('ROLE_SUPER_ADMIN, ROLE_USER, ROLE_DOCTOR, ROLE_SECRETAR, ROLE_ADMIN')")
     public byte[] getProfileImage(
             @PathVariable("username") String username,
             @PathVariable("filename") String filename) throws IOException {
@@ -166,6 +168,7 @@ public class UserResource extends ExceptionHandling {
     }
 
     @PostMapping("/updateProfileImage")
+    @PreAuthorize("hasRole('ROLE_SUPER_ADMIN, ROLE_USER, ROLE_DOCTOR, ROLE_SECRETAR, ROLE_ADMIN')")
     public ResponseEntity<User> updateProfileImage(
             @RequestParam("username") String username,
             @RequestParam(value = "profileImage", required = false) MultipartFile profileImage)
@@ -186,12 +189,14 @@ public class UserResource extends ExceptionHandling {
 
 
     @GetMapping("/list")
+    @PreAuthorize("hasRole('ROLE_SUPER_ADMIN, ROLE_USER, ROLE_DOCTOR, ROLE_SECRETAR, ROLE_ADMIN')")
     public ResponseEntity<List<User>> getUsers() {
         List<User> users = userService.getRoleUser();
         return new ResponseEntity<>(users, OK);
     }
 
     @GetMapping("/systemusers")
+    @PreAuthorize("hasRole('ROLE_SUPER_ADMIN, ROLE_USER, ROLE_DOCTOR, ROLE_SECRETAR, ROLE_ADMIN')")
     public ResponseEntity<List<User>> getAllUserSystem() {
         List<User> allUsersSystem = userService.getAllUserSystem();
         return new ResponseEntity<>(allUsersSystem, OK);
@@ -215,6 +220,26 @@ public class UserResource extends ExceptionHandling {
                         httpStatus.getReasonPhrase().toUpperCase(),
                         message.toUpperCase()),
                         httpStatus);
+    }
+
+    @GetMapping("/list-page")
+
+    public ResponseEntity<Map<String, Object>> getAllUser(
+            @RequestParam(required = false, name = "column", defaultValue = "id") String column,
+            @RequestParam(required = false, name = "sort", defaultValue = "asc") String sort,
+            @RequestParam(defaultValue = "0", name = "page") int page,
+            @RequestParam(defaultValue = "5", name= "size") int size) {
+        Map<String, Object> response = userService.findAllPage(column, sort, page, size);
+       if (response.size() < 1) {
+           return new ResponseEntity<>(response, INTERNAL_SERVER_ERROR);
+       }
+       return new ResponseEntity<>(response, OK);
+    }
+
+    @GetMapping("t/{id}")
+    public ResponseEntity<Map<String, Object>> getTreatmentById(
+            @PathVariable("id") Long id) {
+        return new ResponseEntity<>(userService.getTreatmentById(id), OK);
     }
 
 }

@@ -8,6 +8,7 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.servlet.MultipartConfigFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.util.unit.DataSize;
 import org.springframework.web.client.RestTemplate;
@@ -20,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 @SpringBootApplication
+@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class HospitalmanageApplication {
 
 	public static void main(String[] args) {

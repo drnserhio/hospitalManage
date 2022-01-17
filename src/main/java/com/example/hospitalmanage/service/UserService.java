@@ -1,20 +1,17 @@
 package com.example.hospitalmanage.service;
 
+import com.example.hospitalmanage.model.Treatment;
 import com.example.hospitalmanage.model.User;
 import com.example.hospitalmanage.exception.domain.EmailExistsException;
-import com.example.hospitalmanage.exception.domain.PasswordNotValidException;
 import com.example.hospitalmanage.exception.domain.UserNameExistsException;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
-import com.example.hospitalmanage.model.icd.ICD;
-import org.docx4j.openpackaging.exceptions.Docx4JException;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.MessagingException;
-import javax.xml.bind.JAXBException;
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 public interface UserService {
 
@@ -67,5 +64,6 @@ public interface UserService {
 
     List<User> getAllUserSystem();
 
-
+    Map<String, Object> findAllPage(String column, String sort, int page, int size);
+    Map<String, Object> getTreatmentById(Long id);
 }

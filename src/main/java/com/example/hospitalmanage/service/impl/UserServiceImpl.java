@@ -4,6 +4,7 @@ import com.example.hospitalmanage.exception.domain.EmailExistsException;
 import com.example.hospitalmanage.exception.domain.PasswordNotValidException;
 import com.example.hospitalmanage.exception.domain.UserNameExistsException;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
+import com.example.hospitalmanage.model.Treatment;
 import com.example.hospitalmanage.model.User;
 import com.example.hospitalmanage.model.UserPrincipal;
 import com.example.hospitalmanage.model.icd.ICD;
@@ -16,6 +17,10 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -300,6 +305,53 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return userRepository.findAll();
     }
 
+    @Override
+    public Map<String, Object> findAllPage(String column, String sort, int page, int size) {
+
+        try {
+            List<User> users = new ArrayList<>();
+            Pageable pg = PageRequest.of(page, size);
+
+            Page<User> pageUsers;
+
+            if (column == null) {
+                pageUsers = userRepository.findAll(pg);
+            } else {
+                if (sort.equals("asc")) {
+                    pg = PageRequest.of(page, size, Sort.by(column).ascending());
+                    pageUsers = userRepository.findAll(pg);
+                } else {
+                    pg = PageRequest.of(page, size, Sort.by(column).descending());
+                    pageUsers = userRepository.findAll(pg);
+                }
+            }
+            users = pageUsers.getContent();
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("content", users);
+            response.put("currentPage", pageUsers.getNumber());
+            response.put("totalItems", pageUsers.getTotalElements());
+            response.put("totalPages", pageUsers.getTotalPages());
+            response.put("sortColumn", column);
+            response.put("sort", sort);
+
+            return response;
+        } catch (Exception e) {
+           return Collections.emptyMap();
+        }
+    }
 
 
+    public Map<String, Object> getTreatmentById(Long id) {
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Treatment> allTreatmentById = userRepository.findAllTreatmentById(id, pageable);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("content", allTreatmentById);
+        response.put("currentPage", allTreatmentById.getNumber());
+        response.put("totalItems", allTreatmentById.getTotalElements());
+        response.put("totalPages", allTreatmentById.getTotalPages());
+
+        return response;
+    }
 }
