@@ -1,11 +1,11 @@
 package com.example.hospitalmanage.service;
 
-import com.example.hospitalmanage.model.Treatment;
+import com.example.hospitalmanage.dto.RequestTabel;
+import com.example.hospitalmanage.dto.ResponseTable;
 import com.example.hospitalmanage.model.User;
 import com.example.hospitalmanage.exception.domain.EmailExistsException;
 import com.example.hospitalmanage.exception.domain.UserNameExistsException;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
-import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.MessagingException;
@@ -65,5 +65,14 @@ public interface UserService {
     List<User> getAllUserSystem();
 
     Map<String, Object> findAllPage(String column, String sort, int page, int size);
-    Map<String, Object> getTreatmentById(Long id);
+
+    ResponseTable getTreatmentsByUserId(RequestTabel request, Long userId);
+    ResponseTable getVideosByUserId(RequestTabel request, Long userId);
+    ResponseTable getDiagnosisByUserId(RequestTabel request, Long userId);
+
+
+
+
+
+
 }

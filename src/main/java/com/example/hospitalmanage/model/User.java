@@ -30,28 +30,25 @@ public class User {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
-
     private String firstname;
     private String lastname;
     private String patronomic;
     private int age;
-
 
     private String address; //role user
     private String infoAboutComplaint; // жалобы role user
     private String QRCODE; // role user
     private String infoAboutSick; // болезни перенесенные(role user )
     private String infoDiagnosis; // диагноз ( чем а даный момент болен после исследования role doctror
-    //enum create investigation
-    @OneToMany(cascade = CascadeType.ALL)
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<AnalyzeICDDate> diagnosis; //исследование secretary
-    @OneToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Treatment> treatment; // лечение // change after visit treatment (doctor) чем лечить role doctor
-    private Boolean hospiztalization; // role doctor
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Video> videoFiles;
 
-
+    private Boolean hospiztalization; // role doctor
     private Date joindDate;
     private Date lastLoginDate;
     private Date lastLoginDateDisplay;

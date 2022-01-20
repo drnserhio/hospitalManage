@@ -1,5 +1,7 @@
 package com.example.hospitalmanage.resource;
 
+import com.example.hospitalmanage.dto.ResponseTable;
+import com.example.hospitalmanage.dto.impl.RequestTableImpl;
 import com.example.hospitalmanage.model.HttpResponse;
 import com.example.hospitalmanage.model.User;
 import com.example.hospitalmanage.model.UserPrincipal;
@@ -227,7 +229,7 @@ public class UserResource extends ExceptionHandling {
     public ResponseEntity<Map<String, Object>> getAllUser(
             @RequestParam(required = false, name = "column", defaultValue = "id") String column,
             @RequestParam(required = false, name = "sort", defaultValue = "asc") String sort,
-            @RequestParam(defaultValue = "0", name = "page") int page,
+            @RequestParam(defaultValue = "1", name = "page") int page,
             @RequestParam(defaultValue = "5", name= "size") int size) {
         Map<String, Object> response = userService.findAllPage(column, sort, page, size);
        if (response.size() < 1) {
@@ -236,10 +238,20 @@ public class UserResource extends ExceptionHandling {
        return new ResponseEntity<>(response, OK);
     }
 
-    @GetMapping("t/{id}")
-    public ResponseEntity<Map<String, Object>> getTreatmentById(
-            @PathVariable("id") Long id) {
-        return new ResponseEntity<>(userService.getTreatmentById(id), OK);
+    @GetMapping("/treatments/in/user/{userId}")
+    public ResponseEntity<ResponseTable> getTreatmentsByUserId(
+            @RequestBody RequestTableImpl request,
+            @PathVariable("userId") Long id) {
+        ResponseTable responseTable = userService.getTreatmentsByUserId(request , id);
+        return new ResponseEntity<>(responseTable, OK);
+    }
+
+    @GetMapping("/videos/in/user/{userId}")
+    public ResponseEntity<ResponseTable> getVideosByUserId(
+            @RequestBody RequestTableImpl request,
+            @PathVariable("userId") Long id) {
+        ResponseTable responseTable = userService.getVideosByUserId(request , id);
+        return new ResponseEntity<>(responseTable, OK);
     }
 
 }

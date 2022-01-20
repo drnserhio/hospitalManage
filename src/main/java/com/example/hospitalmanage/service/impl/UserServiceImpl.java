@@ -1,18 +1,22 @@
 package com.example.hospitalmanage.service.impl;
 
+import com.example.hospitalmanage.dto.RequestTabel;
+import com.example.hospitalmanage.dto.ResponseTable;
+import com.example.hospitalmanage.dto.impl.ResponseTableImpl;
 import com.example.hospitalmanage.exception.domain.EmailExistsException;
-import com.example.hospitalmanage.exception.domain.PasswordNotValidException;
 import com.example.hospitalmanage.exception.domain.UserNameExistsException;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
 import com.example.hospitalmanage.model.Treatment;
 import com.example.hospitalmanage.model.User;
 import com.example.hospitalmanage.model.UserPrincipal;
-import com.example.hospitalmanage.model.icd.ICD;
+import com.example.hospitalmanage.model.icd.AnalyzeICDDate;
+import com.example.hospitalmanage.model.video.Video;
 import com.example.hospitalmanage.role.Role;
 import com.example.hospitalmanage.service.UserRepository;
 import com.example.hospitalmanage.service.UserService;
-import com.example.hospitalmanage.util.JwtTokenProvider;
+import com.example.hospitalmanage.util.RequestTableHelper;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +25,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -32,17 +35,15 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.mail.MessagingException;
-import javax.persistence.NoResultException;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.example.hospitalmanage.constant.FileConstant.*;
-import static com.example.hospitalmanage.constant.HandlingExceptionConstant.PASSWORD_IS_NOT_VALID;
 import static com.example.hospitalmanage.constant.UserImplConstant.*;
 import static com.example.hospitalmanage.role.Role.ROLE_USER;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
@@ -52,15 +53,17 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 @Service
 @AllArgsConstructor
 @Transactional
+@Slf4j
 @Qualifier("UserDetailsService")
 public class UserServiceImpl implements UserService, UserDetailsService {
 
 
     private final UserRepository userRepository;
-    private final JwtTokenProvider jwtTokenProvider;
     private final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final EmailService emailService;
+    private final EntityManager entityManager;
+
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -342,16 +345,110 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
 
-    public Map<String, Object> getTreatmentById(Long id) {
-        Pageable pageable = PageRequest.of(0, 10);
-        Page<Treatment> allTreatmentById = userRepository.findAllTreatmentById(id, pageable);
+    public ResponseTable getTreatmentsByUserId(RequestTabel request, Long userId) {
+        RequestTableHelper.init(request);
+        List<Treatment> treatments = Collections.emptyList();
+        try {
+            Query query = entityManager
+                    .createNativeQuery("select id, date_create, treatment from treatment t where t.id in (select u_t.treatment_id from user_treatment u_t where u_t.user_id = :userId) order by :column :sort", Treatment.class)
+                    .setParameter("userId", userId).setParameter("column", request.getColumn()).setParameter("sort", request.getSort());
+            query.setFirstResult((request.getPage() - 1) *  request.getSize()).setMaxResults(request.getSize());
+            treatments = query.getResultList();
+        } catch (Exception e) {
+            log.debug("Query exception result");
+        }
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("content", allTreatmentById);
-        response.put("currentPage", allTreatmentById.getNumber());
-        response.put("totalItems", allTreatmentById.getTotalElements());
-        response.put("totalPages", allTreatmentById.getTotalPages());
+        int itemsSize = countTreatmentsByUserId(userId);
+        int totalPages = totalPageConverter(itemsSize, request.getSize());
 
-        return response;
+        com.example.hospitalmanage.dto.ResponseTable responseTable = new ResponseTableImpl(request);
+        responseTable.setContent(treatments);
+        responseTable.setAllItemsSize(itemsSize);
+        responseTable.setTotalPages(totalPages);
+        responseTable.setColumnSort(request.getColumn());
+
+        return responseTable;
+    }
+
+
+    public ResponseTable getVideosByUserId(RequestTabel request, Long userId) {
+        RequestTableHelper.init(request);
+        List<Video> videos = Collections.emptyList();
+        try {
+            Query query = entityManager
+                    .createNativeQuery("select id, create_date, name_file from video v where v.id in (select u_v.video_files_id from user_video_files u_v where u_v.user_id = :userId) order by :column :sort", Video.class)
+                    .setParameter("userId", userId).setParameter("column", request.getColumn()).setParameter("sort", request.getSort());
+            query.setFirstResult((request.getPage() - 1) *  request.getSize()).setMaxResults(request.getSize());
+            videos = query.getResultList();
+        } catch (Exception e) {
+            log.debug("Query exception result");
+        }
+
+        int itemsSize = countVideosByUserId(userId);
+        int totalPages = totalPageConverter(itemsSize, request.getSize());
+
+        com.example.hospitalmanage.dto.ResponseTable responseTable = new ResponseTableImpl(request);
+        responseTable.setContent(videos);
+        responseTable.setAllItemsSize(itemsSize);
+        responseTable.setTotalPages(totalPages);
+        responseTable.setColumnSort(request.getColumn());
+        return responseTable;
+    }
+
+    public ResponseTable getDiagnosisByUserId(RequestTabel request, Long userId) {
+
+        RequestTableHelper.init(request);
+        List<AnalyzeICDDate> analyzeICD = Collections.emptyList();
+        try {
+            Query query = entityManager
+                    .createNativeQuery("select id, create_date, name_file from video v where v.id in (select u_v.video_files_id from user_video_files u_v where u_v.user_id = :userId) order by :column :sort", Video.class)
+                    .setParameter("userId", userId).setParameter("column", request.getColumn()).setParameter("sort", request.getSort());
+            query.setFirstResult((request.getPage() - 1) *  request.getSize()).setMaxResults(request.getSize());
+            analyzeICD = query.getResultList();
+        } catch (Exception e) {
+            log.debug("Query exception result");
+        }
+
+        int itemsSize = countAnalyzeICDByUserId(userId);
+        int totalPages = totalPageConverter(itemsSize, request.getSize());
+
+        com.example.hospitalmanage.dto.ResponseTable responseTable = new ResponseTableImpl(request);
+        responseTable.setContent(analyzeICD);
+        responseTable.setAllItemsSize(itemsSize);
+        responseTable.setTotalPages(totalPages);
+        responseTable.setColumnSort(request.getColumn());
+        return responseTable;
+    }
+
+    private int countAnalyzeICDByUserId(Long userId) {
+        Query query = entityManager
+                .createNativeQuery("select count(id) from analyzeicddate anlz where anlz.id in (select u_d.diagnosis_id from user_diagnosis u_d where u_d.user_id = :userId)")
+                .setParameter("userId", userId);
+        int count = ((Number) query.getSingleResult()).intValue();
+        return count;
+    }
+
+    private int countVideosByUserId(Long userId) {
+        Query query = entityManager
+                .createNativeQuery("select count(id) from video v where v.id in (select u_v.video_files_id from user_video_files u_v where u_v.user_id = :userId)")
+                .setParameter("userId", userId);
+        int count = ((Number) query.getSingleResult()).intValue();
+        return count;
+    }
+
+    private int countTreatmentsByUserId(Long userId) {
+        Query query = entityManager
+                .createNativeQuery("select count(id) from treatment t where t.id in (select u_t.treatment_id from user_treatment u_t where u_t.user_id = :userId)")
+                .setParameter("userId", userId);
+        int count = ((Number) query.getSingleResult()).intValue();
+        return count;
+    }
+
+    private int totalPageConverter(int itemSize, int showEntity) {
+        if (itemSize % showEntity == 0) {
+            return  (itemSize / showEntity);
+        } else {
+            return (itemSize/ showEntity) + 1;
+        }
     }
 }
