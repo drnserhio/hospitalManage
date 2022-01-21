@@ -6,10 +6,8 @@ import lombok.Data;
 
 @Data
 public class RequestTableImpl implements RequestTabel<Treatment> {
-
     private String column;
     private String sort;
     private int page;
     private int size;
-
 }

@@ -1,13 +1,14 @@
 package com.example.hospitalmanage.dto.impl;
 
 import com.example.hospitalmanage.dto.RequestTabel;
+import com.example.hospitalmanage.dto.ResponseTable;
 import com.example.hospitalmanage.model.Treatment;
 import lombok.Data;
 
 import java.util.List;
 
 @Data
-public class ResponseTableImpl implements com.example.hospitalmanage.dto.ResponseTable<Treatment> {
+public class ResponseTableImpl implements ResponseTable<Treatment> {
 
 
 
@@ -23,7 +24,7 @@ public class ResponseTableImpl implements com.example.hospitalmanage.dto.Respons
         init(request);
     }
 
-    public com.example.hospitalmanage.dto.ResponseTable init(RequestTabel request) {
+    public ResponseTable init(RequestTabel request) {
         this.setPage(request.getPage());
         this.setSize(request.getSize());
         this.setSort(request.getSort());

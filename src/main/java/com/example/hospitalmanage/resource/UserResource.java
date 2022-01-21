@@ -238,7 +238,7 @@ public class UserResource extends ExceptionHandling {
        return new ResponseEntity<>(response, OK);
     }
 
-    @GetMapping("/treatments/in/user/{userId}")
+    @PostMapping("/treatments/in/user/{userId}")
     public ResponseEntity<ResponseTable> getTreatmentsByUserId(
             @RequestBody RequestTableImpl request,
             @PathVariable("userId") Long id) {
@@ -246,7 +246,7 @@ public class UserResource extends ExceptionHandling {
         return new ResponseEntity<>(responseTable, OK);
     }
 
-    @GetMapping("/videos/in/user/{userId}")
+    @PostMapping("/videos/in/user/{userId}")
     public ResponseEntity<ResponseTable> getVideosByUserId(
             @RequestBody RequestTableImpl request,
             @PathVariable("userId") Long id) {

@@ -9,7 +9,6 @@ import com.example.hospitalmanage.exception.domain.UserNotFoundException;
 import com.example.hospitalmanage.model.Treatment;
 import com.example.hospitalmanage.model.User;
 import com.example.hospitalmanage.model.UserPrincipal;
-import com.example.hospitalmanage.model.icd.AnalyzeICDDate;
 import com.example.hospitalmanage.model.video.Video;
 import com.example.hospitalmanage.role.Role;
 import com.example.hospitalmanage.service.UserRepository;
@@ -361,7 +360,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         int itemsSize = countTreatmentsByUserId(userId);
         int totalPages = totalPageConverter(itemsSize, request.getSize());
 
-        com.example.hospitalmanage.dto.ResponseTable responseTable = new ResponseTableImpl(request);
+        ResponseTable responseTable = new ResponseTableImpl(request);
         responseTable.setContent(treatments);
         responseTable.setAllItemsSize(itemsSize);
         responseTable.setTotalPages(totalPages);
@@ -387,45 +386,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         int itemsSize = countVideosByUserId(userId);
         int totalPages = totalPageConverter(itemsSize, request.getSize());
 
-        com.example.hospitalmanage.dto.ResponseTable responseTable = new ResponseTableImpl(request);
+        ResponseTable responseTable = new ResponseTableImpl(request);
         responseTable.setContent(videos);
         responseTable.setAllItemsSize(itemsSize);
         responseTable.setTotalPages(totalPages);
         responseTable.setColumnSort(request.getColumn());
         return responseTable;
-    }
-
-    public ResponseTable getDiagnosisByUserId(RequestTabel request, Long userId) {
-
-        RequestTableHelper.init(request);
-        List<AnalyzeICDDate> analyzeICD = Collections.emptyList();
-        try {
-            Query query = entityManager
-                    .createNativeQuery("select id, create_date, name_file from video v where v.id in (select u_v.video_files_id from user_video_files u_v where u_v.user_id = :userId) order by :column :sort", Video.class)
-                    .setParameter("userId", userId).setParameter("column", request.getColumn()).setParameter("sort", request.getSort());
-            query.setFirstResult((request.getPage() - 1) *  request.getSize()).setMaxResults(request.getSize());
-            analyzeICD = query.getResultList();
-        } catch (Exception e) {
-            log.debug("Query exception result");
-        }
-
-        int itemsSize = countAnalyzeICDByUserId(userId);
-        int totalPages = totalPageConverter(itemsSize, request.getSize());
-
-        com.example.hospitalmanage.dto.ResponseTable responseTable = new ResponseTableImpl(request);
-        responseTable.setContent(analyzeICD);
-        responseTable.setAllItemsSize(itemsSize);
-        responseTable.setTotalPages(totalPages);
-        responseTable.setColumnSort(request.getColumn());
-        return responseTable;
-    }
-
-    private int countAnalyzeICDByUserId(Long userId) {
-        Query query = entityManager
-                .createNativeQuery("select count(id) from analyzeicddate anlz where anlz.id in (select u_d.diagnosis_id from user_diagnosis u_d where u_d.user_id = :userId)")
-                .setParameter("userId", userId);
-        int count = ((Number) query.getSingleResult()).intValue();
-        return count;
     }
 
     private int countVideosByUserId(Long userId) {

@@ -68,7 +68,6 @@ public interface UserService {
 
     ResponseTable getTreatmentsByUserId(RequestTabel request, Long userId);
     ResponseTable getVideosByUserId(RequestTabel request, Long userId);
-    ResponseTable getDiagnosisByUserId(RequestTabel request, Long userId);
 
 
 

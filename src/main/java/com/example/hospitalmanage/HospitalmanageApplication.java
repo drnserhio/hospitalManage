@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 @SpringBootApplication
-@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
+//@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class HospitalmanageApplication {
 
 	public static void main(String[] args) {
