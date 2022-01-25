@@ -26,8 +26,9 @@ public class ICDResource extends ExceptionHandling {
 
     private ICDService icdService;
 
-    @PreAuthorize("hasRole('ROLE_SUPER_ADMIN') or hasRole('ROLE_DOCTOR') or hasRole('ROLE_SECRETARY')")
+
     @GetMapping(path = "/list")
+    @PreAuthorize("hasAnyAuthority('god:all')")
     public ResponseEntity<String> getList()
             throws IOException {
         String list = icdService.getList();
@@ -36,7 +37,7 @@ public class ICDResource extends ExceptionHandling {
 
 
     @GetMapping( path = "/{code}")
-    @Secured({"ROLE_SUPER_ADMIN"})
+    @PreAuthorize("hasAnyAuthority('god:all', 'patient:all')")
     public ResponseEntity<ICD> getCodeICD(
             @PathVariable("code") String code)
             throws IOException {

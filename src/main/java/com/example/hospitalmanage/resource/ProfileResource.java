@@ -27,6 +27,7 @@ public class ProfileResource extends ExceptionHandling {
     private final ProfileService profileService;
 
     @PutMapping("/updateProfile")
+    @PreAuthorize("hasAnyAuthority('god:all', 'profile:user')")
     public ResponseEntity<User> updateProfile(
             @RequestParam("currentUsername") String currentUsername,
             @RequestParam(value = "firstname", required = false) String firstname,
@@ -56,14 +57,18 @@ public class ProfileResource extends ExceptionHandling {
         return new ResponseEntity<>(user, OK);
     }
 
+
     @GetMapping( "/document/{username}")
+    @PreAuthorize("hasAnyAuthority('god:all', 'document:all', 'document:file')")
     public ResponseEntity<byte[]> getDocument(
             @PathVariable("username") String username)
             throws Exception {
         return new ResponseEntity<>(profileService.getDocument(username), OK);
     }
 
+
     @PostMapping("/diagnosis/{username}")
+    @PreAuthorize("hasAnyAuthority('god:all', 'patient:all')")
     public ResponseEntity<User> addCodeICD(
             @PathVariable("username") String username,
             @RequestBody  List<ICD> diagnosis) {
@@ -72,6 +77,7 @@ public class ProfileResource extends ExceptionHandling {
     }
 
     @PostMapping("/diagnosis-remove/{username}")
+    @PreAuthorize("hasAnyAuthority('god:all', 'patient:all')")
     public ResponseEntity<User> removeCodeICD(
             @PathVariable("username") String username,
             @RequestBody  String code) {
@@ -80,7 +86,7 @@ public class ProfileResource extends ExceptionHandling {
     }
 
     @PutMapping("/timevisit")
-    @PreAuthorize("hasRole('ROLE_SECRETARY')")
+    @PreAuthorize("hasAnyAuthority('god:all', 'patient:all')")
     public ResponseEntity<User> updateUserTimeVisitByUsername(
             @RequestParam("currentUsername") String currentUsername,
             @RequestParam("timeVisit")
@@ -90,7 +96,9 @@ public class ProfileResource extends ExceptionHandling {
         return new ResponseEntity<>(updateUser, OK);
     }
 
+
     @PostMapping("/add-treatment/{username}")
+    @PreAuthorize("hasAnyAuthority('god:all', 'patient:all')")
     public ResponseEntity<User> addTreatment(
             @PathVariable("username") String username,
             @RequestBody String treatment) {
@@ -99,12 +107,15 @@ public class ProfileResource extends ExceptionHandling {
     }
 
     @DeleteMapping("/del/all/treatment/{username}")
+    @PreAuthorize("hasAnyAuthority('god:all', 'patient:all')")
     public ResponseEntity<User> deleteAllTreatment(
             @PathVariable("username") String username) {
         User user = profileService.deleteAllTreatment(username);
         return new ResponseEntity<>(user, OK);
     }
+
     @DeleteMapping("/del/choose/treatment/{username}/{id}")
+    @PreAuthorize("hasAnyAuthority('god:all', 'patient:all')")
     public ResponseEntity<User> deleteChooseTreatment(
             @PathVariable("username") String username,
             @PathVariable("id") Long id) {
@@ -113,6 +124,7 @@ public class ProfileResource extends ExceptionHandling {
     }
 
     @PostMapping("/change/hospitalization/{username}")
+    @PreAuthorize("hasAnyAuthority('god:all', 'patient:all')")
     public ResponseEntity<User> changeHospitaliztion(
             @PathVariable("username") String username,
             @RequestBody String hospitalization) {

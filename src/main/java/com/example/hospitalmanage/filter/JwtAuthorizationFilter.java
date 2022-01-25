@@ -33,7 +33,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
        if (request.getMethod().equalsIgnoreCase(OPTIONS_HTTP_METHOD)) {
            response.setStatus(OK.value());
        } else {
-           String authenticationHeader = response.getHeader(AUTHORIZATION);
+           String authenticationHeader = request.getHeader(AUTHORIZATION);
 
            if (authenticationHeader == null ||
                     !authenticationHeader.startsWith(TOKEN_PREFIX)) {
@@ -48,6 +48,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                List<GrantedAuthority> authorities = jwtTokenProvider.getAuthorities(token);
                Authentication authentication = jwtTokenProvider.getAuthentication(username, authorities, request);
                SecurityContextHolder.getContext().setAuthentication(authentication);
+
            } else {
                SecurityContextHolder.clearContext();
            }

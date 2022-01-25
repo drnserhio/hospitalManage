@@ -9,6 +9,7 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,6 +40,7 @@ public class VideoResource extends ExceptionHandling {
 
 
     @PostMapping("/upload/{username}")
+    @PreAuthorize("hasAnyAuthority('god:all', 'operation:all')")
     public ResponseEntity<List<String>> uploadFiles(
             @PathVariable("username") String username,
             @RequestParam("files") List<MultipartFile> multipartFiles) throws IOException {
@@ -47,6 +49,7 @@ public class VideoResource extends ExceptionHandling {
     }
 
     @GetMapping("download/{username}/{filename}")
+    @PreAuthorize("hasAnyAuthority('god:all', 'operation:all')")
     public ResponseEntity<Resource> downloadFiles(
             @PathVariable("username") String username,
             @PathVariable("filename") String filename)
@@ -56,13 +59,12 @@ public class VideoResource extends ExceptionHandling {
     }
 
     @DeleteMapping("remove/{username}/{filename}")
+    @PreAuthorize("hasAnyAuthority('god:all', 'operation:all')")
     public ResponseEntity<User> removeFile(
             @PathVariable("username") String username,
             @PathVariable("filename") String filename)
             throws IOException {
         User user = videoService.removeFile(username, filename);
         return new ResponseEntity<>(user, OK);
-
     }
-
 }

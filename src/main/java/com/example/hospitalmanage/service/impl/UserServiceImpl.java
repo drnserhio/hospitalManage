@@ -24,6 +24,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -44,7 +47,7 @@ import java.util.*;
 
 import static com.example.hospitalmanage.constant.FileConstant.*;
 import static com.example.hospitalmanage.constant.UserImplConstant.*;
-import static com.example.hospitalmanage.role.Role.ROLE_USER;
+import static com.example.hospitalmanage.role.Role.*;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -74,7 +77,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             user.setLastLoginDateDisplay(user.getLastLoginDate());
             user.setLastLoginDate(new Date());
             userRepository.save(user);
-            LOGGER.info(FOUND_USER_BY_USERNAME);
             UserPrincipal userPrincipal = new UserPrincipal(user);
             return userPrincipal;
         }
@@ -102,10 +104,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         user.setRole(ROLE_USER.name());
         user.setAuthorities(ROLE_USER.getAuthorities());
         user.setProfileImageUrl(getTemporaryProfileImageUrl(username));
-        userRepository.save(user);
+        User save = userRepository.save(user);
         LOGGER.info("New user password + " + password);
-        emailService.sendMessage(firstname, lastname, email);
-        return user;
+        try {
+            emailService.sendMessage(firstname, lastname, email);
+        } catch (MessagingException e) {}
+        return save;
     }
 
     @Override
@@ -182,6 +186,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 //        }
 //        String password = generatePassword();
 //    }
+
 
     @Override
     public User updateProfileImage(String username, MultipartFile profileImage)

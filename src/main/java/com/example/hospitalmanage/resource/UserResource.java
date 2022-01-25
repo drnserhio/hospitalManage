@@ -14,12 +14,16 @@ import com.example.hospitalmanage.service.impl.ProfileService;
 import com.example.hospitalmanage.service.UserService;
 import com.example.hospitalmanage.util.JwtTokenProvider;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -41,6 +45,7 @@ import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 @RestController
 @RequestMapping(path = {"/", "/user"})
 @AllArgsConstructor
+@Slf4j
 public class UserResource extends ExceptionHandling {
 
     public static final String USER_DELETE_SUCCESSFULLY = "User delete successfully";
@@ -71,11 +76,12 @@ public class UserResource extends ExceptionHandling {
         User loginUser = userService.findUserByUsername(user.getUsername());
         UserPrincipal userPrincipal = new UserPrincipal(loginUser);
         HttpHeaders jwtHeaders = getJwtHeader(userPrincipal);
+        log.info(SecurityContextHolder.getContext().getAuthentication().getAuthorities().toString());
         return new ResponseEntity<>(loginUser, jwtHeaders, OK);
     }
 
     @PostMapping("/add")
-    @PreAuthorize("hasRole('ROLE_SUPER_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('god:all')")
     public ResponseEntity<User> addNewUser(
             @RequestParam("firstname") String firstname,
             @RequestParam("lastname") String lastname,
@@ -102,7 +108,7 @@ public class UserResource extends ExceptionHandling {
     }
 
     @PutMapping("/update")
-    @PreAuthorize("hasRole('ROLE_SUPER_ADMIN, ROLE_USER, ROLE_DOCTOR, ROLE_SECRETAR, ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('god:all')")
     public ResponseEntity<User> updateUser(
            @RequestParam("currentUsername") String currentUsername,
            @RequestParam("firstname") String firstname,
@@ -129,7 +135,7 @@ public class UserResource extends ExceptionHandling {
     }
 
     @DeleteMapping("/delete/{username}")
-    @PreAuthorize("hasAnyAuthority('user:delete')")
+    @PreAuthorize("hasAnyAuthority('god:all')")
     public ResponseEntity<HttpResponse> deleteUser(
             @PathVariable("username") String username) {
         userService.deleteUser(username);
@@ -137,6 +143,7 @@ public class UserResource extends ExceptionHandling {
     }
 
     @GetMapping("/find/{username}")
+    @PreAuthorize("hasAnyAuthority('god:all', 'profile:all')")
     public ResponseEntity<User> getUser(@PathVariable("username") String username) {
         User userByUsername = userService.findUserByUsername(username);
         return new ResponseEntity<>(userByUsername, OK);
@@ -144,7 +151,6 @@ public class UserResource extends ExceptionHandling {
 
 
     @GetMapping(path = "/image/profile/{username}", produces = IMAGE_JPEG_VALUE)
-    @PreAuthorize("hasRole('ROLE_SUPER_ADMIN, ROLE_USER, ROLE_DOCTOR, ROLE_SECRETAR, ROLE_ADMIN')")
     public byte[] getTempProfileImage(@PathVariable("username") String username)
             throws IOException {
         URL url = new URL(TEMP_PROFILE_IMAGE_BASE_URL + username);
@@ -161,7 +167,6 @@ public class UserResource extends ExceptionHandling {
     }
 
     @GetMapping(path = "image/{username}/{filename}", produces = IMAGE_JPEG_VALUE)
-    @PreAuthorize("hasRole('ROLE_SUPER_ADMIN, ROLE_USER, ROLE_DOCTOR, ROLE_SECRETAR, ROLE_ADMIN')")
     public byte[] getProfileImage(
             @PathVariable("username") String username,
             @PathVariable("filename") String filename) throws IOException {
@@ -170,7 +175,6 @@ public class UserResource extends ExceptionHandling {
     }
 
     @PostMapping("/updateProfileImage")
-    @PreAuthorize("hasRole('ROLE_SUPER_ADMIN, ROLE_USER, ROLE_DOCTOR, ROLE_SECRETAR, ROLE_ADMIN')")
     public ResponseEntity<User> updateProfileImage(
             @RequestParam("username") String username,
             @RequestParam(value = "profileImage", required = false) MultipartFile profileImage)
@@ -180,7 +184,7 @@ public class UserResource extends ExceptionHandling {
     }
 
     @PutMapping("/changepass")
-    @PreAuthorize("hasAnyAuthority('user:change-pass')")
+    @PreAuthorize("hasAnyAuthority('god:all', 'profile:change-pass', 'profile:all')")
     public ResponseEntity<User> changePassByUsernameAndOldPassword(
             @RequestParam("oldPassword") String oldPassword,
             @RequestParam("newPassword") String newPassword)
@@ -191,14 +195,14 @@ public class UserResource extends ExceptionHandling {
 
 
     @GetMapping("/list")
-    @PreAuthorize("hasRole('ROLE_SUPER_ADMIN, ROLE_USER, ROLE_DOCTOR, ROLE_SECRETAR, ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('god:all')")
     public ResponseEntity<List<User>> getUsers() {
         List<User> users = userService.getRoleUser();
         return new ResponseEntity<>(users, OK);
     }
 
     @GetMapping("/systemusers")
-    @PreAuthorize("hasRole('ROLE_SUPER_ADMIN, ROLE_USER, ROLE_DOCTOR, ROLE_SECRETAR, ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('god:all')")
     public ResponseEntity<List<User>> getAllUserSystem() {
         List<User> allUsersSystem = userService.getAllUserSystem();
         return new ResponseEntity<>(allUsersSystem, OK);
@@ -224,8 +228,9 @@ public class UserResource extends ExceptionHandling {
                         httpStatus);
     }
 
-    @GetMapping("/list-page")
 
+    @GetMapping("/list-page")
+    @PreAuthorize("hasAnyAuthority('god:all', 'patient:all')")
     public ResponseEntity<Map<String, Object>> getAllUser(
             @RequestParam(required = false, name = "column", defaultValue = "id") String column,
             @RequestParam(required = false, name = "sort", defaultValue = "asc") String sort,
@@ -239,6 +244,7 @@ public class UserResource extends ExceptionHandling {
     }
 
     @PostMapping("/treatments/in/user/{userId}")
+    @PreAuthorize("hasAnyAuthority('god:all', 'patient:all')")
     public ResponseEntity<ResponseTable> getTreatmentsByUserId(
             @RequestBody RequestTableImpl request,
             @PathVariable("userId") Long id) {
@@ -247,6 +253,7 @@ public class UserResource extends ExceptionHandling {
     }
 
     @PostMapping("/videos/in/user/{userId}")
+    @PreAuthorize("hasAnyAuthority('god:all', 'oparation:all')")
     public ResponseEntity<ResponseTable> getVideosByUserId(
             @RequestBody RequestTableImpl request,
             @PathVariable("userId") Long id) {

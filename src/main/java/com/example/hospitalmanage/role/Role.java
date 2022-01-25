@@ -2,6 +2,7 @@ package com.example.hospitalmanage.role;
 
 import static com.example.hospitalmanage.constant.AuthorityConstant.*;
 
+
 public enum Role {
 
     ROLE_USER(USER_AUTHORITIES),

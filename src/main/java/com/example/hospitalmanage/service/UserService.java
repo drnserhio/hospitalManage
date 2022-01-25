@@ -6,6 +6,7 @@ import com.example.hospitalmanage.model.User;
 import com.example.hospitalmanage.exception.domain.EmailExistsException;
 import com.example.hospitalmanage.exception.domain.UserNameExistsException;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.MessagingException;
@@ -64,11 +65,11 @@ public interface UserService {
 
     List<User> getAllUserSystem();
 
+
     Map<String, Object> findAllPage(String column, String sort, int page, int size);
 
     ResponseTable getTreatmentsByUserId(RequestTabel request, Long userId);
     ResponseTable getVideosByUserId(RequestTabel request, Long userId);
-
 
 
 
