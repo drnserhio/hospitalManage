@@ -2,33 +2,18 @@ package com.example.hospitalmanage.resource;
 
 import com.example.hospitalmanage.exception.ExceptionHandling;
 import com.example.hospitalmanage.model.User;
-import com.example.hospitalmanage.service.impl.VideoService;
+import com.example.hospitalmanage.service.VideoService;
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.hospitalmanage.constant.FileConstant.TEMP_PROFILE_IMAGE_BASE_URL;
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.springframework.http.HttpStatus.OK;
-import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 
 @AllArgsConstructor
 @RestController

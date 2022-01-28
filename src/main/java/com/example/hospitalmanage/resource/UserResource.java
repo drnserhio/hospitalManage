@@ -10,7 +10,7 @@ import com.example.hospitalmanage.exception.domain.EmailExistsException;
 import com.example.hospitalmanage.exception.domain.PasswordNotValidException;
 import com.example.hospitalmanage.exception.domain.UserNameExistsException;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
-import com.example.hospitalmanage.service.impl.ProfileService;
+import com.example.hospitalmanage.service.impl.ProfileServiceImpl;
 import com.example.hospitalmanage.service.UserService;
 import com.example.hospitalmanage.util.JwtTokenProvider;
 import lombok.AllArgsConstructor;
@@ -33,7 +33,6 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Map;
 
 import static com.example.hospitalmanage.constant.FileConstant.*;
 import static com.example.hospitalmanage.constant.SecurityConstant.JWT_TOKEN_HEADER;
@@ -51,7 +50,7 @@ public class UserResource extends ExceptionHandling {
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
-    private final ProfileService profileService;
+    private final ProfileServiceImpl profileServiceImpl;
 
     @PostMapping("/register")
     public ResponseEntity<User> register(
@@ -187,7 +186,7 @@ public class UserResource extends ExceptionHandling {
             @RequestParam("oldPassword") String oldPassword,
             @RequestParam("newPassword") String newPassword)
             throws UserNotFoundException, PasswordNotValidException {
-        User user = profileService.changePassByUsernameAndOldPassword(oldPassword, newPassword);
+        User user = profileServiceImpl.changePassByUsernameAndOldPassword(oldPassword, newPassword);
         return new ResponseEntity<>(user, OK);
     }
 
@@ -202,7 +201,7 @@ public class UserResource extends ExceptionHandling {
     @GetMapping("/systemusers")
     @PreAuthorize("hasAnyAuthority('god:all')")
     public ResponseEntity<List<User>> getAllUserSystem() {
-        List<User> allUsersSystem = userService.getAllUserSystem();
+        List<User> allUsersSystem = userService.findAll();
         return new ResponseEntity<>(allUsersSystem, OK);
     }
 
@@ -227,17 +226,11 @@ public class UserResource extends ExceptionHandling {
     }
 
 
-    @GetMapping("/list-page")
+    @PostMapping("/list-page")
     @PreAuthorize("hasAnyAuthority('god:all', 'patient:all')")
-    public ResponseEntity<Map<String, Object>> getAllUser(
-            @RequestParam(required = false, name = "column", defaultValue = "id") String column,
-            @RequestParam(required = false, name = "sort", defaultValue = "asc") String sort,
-            @RequestParam(defaultValue = "1", name = "page") int page,
-            @RequestParam(defaultValue = "5", name= "size") int size) {
-        Map<String, Object> response = userService.findAllPage(column, sort, page, size);
-       if (response.size() < 1) {
-           return new ResponseEntity<>(response, INTERNAL_SERVER_ERROR);
-       }
+    public ResponseEntity<ResponseTable> getAllUser(
+            @RequestBody RequestTableTreatmentImpl request) {
+        ResponseTable response = userService.findAllPage(request);
        return new ResponseEntity<>(response, OK);
     }
 

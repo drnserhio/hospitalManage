@@ -1,29 +1,35 @@
-package com.example.hospitalmanage.service.impl;
+package com.example.hospitalmanage.dao.impl;
 
-
+import com.example.hospitalmanage.dao.ICDDao;
 import com.example.hospitalmanage.model.icd.ICD;
-import com.example.hospitalmanage.service.ICDRepository;
 import com.example.hospitalmanage.util.OAuthTokenProvider;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Objects;
 
-@Service
+@Repository
+@Slf4j
 @AllArgsConstructor
-public class ICDService {
+@Transactional
+public class ICDDaoImpl implements ICDDao {
+
 
     private OAuthTokenProvider oAuthTokenProvider;
     private RestTemplate restTemplate;
-    private ICDRepository ICDRepository;
+    private EntityManager entityManager;
 
     public ICD getCodeICD(String code) throws IOException {
         HttpEntity<String > entity = new HttpEntity<>(getOAuthHeader());
@@ -36,11 +42,11 @@ public class ICDService {
     }
 
     private ICD isICDHasInBase(String code, String language, String value) {
-        ICD icd = ICDRepository.findByCode(code.toLowerCase());
+        ICD icd = findByCode(code);
         if (Objects.isNull(icd)) {
             ICD createICD = new ICD(code.toLowerCase(), language, value);
-            ICDRepository.save(createICD);
-            return createICD;
+            ICD save = saveICD(createICD);
+            return save;
         }
         return icd;
     }
@@ -63,4 +69,24 @@ public class ICDService {
         return response.getBody();
     }
 
+    @Override
+    public ICD findByCode(String code) {
+        ICD icd = null;
+        try {
+            Query query = entityManager
+                    .createQuery("select icd from ICD icd where icd.code = :code")
+                    .setParameter("code", code);
+            icd = (ICD) query.getResultList().get(0);
+        } catch (Exception e) {
+            log.info(e.getMessage());
+        }
+        return icd;
+    }
+
+    @Override
+    public ICD saveICD(ICD icd) {
+        entityManager.persist(icd);
+        ICD save = findByCode(icd.getCode());
+        return save;
+    }
 }
