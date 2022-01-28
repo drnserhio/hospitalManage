@@ -8,7 +8,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class ResponseTableImpl implements ResponseTable<Treatment> {
+public class ResponseTableTreatmentImpl implements ResponseTable<Treatment> {
 
 
 
@@ -20,7 +20,7 @@ public class ResponseTableImpl implements ResponseTable<Treatment> {
     private String sort;
     private String columnSort;
 
-    public ResponseTableImpl(RequestTabel request) {
+    public ResponseTableTreatmentImpl(RequestTabel request) {
         init(request);
     }
 

@@ -1,7 +1,7 @@
 package com.example.hospitalmanage.resource;
 
 import com.example.hospitalmanage.dto.ResponseTable;
-import com.example.hospitalmanage.dto.impl.RequestTableImpl;
+import com.example.hospitalmanage.dto.impl.RequestTableTreatmentImpl;
 import com.example.hospitalmanage.model.HttpResponse;
 import com.example.hospitalmanage.model.User;
 import com.example.hospitalmanage.model.UserPrincipal;
@@ -18,12 +18,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -246,7 +244,7 @@ public class UserResource extends ExceptionHandling {
     @PostMapping("/treatments/in/user/{userId}")
     @PreAuthorize("hasAnyAuthority('god:all', 'patient:all')")
     public ResponseEntity<ResponseTable> getTreatmentsByUserId(
-            @RequestBody RequestTableImpl request,
+            @RequestBody RequestTableTreatmentImpl request,
             @PathVariable("userId") Long id) {
         ResponseTable responseTable = userService.getTreatmentsByUserId(request , id);
         return new ResponseEntity<>(responseTable, OK);
@@ -255,7 +253,7 @@ public class UserResource extends ExceptionHandling {
     @PostMapping("/videos/in/user/{userId}")
     @PreAuthorize("hasAnyAuthority('god:all', 'oparation:all')")
     public ResponseEntity<ResponseTable> getVideosByUserId(
-            @RequestBody RequestTableImpl request,
+            @RequestBody RequestTableTreatmentImpl request,
             @PathVariable("userId") Long id) {
         ResponseTable responseTable = userService.getVideosByUserId(request , id);
         return new ResponseEntity<>(responseTable, OK);

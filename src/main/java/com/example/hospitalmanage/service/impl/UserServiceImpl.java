@@ -2,7 +2,7 @@ package com.example.hospitalmanage.service.impl;
 
 import com.example.hospitalmanage.dto.RequestTabel;
 import com.example.hospitalmanage.dto.ResponseTable;
-import com.example.hospitalmanage.dto.impl.ResponseTableImpl;
+import com.example.hospitalmanage.dto.impl.ResponseTableTreatmentImpl;
 import com.example.hospitalmanage.exception.domain.EmailExistsException;
 import com.example.hospitalmanage.exception.domain.UserNameExistsException;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
@@ -24,9 +24,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -365,7 +362,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         int itemsSize = countTreatmentsByUserId(userId);
         int totalPages = totalPageConverter(itemsSize, request.getSize());
 
-        ResponseTable responseTable = new ResponseTableImpl(request);
+        ResponseTable responseTable = new ResponseTableTreatmentImpl(request);
         responseTable.setContent(treatments);
         responseTable.setAllItemsSize(itemsSize);
         responseTable.setTotalPages(totalPages);
@@ -391,7 +388,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         int itemsSize = countVideosByUserId(userId);
         int totalPages = totalPageConverter(itemsSize, request.getSize());
 
-        ResponseTable responseTable = new ResponseTableImpl(request);
+        ResponseTable responseTable = new ResponseTableTreatmentImpl(request);
         responseTable.setContent(videos);
         responseTable.setAllItemsSize(itemsSize);
         responseTable.setTotalPages(totalPages);
