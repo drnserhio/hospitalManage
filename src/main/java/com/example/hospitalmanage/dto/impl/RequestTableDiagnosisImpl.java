@@ -5,6 +5,8 @@ import com.example.hospitalmanage.dto.impl.projection.AnalizeProjectionDto;
 import com.example.hospitalmanage.model.icd.AnalyzeICDDate;
 import lombok.Data;
 
+import javax.persistence.Tuple;
+
 @Data
 public class RequestTableDiagnosisImpl implements RequestTabel<AnalizeProjectionDto> {
     private String column;

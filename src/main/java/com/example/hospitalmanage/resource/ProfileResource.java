@@ -1,16 +1,13 @@
 package com.example.hospitalmanage.resource;
 
-import com.example.hospitalmanage.dto.RequestTabel;
 import com.example.hospitalmanage.dto.ResponseTable;
 import com.example.hospitalmanage.dto.impl.RequestTableDiagnosisImpl;
 import com.example.hospitalmanage.exception.ExceptionHandling;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
 import com.example.hospitalmanage.model.User;
-import com.example.hospitalmanage.model.icd.AnalyzeICDDate;
 import com.example.hospitalmanage.model.icd.ICD;
 import com.example.hospitalmanage.service.ProfileService;
 import com.example.hospitalmanage.service.UserService;
-import com.example.hospitalmanage.service.impl.ProfileServiceImpl;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -137,11 +134,20 @@ public class ProfileResource extends ExceptionHandling {
         return new ResponseEntity<>(user, OK);
     }
 
-    @GetMapping("/list_analize/user/{id}")
+    @PostMapping("/list/analize/user/{id}")
+    @PreAuthorize("hasAnyAuthority('god:all', 'patient:all', 'profile:user')")
     public ResponseEntity<ResponseTable> findAllAnalyzeByUserId(
             @RequestBody RequestTableDiagnosisImpl request,
             @PathVariable Long id) {
         ResponseTable allDiagnosisByUser = profileService.findAllDiagnosisByUser(request, id);
         return new ResponseEntity<>(allDiagnosisByUser, OK);
+    }
+
+    @DeleteMapping("/delete/analize/{username}/{analizeId}")
+    @PreAuthorize("hasAnyAuthority('god:all', 'patient:all')")
+    public boolean deleteAnalize(
+            @PathVariable String username,
+            @PathVariable Long analizeId) {
+     return profileService.deleteAnalize(username, analizeId);
     }
 }

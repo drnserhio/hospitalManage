@@ -7,15 +7,16 @@ import com.example.hospitalmanage.model.Treatment;
 import com.example.hospitalmanage.model.icd.AnalyzeICDDate;
 import lombok.Data;
 
+import javax.persistence.Tuple;
 import java.util.List;
 
 @Data
-public class ResponseTableDiagnosisImpl implements ResponseTable<AnalizeProjectionDto> {
+public class ResponseTableDiagnosisImpl implements ResponseTable<Tuple> {
     private int allItemsSize;
     private int page;
     private int totalPages;
     private int size;
-    private List<AnalizeProjectionDto> content;
+    private List<Tuple> content;
     private String sort;
     private String columnSort;
 

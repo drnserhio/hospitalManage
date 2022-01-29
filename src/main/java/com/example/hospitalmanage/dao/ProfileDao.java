@@ -33,4 +33,6 @@ public interface ProfileDao {
     public User changeHospitalisation(String username, String hospitalization);
 
     ResponseTable findAllDiagnosisByUser(RequestTabel request, Long id);
+
+    boolean deleteAnalize(String username, Long analizeId);
 }

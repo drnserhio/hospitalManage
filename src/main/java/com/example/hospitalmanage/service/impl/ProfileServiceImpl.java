@@ -6,7 +6,6 @@ import com.example.hospitalmanage.dto.ResponseTable;
 import com.example.hospitalmanage.exception.domain.PasswordNotValidException;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
 import com.example.hospitalmanage.model.User;
-import com.example.hospitalmanage.model.icd.AnalyzeICDDate;
 import com.example.hospitalmanage.model.icd.ICD;
 import com.example.hospitalmanage.service.ProfileService;
 import lombok.AllArgsConstructor;
@@ -81,5 +80,10 @@ public class ProfileServiceImpl implements ProfileService {
     public ResponseTable findAllDiagnosisByUser(RequestTabel request, Long id) {
         ResponseTable allDiagnosisByUser = profileDao.findAllDiagnosisByUser(request, id);
         return allDiagnosisByUser;
+    }
+
+    @Override
+    public boolean deleteAnalize(String username, Long analizeId) {
+       return profileDao.deleteAnalize(username, analizeId);
     }
 }

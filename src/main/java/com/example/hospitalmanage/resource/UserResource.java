@@ -235,7 +235,7 @@ public class UserResource extends ExceptionHandling {
     }
 
     @PostMapping("/treatments/in/user/{userId}")
-    @PreAuthorize("hasAnyAuthority('god:all', 'patient:all')")
+    @PreAuthorize("hasAnyAuthority('god:all', 'patient:all', 'profile:user')")
     public ResponseEntity<ResponseTable> getTreatmentsByUserId(
             @RequestBody RequestTableTreatmentImpl request,
             @PathVariable("userId") Long id) {

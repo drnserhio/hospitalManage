@@ -5,7 +5,6 @@ import com.example.hospitalmanage.dto.ResponseTable;
 import com.example.hospitalmanage.exception.domain.PasswordNotValidException;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
 import com.example.hospitalmanage.model.User;
-import com.example.hospitalmanage.model.icd.AnalyzeICDDate;
 import com.example.hospitalmanage.model.icd.ICD;
 
 import java.time.LocalDateTime;
@@ -35,4 +34,5 @@ public interface ProfileService {
 
      ResponseTable findAllDiagnosisByUser(RequestTabel request, Long id);
 
+    boolean deleteAnalize(String username, Long analizeId);
 }

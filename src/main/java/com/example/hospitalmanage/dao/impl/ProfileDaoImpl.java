@@ -12,7 +12,6 @@ import com.example.hospitalmanage.model.Treatment;
 import com.example.hospitalmanage.model.User;
 import com.example.hospitalmanage.model.icd.AnalyzeICDDate;
 import com.example.hospitalmanage.model.icd.ICD;
-import com.example.hospitalmanage.model.video.Video;
 import com.example.hospitalmanage.service.impl.DocXGeneratorService;
 import com.example.hospitalmanage.util.RequestTableHelper;
 import lombok.AllArgsConstructor;
@@ -23,11 +22,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
+import javax.persistence.Tuple;
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -185,23 +187,27 @@ public class ProfileDaoImpl implements ProfileDao {
         return isHospitalization;
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
     public ResponseTable findAllDiagnosisByUser(RequestTabel request, Long id) {
         RequestTableHelper.init(request);
-        List<AnalizeProjectionDto> diagnosis = new ArrayList<>();
+        List<AnalizeProjectionDto>analizeProjectionDtos =new ArrayList<>();
         try {
-            String sql = String.format("select az.id, az.date_add_analyze , icd.value icd from analyzeicddate az, icd icd where icd_id = icd.id and az.id  in (select diagnosis_id from user_diagnosis where user_id = %d) order by %s %s", id, request.getColumn(), request.getSort());
-            Query query = entityManager
-                    .createNativeQuery(sql)
+            List<Tuple> resultList = entityManager
+                    .createNativeQuery("select az.id, az.date_add_analyze , icd.value icd from analyzeicddate az, icd icd where icd_id = icd.id and az.id  in (select diagnosis_id from user_diagnosis where user_id = :id) order by :column :sort", Tuple.class)
+                    .setParameter("id", id)
+                    .setParameter("column", request.getColumn())
+                    .setParameter("sort", request.getSort())
                     .setFirstResult((request.getPage() - 1) * request.getSize())
-                    .setMaxResults(request.getSize());
-            diagnosis = (List<AnalizeProjectionDto>) query.getResultList();
+                    .setMaxResults(request.getSize()).getResultList();
+            analizeProjectionDtos = resultList.stream().map(v -> new AnalizeProjectionDto((BigInteger) v.get(0), (Date) v.get(1), (String) v.get(2))).toList();
         } catch (Exception e) {
             log.info(e.getMessage());
         }
         int itemsSize = countAnaliziesForUserId(id);
         int totalPages = totalPageConverter(itemsSize, request.getSize());
+
         ResponseTable responseTable = new ResponseTableDiagnosisImpl(request);
-        responseTable.setContent(diagnosis);
+        responseTable.setContent(analizeProjectionDtos);
         responseTable.setAllItemsSize(itemsSize);
         responseTable.setTotalPages(totalPages);
         responseTable.setColumnSort(request.getColumn());
@@ -209,6 +215,22 @@ public class ProfileDaoImpl implements ProfileDao {
         return responseTable;
     }
 
+    @Override
+    public boolean deleteAnalize(String username, Long analizeId) {
+        try {
+            User findUser = userDao.findUserByUsername(username);
+            AnalyzeICDDate icd = findUser.getDiagnosis().stream().filter(c -> c.getId().equals(analizeId)).findFirst().get();
+            if (Objects.isNull(icd)) {
+                throw new NoResultException("Didn't find ICD for patient");
+            }
+            findUser.getDiagnosis().remove(icd);
+            userDao.saveUser(findUser);
+            return true;
+        } catch (Exception e) {
+            log.info(e.getMessage());
+        }
+        return false;
+    }
 
     private int countAnaliziesForUserId(Long userId) {
         Query query = entityManager
