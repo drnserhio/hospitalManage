@@ -43,7 +43,7 @@ import java.util.*;
 import static com.example.hospitalmanage.constant.FileConstant.*;
 import static com.example.hospitalmanage.constant.FileConstant.DEFAULT_USER_IMAGE_PATH;
 import static com.example.hospitalmanage.constant.UserImplConstant.*;
-import static com.example.hospitalmanage.role.Role.ROLE_USER;
+import static com.example.hospitalmanage.role.Role.*;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -81,6 +81,7 @@ public class UserDaoImpl implements UserDao {
         user.setRole(ROLE_USER.name());
         user.setAuthorities(ROLE_USER.getAuthorities());
         user.setProfileImageUrl(getTemporaryProfileImageUrl(username));
+        user.setOnline(false);
         saveUser(user);
         User save = saveUser(user);
         LOGGER.info("New user password + " + password);
@@ -177,6 +178,31 @@ public class UserDaoImpl implements UserDao {
 
 
     @Override
+    public User findUserByUserId(Long id) {
+        User user = null;
+        try {
+            Query query = entityManager
+                    .createQuery("select usr from User usr where usr.id = :id")
+                    .setParameter("id", id);
+            user = (User) query.getResultList().get(0);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (Objects.isNull(user)) {
+            throw new RuntimeException("User not found: " + id);
+        }
+        return user;
+    }
+
+    @Override
+    public boolean isExistUser(Long id) {
+        Query query = entityManager.
+                createQuery("select count(usr) from User usr where usr.id = :id").
+                setParameter("id", id);
+        return (long) query.getSingleResult() == 1;
+    }
+
+    @Override
     public User updateProfileImage(String username, MultipartFile profileImage)
             throws IOException, UserNotFoundException, UserNameExistsException, EmailExistsException {
         User user = validationNewUsernameAndEmail(username, null, null);
@@ -267,7 +293,12 @@ public class UserDaoImpl implements UserDao {
             user.setProfileImageUrl(setProfileImage(user.getUsername()));
             LOGGER.info(FILE_SAVED_IN_FILE_SYSTEM + profileImage.getOriginalFilename());
         }
+    }
 
+    public void logOut(User user) {
+        user.setOnline(false);
+        user.setJoindDate(new Date());
+        saveUser(user);
     }
 
     private String setProfileImage(String username) {
@@ -372,7 +403,7 @@ public class UserDaoImpl implements UserDao {
         List<Treatment> treatments = Collections.emptyList();
         try {
             Query query = entityManager
-                    .createNativeQuery("select id, date_create, treatment from treatment t where t.id in (select u_t.treatment_id from user_treatment u_t where u_t.user_id = :userId) order by :column :sort", Treatment.class)
+                    .createNativeQuery("select id, date_create, treatment from treatment t where t.id in (select u_t.treatment_id from users_treatments u_t where u_t.user_id = :userId) order by :column :sort", Treatment.class)
                     .setParameter("userId", userId).setParameter("column", request.getColumn()).setParameter("sort", request.getSort());
             query.setFirstResult((request.getPage() - 1) *  request.getSize()).setMaxResults(request.getSize());
             treatments = query.getResultList();
@@ -399,7 +430,7 @@ public class UserDaoImpl implements UserDao {
         List<Video> videos = Collections.emptyList();
         try {
             Query query = entityManager
-                    .createNativeQuery("select id, create_date, name_file from video v where v.id in (select u_v.video_files_id from user_video_files u_v where u_v.user_id = :userId) order by :column :sort", Video.class)
+                    .createNativeQuery("select id, create_date, name_file from video v where v.id in (select u_v.video_id from users_videos u_v where u_v.user_id = :userId) order by :column :sort", Video.class)
                     .setParameter("userId", userId)
                     .setParameter("column", request.getColumn())
                     .setParameter("sort", request.getSort())
@@ -422,9 +453,23 @@ public class UserDaoImpl implements UserDao {
         return responseTable;
     }
 
+    @Override
+    public List<User> findAllChatUsersByUserId(Long userId) {
+        List<User> users = new ArrayList<>();
+        try {
+            Query query = entityManager
+                    .createQuery("select usr from User usr where usr.id <> :userId")
+                    .setParameter("userId", userId);
+            users = (List<User>) query.getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return users;
+    }
+
     private int countVideosByUserId(Long userId) {
         Query query = entityManager
-                .createNativeQuery("select count(id) from video v where v.id in (select u_v.video_files_id from user_video_files u_v where u_v.user_id = :userId)")
+                .createNativeQuery("select count(id) from video v where v.id in (select u_v.video_id from users_videos u_v where u_v.user_id = :userId)")
                 .setParameter("userId", userId);
         int count = ((Number) query.getSingleResult()).intValue();
         return count;
@@ -432,7 +477,7 @@ public class UserDaoImpl implements UserDao {
 
     private int countTreatmentsByUserId(Long userId) {
         Query query = entityManager
-                .createNativeQuery("select count(id) from treatment t where t.id in (select u_t.treatment_id from user_treatment u_t where u_t.user_id = :userId)")
+                .createNativeQuery("select count(id) from treatment t where t.id in (select u_t.treatment_id from users_treatments u_t where u_t.user_id = :userId)")
                 .setParameter("userId", userId);
         int count = ((Number) query.getSingleResult()).intValue();
         return count;
@@ -445,4 +490,6 @@ public class UserDaoImpl implements UserDao {
             return (itemSize/ showEntity) + 1;
         }
     }
+
+
 }

@@ -10,7 +10,6 @@ import com.example.hospitalmanage.model.User;
 import com.example.hospitalmanage.model.UserPrincipal;
 import com.example.hospitalmanage.service.UserService;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -27,7 +26,6 @@ import java.util.Date;
 import java.util.List;
 
 import static com.example.hospitalmanage.constant.UserImplConstant.*;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Service
 @AllArgsConstructor
@@ -49,6 +47,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         } else {
             user.setLastLoginDateDisplay(user.getLastLoginDate());
             user.setLastLoginDate(new Date());
+            user.setOnline(true);
             userDao.saveUser(user);
             UserPrincipal userPrincipal = new UserPrincipal(user);
             return userPrincipal;
@@ -176,6 +175,20 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public ResponseTable getVideosByUserId(RequestTabel request, Long userId) {
         ResponseTable videosByUserId = userDao.getVideosByUserId(request, userId);
         return videosByUserId;
+    }
+
+    @Override
+    public User findUserByUserId(Long id) {
+        return userDao.findUserByUserId(id);
+    }
+
+    @Override
+    public List<User> findAllChatUsersByUserId(Long userId) {
+        return userDao.findAllChatUsersByUserId(userId);
+    }
+
+    public void logOut(User user) {
+        userDao.logOut(user);
     }
 
 }

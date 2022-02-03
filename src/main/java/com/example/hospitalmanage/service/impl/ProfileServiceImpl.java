@@ -86,4 +86,5 @@ public class ProfileServiceImpl implements ProfileService {
     public boolean deleteAnalize(String username, Long analizeId) {
        return profileDao.deleteAnalize(username, analizeId);
     }
+
 }

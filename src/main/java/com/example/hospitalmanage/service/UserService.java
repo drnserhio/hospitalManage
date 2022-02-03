@@ -43,6 +43,8 @@ public interface UserService {
 
 //   void resetPassword(String email); // about phone reconnect account
 
+    void logOut(User user);
+
   User updateProfileImage(String username, MultipartFile profileImage) throws IOException, UserNotFoundException, UserNameExistsException, EmailExistsException;
 
 
@@ -70,6 +72,8 @@ public interface UserService {
     ResponseTable getVideosByUserId(RequestTabel request, Long userId);
 
 
+    User findUserByUserId(Long id);
+    List<User> findAllChatUsersByUserId(Long userId);
 
 
 

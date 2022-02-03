@@ -150,4 +150,10 @@ public class ProfileResource extends ExceptionHandling {
             @PathVariable Long analizeId) {
      return profileService.deleteAnalize(username, analizeId);
     }
+
+    @PutMapping("/logout")
+    public void logOut(
+            @RequestBody User user) {
+        userService.logOut(user);
+    }
 }

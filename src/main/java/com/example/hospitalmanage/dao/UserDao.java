@@ -18,6 +18,7 @@ public interface UserDao {
     User findUserByEmail(String email);
     User findUserByUsername(String useraname);
     User saveUser(User user);
+    void logOut(User user);
 
     User register(String firstname, String lastname, String username, String email, String password) throws MessagingException, UserNotFoundException, UserNameExistsException, EmailExistsException;
 
@@ -62,6 +63,9 @@ public interface UserDao {
                        String infoAboutComplaint,
                        String infoAboutSick) throws MessagingException;
 
+    User findUserByUserId(Long id);
+    boolean isExistUser(Long id);
+    List<User> findAllChatUsersByUserId(Long userId);
 
     List<User> findAll();
 
@@ -70,7 +74,6 @@ public interface UserDao {
 
     ResponseTable getTreatmentsByUserId(RequestTabel request, Long userId);
     ResponseTable getVideosByUserId(RequestTabel request, Long userId);
-
 
 
 }

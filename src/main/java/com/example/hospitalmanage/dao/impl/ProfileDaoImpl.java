@@ -193,7 +193,7 @@ public class ProfileDaoImpl implements ProfileDao {
         List<AnalizeProjectionDto>analizeProjectionDtos =new ArrayList<>();
         try {
             List<Tuple> resultList = entityManager
-                    .createNativeQuery("select az.id, az.date_add_analyze , icd.value icd from analyzeicddate az, icd icd where icd_id = icd.id and az.id  in (select diagnosis_id from user_diagnosis where user_id = :id) order by :column :sort", Tuple.class)
+                    .createNativeQuery("select az.id, az.date_add_analyze , icd.value icd from analyzeicddate az, icd icd where icd_id = icd.id and az.id  in (select diagnos_id from users_diagnosis where user_id = :id) order by :column :sort", Tuple.class)
                     .setParameter("id", id)
                     .setParameter("column", request.getColumn())
                     .setParameter("sort", request.getSort())
@@ -234,7 +234,7 @@ public class ProfileDaoImpl implements ProfileDao {
 
     private int countAnaliziesForUserId(Long userId) {
         Query query = entityManager
-                .createNativeQuery("select count(id) from analyzeicddate az where az.id in (select a_z.diagnosis_id from user_diagnosis a_z where a_z.user_id = :userId)")
+                .createNativeQuery("select count(id) from analyzeicddate az where az.id in (select a_z.diagnos_id from users_diagnosis a_z where a_z.user_id = :userId)")
                 .setParameter("userId", userId);
         int count = ((Number) query.getSingleResult()).intValue();
         return count;

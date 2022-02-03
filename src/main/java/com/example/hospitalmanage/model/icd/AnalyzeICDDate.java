@@ -10,12 +10,15 @@ import java.util.Date;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 public class AnalyzeICDDate implements Comparator<AnalyzeICDDate> {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
     @ManyToOne
+    @JoinColumn(name = "icd_id")
     private ICD icd;
     private Date dateAddAnalyze;
 
