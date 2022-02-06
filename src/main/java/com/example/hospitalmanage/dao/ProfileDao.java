@@ -4,6 +4,7 @@ import com.example.hospitalmanage.dto.RequestTabel;
 import com.example.hospitalmanage.dto.ResponseTable;
 import com.example.hospitalmanage.exception.domain.PasswordNotValidException;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
+import com.example.hospitalmanage.model.Treatment;
 import com.example.hospitalmanage.model.User;
 import com.example.hospitalmanage.model.icd.ICD;
 
@@ -35,4 +36,6 @@ public interface ProfileDao {
     ResponseTable findAllDiagnosisByUser(RequestTabel request, Long id);
 
     boolean deleteAnalize(String username, Long analizeId);
+
+    Boolean updateTreatment(Treatment treatment);
 }

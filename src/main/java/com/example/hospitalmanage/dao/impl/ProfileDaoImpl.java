@@ -232,6 +232,20 @@ public class ProfileDaoImpl implements ProfileDao {
         return false;
     }
 
+    @Override
+    public Boolean updateTreatment(Treatment treatment) {
+        boolean update = false;
+        try {
+            treatment.setDateCreate(new Date());
+            entityManager
+                    .merge(treatment);
+            update = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return update;
+    }
+
     private int countAnaliziesForUserId(Long userId) {
         Query query = entityManager
                 .createNativeQuery("select count(id) from analyzeicddate az where az.id in (select a_z.diagnos_id from users_diagnosis a_z where a_z.user_id = :userId)")

@@ -4,6 +4,7 @@ import com.example.hospitalmanage.dto.ResponseTable;
 import com.example.hospitalmanage.dto.impl.RequestTableDiagnosisImpl;
 import com.example.hospitalmanage.exception.ExceptionHandling;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
+import com.example.hospitalmanage.model.Treatment;
 import com.example.hospitalmanage.model.User;
 import com.example.hospitalmanage.model.icd.ICD;
 import com.example.hospitalmanage.service.ProfileService;
@@ -36,7 +37,7 @@ public class ProfileResource extends ExceptionHandling {
             @RequestParam(value = "lastname", required = false) String lastname,
             @RequestParam(value = "patronomic", required = false) String patronomic,
             @RequestParam(value = "age", required = false) String age,
-            @RequestParam(value = "username",required = false) String username,
+            @RequestParam(value = "username", required = false) String username,
             @RequestParam(value = "email", required = false) String email,
 //            @RequestParam("password") String password,
             @RequestParam(value = "QRCODE", required = false) String QRCODE,
@@ -60,7 +61,7 @@ public class ProfileResource extends ExceptionHandling {
     }
 
 
-    @GetMapping( "/document/{username}")
+    @GetMapping("/document/{username}")
     @PreAuthorize("hasAnyAuthority('god:all', 'document:all', 'document:file')")
     public ResponseEntity<byte[]> getDocument(
             @PathVariable("username") String username)
@@ -73,7 +74,7 @@ public class ProfileResource extends ExceptionHandling {
     @PreAuthorize("hasAnyAuthority('god:all', 'patient:all')")
     public ResponseEntity<User> addCodeICD(
             @PathVariable("username") String username,
-            @RequestBody  List<ICD> diagnosis) {
+            @RequestBody List<ICD> diagnosis) {
         User user = profileService.addDiagnosis(username, diagnosis);
         return new ResponseEntity<>(user, OK);
     }
@@ -82,7 +83,7 @@ public class ProfileResource extends ExceptionHandling {
     @PreAuthorize("hasAnyAuthority('god:all', 'patient:all')")
     public ResponseEntity<User> removeCodeICD(
             @PathVariable("username") String username,
-            @RequestBody  String code) {
+            @RequestBody String code) {
         User user = profileService.deleteDiagnos(username, code);
         return new ResponseEntity<>(user, OK);
     }
@@ -107,6 +108,15 @@ public class ProfileResource extends ExceptionHandling {
         User user = profileService.addTreatment(username, treatment);
         return new ResponseEntity<>(user, OK);
     }
+
+    @PutMapping("/treatment-change")
+    @PreAuthorize("hasAnyAuthority('god:all', 'patient:all')")
+    public ResponseEntity<Boolean> updateTreatment(
+            @RequestBody Treatment treatment) {
+        Boolean update = profileService.updateTreatment(treatment);
+        return new ResponseEntity<>(update, OK);
+    }
+
 
     @DeleteMapping("/del/all/treatment/{username}")
     @PreAuthorize("hasAnyAuthority('god:all', 'patient:all')")
@@ -148,12 +158,13 @@ public class ProfileResource extends ExceptionHandling {
     public boolean deleteAnalize(
             @PathVariable String username,
             @PathVariable Long analizeId) {
-     return profileService.deleteAnalize(username, analizeId);
+        return profileService.deleteAnalize(username, analizeId);
     }
 
     @PutMapping("/logout")
     public void logOut(
             @RequestBody User user) {
         userService.logOut(user);
+        //TODO update!!!
     }
 }

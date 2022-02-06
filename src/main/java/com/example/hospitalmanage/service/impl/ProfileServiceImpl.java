@@ -5,6 +5,7 @@ import com.example.hospitalmanage.dto.RequestTabel;
 import com.example.hospitalmanage.dto.ResponseTable;
 import com.example.hospitalmanage.exception.domain.PasswordNotValidException;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
+import com.example.hospitalmanage.model.Treatment;
 import com.example.hospitalmanage.model.User;
 import com.example.hospitalmanage.model.icd.ICD;
 import com.example.hospitalmanage.service.ProfileService;
@@ -85,6 +86,11 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public boolean deleteAnalize(String username, Long analizeId) {
        return profileDao.deleteAnalize(username, analizeId);
+    }
+
+    @Override
+    public Boolean updateTreatment(Treatment treatment) {
+        return profileDao.updateTreatment(treatment);
     }
 
 }
