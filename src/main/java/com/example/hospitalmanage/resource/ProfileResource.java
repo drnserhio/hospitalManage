@@ -62,7 +62,7 @@ public class ProfileResource extends ExceptionHandling {
 
 
     @GetMapping("/document/{username}")
-    @PreAuthorize("hasAnyAuthority('god:all', 'document:all', 'document:file')")
+    @PreAuthorize("hasAnyAuthority('god:all', 'operation:all', 'operation:file')")
     public ResponseEntity<byte[]> getDocument(
             @PathVariable("username") String username)
             throws Exception {
