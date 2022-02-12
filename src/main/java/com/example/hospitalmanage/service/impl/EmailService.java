@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
-import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.Date;
@@ -20,28 +19,98 @@ import static com.example.hospitalmanage.constant.EmailConstant.*;
 public class EmailService {
 
 
-    public void sendMessage(String firstname, String lastname, String email)
+    public void sendMessageRegistartion(String firstname, String lastname,String username,String email)
             throws MessagingException {
-        Message message = creatMail(firstname,email);
+        Message message = creatProfile(firstname, lastname, username, email);
         SMTPTransport smtpTransport = (SMTPTransport) getEmailSession().getTransport(SIMPLE_MAIL_TRANSFER_PROTOCOL);
         smtpTransport.connect(GMAIL_SMTP_SERVER, USERNAME, PASSWORD);
         smtpTransport.sendMessage(message, message.getAllRecipients());
         smtpTransport.close();
     }
 
-    private javax.mail.Message creatMail(String firstname, String email)
+    public void sendMessageUpdateProfile(String firstname, String lastname,String username,String email)
             throws MessagingException {
-       javax.mail.Message message = new MimeMessage(getEmailSession());
-       message.setFrom(new InternetAddress(FROM_EMAIL));
-       message.setRecipients(javax.mail.Message.RecipientType.TO, InternetAddress.parse(email, false));
-       message.setRecipients(javax.mail.Message.RecipientType.TO, InternetAddress.parse(email, false));
-       message.setSubject(EMAIL_SUBJECT);
-       message.setText(
-               "Hello " +  firstname +
-                       ", \n \n Your registration successfull: \n \n" +
-                       "The support Team Hospital ");
-       message.setSentDate(new Date());
-       return message;
+        Message message = mailUpdateProfile(firstname, lastname, username, email);
+        SMTPTransport smtpTransport = (SMTPTransport) getEmailSession().getTransport(SIMPLE_MAIL_TRANSFER_PROTOCOL);
+        smtpTransport.connect(GMAIL_SMTP_SERVER, USERNAME, PASSWORD);
+        smtpTransport.sendMessage(message, message.getAllRecipients());
+        smtpTransport.close();
+    }
+
+    public void sendMessageUpdateProfileImage(String firstname, String lastname,String username,String email)
+            throws MessagingException {
+        Message message = updateImageProfile(firstname, lastname, username, email);
+        SMTPTransport smtpTransport = (SMTPTransport) getEmailSession().getTransport(SIMPLE_MAIL_TRANSFER_PROTOCOL);
+        smtpTransport.connect(GMAIL_SMTP_SERVER, USERNAME, PASSWORD);
+        smtpTransport.sendMessage(message, message.getAllRecipients());
+        smtpTransport.close();
+    }
+
+    public void sendMessageUpdatePasswordProfile(String firstname, String lastname, String newPass, String email)
+            throws MessagingException {
+        Message message = updatePasswordProfile(firstname, lastname, newPass, email);
+        SMTPTransport smtpTransport = (SMTPTransport) getEmailSession().getTransport(SIMPLE_MAIL_TRANSFER_PROTOCOL);
+        smtpTransport.connect(GMAIL_SMTP_SERVER, USERNAME, PASSWORD);
+        smtpTransport.sendMessage(message, message.getAllRecipients());
+        smtpTransport.close();
+    }
+
+    private Message updatePasswordProfile(String firstname, String lastname, String newPass, String email)
+            throws MessagingException {
+        javax.mail.Message message = new MimeMessage(getEmailSession());
+        message.setFrom(new InternetAddress(FROM_EMAIL));
+        message.setRecipients(javax.mail.Message.RecipientType.TO, InternetAddress.parse(email, false));
+        message.setSubject(EMAIL_SUBJECT);
+        message.setText(
+                "Hello " + firstname + " " + lastname +
+                        ", \n \n Your update password is successfull: \n \n" +
+                        " \n \n  new password : " + newPass + "\n \n " +
+                        "The support Team Hospital ");
+        message.setSentDate(new Date());
+        return message;
+    }
+
+    private javax.mail.Message updateImageProfile(String firstname, String lastname,String username,String email)
+            throws MessagingException {
+        javax.mail.Message message = new MimeMessage(getEmailSession());
+        message.setFrom(new InternetAddress(FROM_EMAIL));
+        message.setRecipients(javax.mail.Message.RecipientType.TO, InternetAddress.parse(email, false));
+        message.setSubject(EMAIL_SUBJECT);
+        message.setText(
+                "Hello " + firstname + " " + lastname +
+                        ", \n \n Your update image successfull: \n \n" +
+                        "The support Team Hospital ");
+        message.setSentDate(new Date());
+        return message;
+
+    }
+
+    private javax.mail.Message creatProfile(String firstname, String lastname,String username,String email)
+            throws MessagingException {
+        javax.mail.Message message = new MimeMessage(getEmailSession());
+        message.setFrom(new InternetAddress(FROM_EMAIL));
+        message.setRecipients(javax.mail.Message.RecipientType.TO, InternetAddress.parse(email, false));
+        message.setSubject(EMAIL_SUBJECT);
+        message.setText(
+                "Hello " + firstname + " " + lastname +
+                        ", \n \n Your username : " + username + "\n registration successfull! \n \n" +
+                        "The support Team Hospital ");
+        message.setSentDate(new Date());
+        return message;
+    }
+
+    private javax.mail.Message mailUpdateProfile(String firstname, String lastname,String username,String email)
+            throws MessagingException {
+        javax.mail.Message message = new MimeMessage(getEmailSession());
+        message.setFrom(new InternetAddress(FROM_EMAIL));
+        message.setRecipients(javax.mail.Message.RecipientType.TO, InternetAddress.parse(email, false));
+        message.setSubject(EMAIL_SUBJECT);
+        message.setText(
+                "Hello " + firstname +
+                        ", \n \n Your profile successfull update: \n \n" +
+                        "The support Team Hospital ");
+        message.setSentDate(new Date());
+        return message;
     }
 
     private Session getEmailSession() {
@@ -53,6 +122,6 @@ public class EmailService {
         properties.put(SMTP_STARTTLS_REQUIRED, true);
         return Session.getInstance(properties, null);
     }
-
-
 }
+
+

@@ -8,7 +8,7 @@ public final class RequestTableHelper {
     public static final String ID_DEFAULT_COLUMN = "id";
     public static final String SORT_DEFAULT = "asc";
     public static final int PAGE_DEFAULT = 1;
-    public static final int SIZE_DEFAULT = 3;
+    public static final int SIZE_DEFAULT = 5;
 
     private RequestTableHelper() {}
 

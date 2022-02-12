@@ -29,8 +29,23 @@ public class ChatMessageDaoImpl implements ChatMessageDao {
     @Override
     public ChatMessage save(ChatMessage chatMessage) {
         chatMessage.setStatus(MessageStatus.RECEIVED);
+        if (chatMessage.getContent().length() > 25) {
+            chatMessage.setContent(convertContent(chatMessage.getContent()));
+        }
         chatMessageRepository.save(chatMessage);
         return chatMessage;
+    }
+
+    private String convertContent(String content) {
+        StringBuilder stringBuilder = new StringBuilder(content);
+        int length = stringBuilder.length() / 25;
+        int i = 25;
+        while (length > 0) {
+            stringBuilder.insert(i, "\n");
+            length--;
+            i+=25;
+        }
+        return stringBuilder.toString();
     }
 
     @Override

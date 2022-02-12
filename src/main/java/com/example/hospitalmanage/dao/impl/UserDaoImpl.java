@@ -20,10 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -78,16 +74,16 @@ public class UserDaoImpl implements UserDao {
         user.setJoindDate(new Date());
         user.setIsActive(true);
         user.setIsNotLocked(true);
-        user.setRole(ROLE_SUPER_ADMIN.name());
-        user.setAuthorities(ROLE_SUPER_ADMIN.getAuthorities());
+        user.setRole(ROLE_USER.name());
+        user.setAuthorities(ROLE_USER.getAuthorities());
         user.setProfileImageUrl(getTemporaryProfileImageUrl(username));
         user.setOnline(false);
-        saveUser(user);
         User save = saveUser(user);
-        LOGGER.info("New user password + " + password);
         try {
-            emailService.sendMessage(firstname, lastname, email);
-        } catch (MessagingException e) {}
+            emailService.sendMessageRegistartion(save.getFirstname(), save.getLastname(), save.getUsername(), save.getEmail());
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
         return save;
     }
 
@@ -126,7 +122,7 @@ public class UserDaoImpl implements UserDao {
         user.setProfileImageUrl(getTemporaryProfileImageUrl(username));
         User save = saveUser(user);
         saveProfileImage(user, profileImage);
-        emailService.sendMessage(firstname, lastname, email);
+        emailService.sendMessageRegistartion(save.getFirstname(), save.getLastname(), save.getUsername(), save.getEmail());
         LOGGER.info("New user password + " + password);
         return save;
     }
@@ -154,8 +150,11 @@ public class UserDaoImpl implements UserDao {
         user.setAuthorities(getRoleEnumName(role).getAuthorities());
         User update = saveUser(user);
         saveProfileImage(user, profileImage);
-        // emailService.sendMessage(firstname, lastname, email);
-        //change userPrifile
+        try {
+            emailService.sendMessageUpdateProfile(update.getFirstname(), update.getLastname(), update.getUsername(), user.getEmail());
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
         return update;
     }
 
@@ -209,7 +208,12 @@ public class UserDaoImpl implements UserDao {
     public User updateProfileImage(String username, MultipartFile profileImage)
             throws IOException, UserNotFoundException, UserNameExistsException, EmailExistsException {
         User user = validationNewUsernameAndEmail(username, null, null);
-        saveProfileImage(user,profileImage);
+        saveProfileImage(user, profileImage);
+        try {
+            emailService.sendMessageUpdateProfileImage(user.getFirstname(), user.getLastname(), user.getUsername(), user.getEmail());
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
         return user;
     }
 
@@ -218,7 +222,7 @@ public class UserDaoImpl implements UserDao {
         List<User> listUsers = new ArrayList<>();
         try {
             Query query = entityManager.createQuery("select usr from User usr where usr.role = 'ROLE_USER'", User.class);
-           listUsers = (List<User>) query.getResultList();
+            listUsers = (List<User>) query.getResultList();
         } catch (Exception e) {
             log.info(e.getMessage());
         }
@@ -236,8 +240,7 @@ public class UserDaoImpl implements UserDao {
                               String QRCODE,
                               String address,
                               String infoAboutComplaint,
-                              String infoAboutSick)
-            throws MessagingException {
+                              String infoAboutSick) {
         User user = findUserByUsername(currentUsername);
         user.setFirstname(firstname);
         user.setLastname(lastname);
@@ -250,7 +253,11 @@ public class UserDaoImpl implements UserDao {
         user.setInfoAboutComplaint(infoAboutComplaint);
         user.setInfoAboutSick(infoAboutSick);
         User update = saveUser(user);
-        //email
+        try {
+            emailService.sendMessageUpdateProfile(update.getFirstname(), user.getLastname(), user.getUsername(), user.getEmail());
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
         return update;
     }
 
@@ -291,7 +298,7 @@ public class UserDaoImpl implements UserDao {
                 Files.createDirectories(userFolder);
                 LOGGER.info(DIRECTORY_CREATED + userFolder);
             }
-            Files.deleteIfExists(Paths.get(userFolder + user.getUsername() + DOT +JPG_EXSTENSION));
+            Files.deleteIfExists(Paths.get(userFolder + user.getUsername() + DOT + JPG_EXSTENSION));
             Files.copy(profileImage.getInputStream(), userFolder.resolve(user.getUsername() + DOT + JPG_EXSTENSION), REPLACE_EXISTING);
             user.setProfileImageUrl(setProfileImage(user.getUsername()));
             LOGGER.info(FILE_SAVED_IN_FILE_SYSTEM + profileImage.getOriginalFilename());
@@ -299,10 +306,11 @@ public class UserDaoImpl implements UserDao {
     }
 
     public boolean logOut(User user) {
+        User usr = findUserByUsername(user.getUsername());
         try {
-            user.setOnline(false);
-            user.setJoindDate(new Date());
-            update(user);
+            usr.setOnline(false);
+            usr.setJoindDate(new Date());
+            saveUser(usr);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -321,7 +329,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     private String generateUserId() {
-        return  RandomStringUtils.randomNumeric(10);
+        return RandomStringUtils.randomNumeric(10);
     }
 
     private String encryptPassoword(String password) {
@@ -331,6 +339,7 @@ public class UserDaoImpl implements UserDao {
     private Role getRoleEnumName(String role) {
         return Role.valueOf(role.toUpperCase());
     }
+
     @Override
     public User findUserByEmail(String email) {
         User user = null;
@@ -381,10 +390,10 @@ public class UserDaoImpl implements UserDao {
             String sql = String.format("select usr from User usr order by %s %s", request.getColumn(), request.getSort());
             TypedQuery<User> userTypedQuery = entityManager
                     .createQuery(sql, User.class)
-                    .setFirstResult((request.getPage() - 1) *  request.getSize()).setMaxResults(request.getSize());
+                    .setFirstResult((request.getPage() - 1) * request.getSize()).setMaxResults(request.getSize());
             users = userTypedQuery.getResultList();
         } catch (Exception e) {
-         log.info(e.getMessage());
+            log.info(e.getMessage());
         }
 
         int itemsSize = (int) countUsers();
@@ -414,7 +423,7 @@ public class UserDaoImpl implements UserDao {
             Query query = entityManager
                     .createNativeQuery("select id, date_create, treatment from treatment t where t.id in (select u_t.treatment_id from users_treatments u_t where u_t.user_id = :userId) order by :column :sort", Treatment.class)
                     .setParameter("userId", userId).setParameter("column", request.getColumn()).setParameter("sort", request.getSort());
-            query.setFirstResult((request.getPage() - 1) *  request.getSize()).setMaxResults(request.getSize());
+            query.setFirstResult((request.getPage() - 1) * request.getSize()).setMaxResults(request.getSize());
             treatments = query.getResultList();
         } catch (Exception e) {
             log.debug("Query exception result");
@@ -443,7 +452,7 @@ public class UserDaoImpl implements UserDao {
                     .setParameter("userId", userId)
                     .setParameter("column", request.getColumn())
                     .setParameter("sort", request.getSort())
-                    .setFirstResult((request.getPage() - 1) *  request.getSize())
+                    .setFirstResult((request.getPage() - 1) * request.getSize())
                     .setMaxResults(request.getSize());
             videos = (List<Video>) query.getResultList();
         } catch (Exception e) {
@@ -494,9 +503,9 @@ public class UserDaoImpl implements UserDao {
 
     private int totalPageConverter(int itemSize, int showEntity) {
         if (itemSize % showEntity == 0) {
-            return  (itemSize / showEntity);
+            return (itemSize / showEntity);
         } else {
-            return (itemSize/ showEntity) + 1;
+            return (itemSize / showEntity) + 1;
         }
     }
 

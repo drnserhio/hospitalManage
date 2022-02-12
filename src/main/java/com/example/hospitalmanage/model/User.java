@@ -1,14 +1,11 @@
 package com.example.hospitalmanage.model;
 
-import com.example.hospitalmanage.model.chat.ChatRoom;
 import com.example.hospitalmanage.model.icd.AnalyzeICDDate;
 import com.example.hospitalmanage.model.video.Video;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -37,11 +34,11 @@ public class User {
     private String patronomic;
     private int age;
 
-    private String address; //role user
-    private String infoAboutComplaint; // жалобы role user
-    private String QRCODE; // role user
-    private String infoAboutSick; // болезни перенесенные(role user )
-    private String infoDiagnosis; // диагноз ( чем а даный момент болен после исследования role doctror
+    private String address;
+    private String infoAboutComplaint;
+    private String QRCODE;
+    private String infoAboutSick;
+    private String infoDiagnosis;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(
