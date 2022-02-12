@@ -10,13 +10,11 @@ import java.util.List;
 
 public interface ChatMessageDao {
 
+    ChatMessage save(ChatMessage chatMessage);
 
-     long countNewMessages(Long senderId, Long recipientId) ;
+    long countNewMessage(Long senderId, Long recipientId);
 
-    List<ChatMessage> findByChatId(String chatId);
-    void sendMessage(Long senderId, Long recipientId, Message msg) ;
+    List<ChatMessage> findChatMessages(Long senderId, Long recipientId);
 
-    ChatMessage findChatMessageById(Long id) ;
-
-     List<ChatMessage> findChatMessages(Long senderId, Long recipientId);
+    ChatMessage findById(String id);
 }

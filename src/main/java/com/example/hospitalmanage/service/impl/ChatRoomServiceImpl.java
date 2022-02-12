@@ -7,13 +7,16 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
 public class ChatRoomServiceImpl implements ChatRoomService {
+
     private final ChatRoomDao chatRoomDao;
+
     @Override
-    public List<ChatRoom> findListChatRoomByUserId(Long id) {
-        return chatRoomDao.findListChatRoomByUserId(id);
+    public Optional<String> getChatId(Long senderId, Long recipientId, boolean createIfNotExist) {
+        return chatRoomDao.getChatId(senderId, recipientId, createIfNotExist);
     }
 }

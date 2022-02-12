@@ -16,15 +16,14 @@ public class ChatMessageImpl implements ChatMessageService {
 
     private final ChatMessageDao chatMessageDao;
 
-
     @Override
-    public long countNewMessages(Long senderId, Long recipientId) {
-        return chatMessageDao.countNewMessages(senderId, recipientId);
+    public ChatMessage save(ChatMessage chatMessage) {
+        return chatMessageDao.save(chatMessage);
     }
 
     @Override
-    public List<ChatMessage> findByChatId(String chatId) {
-        return chatMessageDao.findByChatId(chatId);
+    public long countNewMessage(Long senderId, Long recipientId) {
+        return chatMessageDao.countNewMessage(senderId, recipientId);
     }
 
     @Override
@@ -33,7 +32,7 @@ public class ChatMessageImpl implements ChatMessageService {
     }
 
     @Override
-    public void sendMessage(Long senderId, Long recipientId, Message msg) {
-        chatMessageDao.sendMessage(senderId, recipientId, msg);
+    public ChatMessage findById(String id) {
+        return chatMessageDao.findById(id);
     }
 }

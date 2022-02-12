@@ -8,11 +8,11 @@ import java.util.List;
 
 public interface ChatMessageService {
 
-    long countNewMessages(Long senderId, Long recipientId) ;
+    ChatMessage save(ChatMessage chatMessage);
 
-    List<ChatMessage> findByChatId(String chatId);
+    long countNewMessage(Long senderId, Long recipientId);
 
     List<ChatMessage> findChatMessages(Long senderId, Long recipientId);
 
-    void sendMessage(Long senderId, Long recipientId, Message msg) ;
+    ChatMessage findById(String id);
 }

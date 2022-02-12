@@ -162,9 +162,8 @@ public class ProfileResource extends ExceptionHandling {
     }
 
     @PutMapping("/logout")
-    public void logOut(
+    public boolean logOut(
             @RequestBody User user) {
-        userService.logOut(user);
-        //TODO update!!!
+       return userService.logOut(user);
     }
 }

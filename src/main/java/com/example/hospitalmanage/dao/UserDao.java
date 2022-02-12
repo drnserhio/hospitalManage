@@ -18,7 +18,7 @@ public interface UserDao {
     User findUserByEmail(String email);
     User findUserByUsername(String useraname);
     User saveUser(User user);
-    void logOut(User user);
+    boolean logOut(User user);
 
     User register(String firstname, String lastname, String username, String email, String password) throws MessagingException, UserNotFoundException, UserNameExistsException, EmailExistsException;
 

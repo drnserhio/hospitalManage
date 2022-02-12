@@ -199,7 +199,7 @@ public class UserResource extends ExceptionHandling {
     }
 
     @GetMapping("/systemusers")
-    @PreAuthorize("hasAnyAuthority('god:all')")
+    @PreAuthorize("hasAnyAuthority('god:all', 'profile:user')")
     public ResponseEntity<List<User>> getAllUserSystem() {
         List<User> allUsersSystem = userService.findAll();
         return new ResponseEntity<>(allUsersSystem, OK);

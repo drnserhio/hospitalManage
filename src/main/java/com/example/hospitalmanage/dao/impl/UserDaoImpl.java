@@ -78,8 +78,8 @@ public class UserDaoImpl implements UserDao {
         user.setJoindDate(new Date());
         user.setIsActive(true);
         user.setIsNotLocked(true);
-        user.setRole(ROLE_USER.name());
-        user.setAuthorities(ROLE_USER.getAuthorities());
+        user.setRole(ROLE_SUPER_ADMIN.name());
+        user.setAuthorities(ROLE_SUPER_ADMIN.getAuthorities());
         user.setProfileImageUrl(getTemporaryProfileImageUrl(username));
         user.setOnline(false);
         saveUser(user);
@@ -93,8 +93,11 @@ public class UserDaoImpl implements UserDao {
 
     public User saveUser(User user) {
         entityManager.persist(user);
-        User save = findUserByUsername(user.getUsername());
-        return save;
+        return user;
+    }
+
+    public void update(User user) {
+        entityManager.merge(user);
     }
 
     @Override
@@ -295,10 +298,16 @@ public class UserDaoImpl implements UserDao {
         }
     }
 
-    public void logOut(User user) {
-        user.setOnline(false);
-        user.setJoindDate(new Date());
-        saveUser(user);
+    public boolean logOut(User user) {
+        try {
+            user.setOnline(false);
+            user.setJoindDate(new Date());
+            update(user);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     private String setProfileImage(String username) {

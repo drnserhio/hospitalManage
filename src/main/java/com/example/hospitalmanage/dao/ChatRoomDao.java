@@ -8,11 +8,5 @@ import java.util.Optional;
 
 public interface ChatRoomDao {
 
-    public Optional<String> getChatId(Long senderId, Long recipientId);
-
-    ChatRoom findBySenderIdAndRecipientId(Long senderId, Long recipientId);
-
-    void save(ChatRoom chatRoom);
-
-    List<ChatRoom> findListChatRoomByUserId(Long id);
+    Optional<String> getChatId(Long senderId, Long recipientId, boolean createIfNotExist);
 }

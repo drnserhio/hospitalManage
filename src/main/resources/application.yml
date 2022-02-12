@@ -6,6 +6,9 @@ server:
   error:
     path: /error
 spring:
+  data:
+    mongodb:
+      uri: mongodb://root:5600@127.0.0.1:27017/chat?authSource=chat&readPreference=primary&appname=MongoDB%20Compass&directConnection=true&ssl=false
   datasource:
     url: jdbc:mysql://localhost:3306/hospitalDB
     username: root
@@ -28,3 +31,7 @@ spring:
         introspection-uri: https://icdaccessmanagement.who.int/connect/token
         grand-type: client_credentials
         scope: icdapi_access
+logging:
+  level:
+    web:
+      socket: trace

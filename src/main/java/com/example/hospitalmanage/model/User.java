@@ -51,7 +51,7 @@ public class User {
     )
     private Set<AnalyzeICDDate> diagnosis; //исследование secretary
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(
             name = "users_treatments",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -66,15 +66,6 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "video_id")
     )
     private Set<Video> videoFiles;
-
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinTable(
-            name = "users_chat_rooms",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "chatRoom_id")
-    )
-    private Set<ChatRoom> chatRooms;
 
     private Boolean hospiztalization; // role doctor
     private Date joindDate;

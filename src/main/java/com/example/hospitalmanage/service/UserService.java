@@ -43,7 +43,7 @@ public interface UserService {
 
 //   void resetPassword(String email); // about phone reconnect account
 
-    void logOut(User user);
+    boolean logOut(User user);
 
   User updateProfileImage(String username, MultipartFile profileImage) throws IOException, UserNotFoundException, UserNameExistsException, EmailExistsException;
 

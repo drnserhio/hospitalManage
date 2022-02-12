@@ -187,8 +187,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return userDao.findAllChatUsersByUserId(userId);
     }
 
-    public void logOut(User user) {
-        userDao.logOut(user);
+    public boolean logOut(User user) {
+       return userDao.logOut(user);
     }
 
 }
