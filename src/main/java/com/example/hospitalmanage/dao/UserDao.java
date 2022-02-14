@@ -29,8 +29,8 @@ public interface UserDao {
                     String password,
                     String role,
                     boolean isNonLocked,
-                    boolean isActive,
-                    MultipartFile profileImage) throws IOException, UserNotFoundException, UserNameExistsException, EmailExistsException, MessagingException;
+                    boolean isActive)
+            throws UserNotFoundException, UserNameExistsException, EmailExistsException, IOException;
     User updateUser(
             String currentUsername,
             String firstname,
@@ -39,12 +39,11 @@ public interface UserDao {
             String email,
             String role,
             boolean isNonLocked,
-            boolean isActive,
-            MultipartFile profileImage) throws IOException, UserNotFoundException, UserNameExistsException, EmailExistsException;
+            boolean isActive) throws IOException, UserNotFoundException, UserNameExistsException, EmailExistsException;
 
     void deleteUser(String username);
 
-//   void resetPassword(String email); // about phone reconnect account
+//   void resetPassword(String email); // about phone reconnect account\
 
     User updateProfileImage(String username, MultipartFile profileImage) throws IOException, UserNotFoundException, UserNameExistsException, EmailExistsException;
 

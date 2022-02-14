@@ -2,10 +2,10 @@ package com.example.hospitalmanage.service;
 
 import com.example.hospitalmanage.dto.RequestTabel;
 import com.example.hospitalmanage.dto.ResponseTable;
-import com.example.hospitalmanage.model.User;
 import com.example.hospitalmanage.exception.domain.EmailExistsException;
 import com.example.hospitalmanage.exception.domain.UserNameExistsException;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
+import com.example.hospitalmanage.model.User;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.MessagingException;
@@ -26,8 +26,7 @@ public interface UserService {
                     String password,
                     String role,
                     boolean isNonLocked,
-                    boolean isActive,
-                    MultipartFile profileImage) throws IOException, UserNotFoundException, UserNameExistsException, EmailExistsException, MessagingException;
+                    boolean isActive) throws UserNotFoundException, UserNameExistsException, EmailExistsException, IOException;
     User updateUser(
             String currentUsername,
             String firstname,
@@ -36,8 +35,7 @@ public interface UserService {
             String email,
             String role,
             boolean isNonLocked,
-            boolean isActive,
-            MultipartFile profileImage) throws IOException, UserNotFoundException, UserNameExistsException, EmailExistsException;
+            boolean isActive) throws IOException, UserNotFoundException, UserNameExistsException, EmailExistsException;
 
    void deleteUser(String username);
 

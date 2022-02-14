@@ -2,16 +2,16 @@ package com.example.hospitalmanage.resource;
 
 import com.example.hospitalmanage.dto.ResponseTable;
 import com.example.hospitalmanage.dto.impl.RequestTableTreatmentImpl;
-import com.example.hospitalmanage.model.HttpResponse;
-import com.example.hospitalmanage.model.User;
-import com.example.hospitalmanage.model.UserPrincipal;
 import com.example.hospitalmanage.exception.ExceptionHandling;
 import com.example.hospitalmanage.exception.domain.EmailExistsException;
 import com.example.hospitalmanage.exception.domain.PasswordNotValidException;
 import com.example.hospitalmanage.exception.domain.UserNameExistsException;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
-import com.example.hospitalmanage.service.impl.ProfileServiceImpl;
+import com.example.hospitalmanage.model.HttpResponse;
+import com.example.hospitalmanage.model.User;
+import com.example.hospitalmanage.model.UserPrincipal;
 import com.example.hospitalmanage.service.UserService;
+import com.example.hospitalmanage.service.impl.ProfileServiceImpl;
 import com.example.hospitalmanage.util.JwtTokenProvider;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +36,8 @@ import java.util.List;
 
 import static com.example.hospitalmanage.constant.FileConstant.*;
 import static com.example.hospitalmanage.constant.SecurityConstant.JWT_TOKEN_HEADER;
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 
 @RestController
@@ -78,7 +79,6 @@ public class UserResource extends ExceptionHandling {
     }
 
     @PostMapping("/add")
-    @PreAuthorize("hasAnyAuthority('god:all')")
     public ResponseEntity<User> addNewUser(
             @RequestParam("firstname") String firstname,
             @RequestParam("lastname") String lastname,
@@ -87,9 +87,8 @@ public class UserResource extends ExceptionHandling {
             @RequestParam("password") String password,
             @RequestParam("role") String role,
             @RequestParam("isNonLocked") String isNonLocked,
-            @RequestParam("isActive") String isActive,
-            @RequestParam(value = "profileImage", required = false) MultipartFile profileImage)
-            throws IOException, UserNotFoundException, UserNameExistsException, EmailExistsException, MessagingException {
+            @RequestParam("isActive") String isActive)
+            throws UserNotFoundException, UserNameExistsException, EmailExistsException, IOException {
         User newUser = userService.addNewUser(
                 firstname,
                 lastname,
@@ -98,8 +97,7 @@ public class UserResource extends ExceptionHandling {
                 password,
                 role,
                 Boolean.parseBoolean(isNonLocked),
-                Boolean.parseBoolean(isActive),
-                profileImage
+                Boolean.parseBoolean(isActive)
         );
         return new ResponseEntity<>(newUser, OK);
     }
@@ -114,8 +112,7 @@ public class UserResource extends ExceptionHandling {
            @RequestParam("email") String email,
            @RequestParam("role") String role,
            @RequestParam("isNonLocked") String isNonLocked,
-           @RequestParam("isActive") String isActive,
-           @RequestParam(value = "profileImage", required = false) MultipartFile profileImage)
+           @RequestParam("isActive") String isActive)
             throws IOException, UserNotFoundException, UserNameExistsException, EmailExistsException {
         User updateUser = userService.updateUser(
                 currentUsername,
@@ -125,8 +122,7 @@ public class UserResource extends ExceptionHandling {
                 email,
                 role,
                 Boolean.parseBoolean(isNonLocked),
-                Boolean.parseBoolean(isActive),
-                profileImage
+                Boolean.parseBoolean(isActive)
         );
         return new ResponseEntity<>(updateUser, OK);
     }

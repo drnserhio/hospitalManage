@@ -37,9 +37,8 @@ import java.nio.file.Paths;
 import java.util.*;
 
 import static com.example.hospitalmanage.constant.FileConstant.*;
-import static com.example.hospitalmanage.constant.FileConstant.DEFAULT_USER_IMAGE_PATH;
 import static com.example.hospitalmanage.constant.UserImplConstant.*;
-import static com.example.hospitalmanage.role.Role.*;
+import static com.example.hospitalmanage.role.Role.ROLE_USER;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -69,6 +68,7 @@ public class UserDaoImpl implements UserDao {
         user.setFirstname(firstname);
         user.setLastname(lastname);
         user.setUsername(username);
+        user.setPatronomic("NONE");
         user.setEmail(email);
         user.setPassword(encryptPassoword(password));
         user.setJoindDate(new Date());
@@ -78,6 +78,11 @@ public class UserDaoImpl implements UserDao {
         user.setAuthorities(ROLE_USER.getAuthorities());
         user.setProfileImageUrl(getTemporaryProfileImageUrl(username));
         user.setOnline(false);
+        user.setQRCODE("NONE");
+        user.setAddress("NONE");
+        user.setInfoAboutComplaint("NONE");
+        user.setInfoDiagnosis("NONe");
+        user.setHospiztalization(false);
         User save = saveUser(user);
         try {
             emailService.sendMessageRegistartion(save.getFirstname(), save.getLastname(), save.getUsername(), save.getEmail());
@@ -104,8 +109,8 @@ public class UserDaoImpl implements UserDao {
                            String password,
                            String role,
                            boolean isNonLocked,
-                           boolean isActive,
-                           MultipartFile profileImage) throws IOException, UserNotFoundException, UserNameExistsException, EmailExistsException, MessagingException {
+                           boolean isActive)
+            throws UserNotFoundException, UserNameExistsException, EmailExistsException, IOException {
         validationNewUsernameAndEmail(EMPTY, username, email);
         User user = new User();
         user.setUserId(generateUserId());
@@ -119,11 +124,7 @@ public class UserDaoImpl implements UserDao {
         user.setIsNotLocked(true);
         user.setRole(getRoleEnumName(role).name());
         user.setAuthorities(getRoleEnumName(role).getAuthorities());
-        user.setProfileImageUrl(getTemporaryProfileImageUrl(username));
         User save = saveUser(user);
-        saveProfileImage(user, profileImage);
-        emailService.sendMessageRegistartion(save.getFirstname(), save.getLastname(), save.getUsername(), save.getEmail());
-        LOGGER.info("New user password + " + password);
         return save;
     }
 
@@ -135,8 +136,7 @@ public class UserDaoImpl implements UserDao {
                            String email,
                            String role,
                            boolean isNonLocked,
-                           boolean isActive,
-                           MultipartFile profileImage)
+                           boolean isActive)
             throws IOException, UserNotFoundException, UserNameExistsException, EmailExistsException {
         User user = validationNewUsernameAndEmail(currentUsername, username, email);
         user.setFirstname(firstname);
@@ -148,13 +148,8 @@ public class UserDaoImpl implements UserDao {
         user.setIsNotLocked(isNonLocked);
         user.setRole(getRoleEnumName(role).name());
         user.setAuthorities(getRoleEnumName(role).getAuthorities());
+        user.setProfileImageUrl(getTemporaryProfileImageUrl(username));
         User update = saveUser(user);
-        saveProfileImage(user, profileImage);
-        try {
-            emailService.sendMessageUpdateProfile(update.getFirstname(), update.getLastname(), update.getUsername(), user.getEmail());
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
         return update;
     }
 
@@ -508,6 +503,5 @@ public class UserDaoImpl implements UserDao {
             return (itemSize / showEntity) + 1;
         }
     }
-
 
 }

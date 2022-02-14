@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
-import static com.example.hospitalmanage.constant.UserImplConstant.*;
+import static com.example.hospitalmanage.constant.UserImplConstant.USER_NOT_FOUND_BY_USERNAME;
 
 @Service
 @AllArgsConstructor
@@ -74,9 +74,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                            String password,
                            String role,
                            boolean isNonLocked,
-                           boolean isActive,
-                           MultipartFile profileImage) throws IOException, UserNotFoundException, UserNameExistsException, EmailExistsException, MessagingException {
-        User user = userDao.addNewUser(firstname, lastname, username, email, password, role, isNonLocked, isActive, profileImage);
+                           boolean isActive) throws UserNotFoundException, UserNameExistsException, EmailExistsException, IOException {
+        User user = userDao.addNewUser(firstname, lastname, username, email, password, role, isNonLocked, isActive);
         return user;
     }
 
@@ -88,10 +87,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                            String email,
                            String role,
                            boolean isNonLocked,
-                           boolean isActive,
-                           MultipartFile profileImage)
+                           boolean isActive)
             throws IOException, UserNotFoundException, UserNameExistsException, EmailExistsException {
-        User user = userDao.updateUser(currentUsername, firstname, lastname, username, email, role, isNonLocked, isActive, profileImage);
+        User user = userDao.updateUser(currentUsername, firstname, lastname, username, email, role, isNonLocked, isActive);
         return user;
     }
 
