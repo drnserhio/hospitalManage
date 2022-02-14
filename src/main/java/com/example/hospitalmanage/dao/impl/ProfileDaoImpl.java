@@ -12,7 +12,7 @@ import com.example.hospitalmanage.model.Treatment;
 import com.example.hospitalmanage.model.User;
 import com.example.hospitalmanage.model.icd.AnalyzeICDDate;
 import com.example.hospitalmanage.model.icd.ICD;
-import com.example.hospitalmanage.service.impl.DocXGeneratorService;
+import com.example.hospitalmanage.converter.DocXGenerator;
 import com.example.hospitalmanage.util.RequestTableHelper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +44,7 @@ import static com.example.hospitalmanage.constant.UserImplConstant.USER_NOT_FOUN
 public class ProfileDaoImpl implements ProfileDao {
 
     private final UserDao userDao;
-    private final DocXGeneratorService docXGeneratorService;
+    private final DocXGenerator docXGenerator;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
     private final EntityManager entityManager;
@@ -52,7 +52,7 @@ public class ProfileDaoImpl implements ProfileDao {
     public byte[] getDocument(String username)
             throws Exception {
         User findUser = userDao.findUserByUsername(username);
-        return docXGeneratorService.createDocument(findUser);
+        return docXGenerator.createDocument(findUser);
     }
 
     public User updateUserTimeVisitByUsername(String currentUsername, LocalDateTime timeVisit)

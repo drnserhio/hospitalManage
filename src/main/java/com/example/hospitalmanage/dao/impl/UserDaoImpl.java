@@ -78,10 +78,10 @@ public class UserDaoImpl implements UserDao {
         user.setAuthorities(ROLE_USER.getAuthorities());
         user.setProfileImageUrl(getTemporaryProfileImageUrl(username));
         user.setOnline(false);
-        user.setQRCODE("NONE");
-        user.setAddress("NONE");
-        user.setInfoAboutComplaint("NONE");
-        user.setInfoDiagnosis("NONe");
+        user.setQRCODE(DEFAULT_NONE);
+        user.setAddress(PUT_YOUR_INFORMATION);
+        user.setInfoAboutComplaint(PUT_YOUR_INFORMATION);
+        user.setInfoDiagnosis(PUT_YOUR_INFORMATION);
         user.setHospiztalization(false);
         User save = saveUser(user);
         try {
@@ -105,6 +105,9 @@ public class UserDaoImpl implements UserDao {
     public User addNewUser(String firstname,
                            String lastname,
                            String username,
+                           String patronomic,
+                           Long age,
+                           String address,
                            String email,
                            String password,
                            String role,
@@ -117,11 +120,17 @@ public class UserDaoImpl implements UserDao {
         user.setFirstname(firstname);
         user.setLastname(lastname);
         user.setUsername(username);
+        user.setPatronomic(patronomic);
+        user.setAddress(address);
         user.setEmail(email);
         user.setPassword(encryptPassoword(password));
         user.setJoindDate(new Date());
         user.setIsActive(true);
         user.setIsNotLocked(true);
+        user.setInfoDiagnosis(PUT_YOUR_INFORMATION);
+        user.setInfoAboutSick(PUT_YOUR_INFORMATION);
+        user.setInfoAboutComplaint(PUT_YOUR_INFORMATION);
+        user.setQRCODE(DEFAULT_NONE);
         user.setRole(getRoleEnumName(role).name());
         user.setAuthorities(getRoleEnumName(role).getAuthorities());
         User save = saveUser(user);
@@ -163,16 +172,6 @@ public class UserDaoImpl implements UserDao {
             log.info(e.getMessage());
         }
     }
-
-//    @Override
-//    public void resetPassword(String email) {
-//        User user = userRepository.findByEmail(email);
-//        if (user == null) {
-//            throw new EmailExistsException(USER_NOT_FOUND_BY_EMAIL + email);
-//        }
-//        String password = generatePassword();
-//    }
-
 
     @Override
     public User findUserByUserId(Long id) {

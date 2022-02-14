@@ -78,30 +78,6 @@ public class UserResource extends ExceptionHandling {
         return new ResponseEntity<>(loginUser, jwtHeaders, OK);
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<User> addNewUser(
-            @RequestParam("firstname") String firstname,
-            @RequestParam("lastname") String lastname,
-            @RequestParam("username") String username,
-            @RequestParam("email") String email,
-            @RequestParam("password") String password,
-            @RequestParam("role") String role,
-            @RequestParam("isNonLocked") String isNonLocked,
-            @RequestParam("isActive") String isActive)
-            throws UserNotFoundException, UserNameExistsException, EmailExistsException, IOException {
-        User newUser = userService.addNewUser(
-                firstname,
-                lastname,
-                username,
-                email,
-                password,
-                role,
-                Boolean.parseBoolean(isNonLocked),
-                Boolean.parseBoolean(isActive)
-        );
-        return new ResponseEntity<>(newUser, OK);
-    }
-
     @PutMapping("/update")
     @PreAuthorize("hasAnyAuthority('god:all')")
     public ResponseEntity<User> updateUser(
