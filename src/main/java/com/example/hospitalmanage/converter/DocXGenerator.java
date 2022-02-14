@@ -44,20 +44,23 @@ public class DocXGenerator {
         WordprocessingMLPackage template = WordprocessingMLPackage.load(new FileInputStream(file));
         VariablePrepare.prepare(template);
         MainDocumentPart mainDocumentPart = template.getMainDocumentPart();
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm:ss dd/MM/yyyy");
 
         HashMap<String, String> mappings = new HashMap<>();
-        mappings.put("firstname", findUser.getFirstname());
-        mappings.put("lastname", findUser.getLastname());
-        mappings.put("patronomic", findUser.getPatronomic());
-        mappings.put("age", String.valueOf(findUser.getAge()));
-        mappings.put("address", findUser.getAddress());
-        mappings.put("diagnosisSize", String.valueOf(findUser.getDiagnosis().size()));
-        mappings.put("hospitalization", findUser.getHospiztalization() == true? "YES": "NO");
-        mappings.put("treatmentSize", String.valueOf(findUser.getTreatment().size()));
-        mappings.put("dateNow", formatter.format(LocalDateTime.now()));
-        mappings.put("doctor", "doctorNow");
-        System.out.println(SecurityContextHolder.getContext());
+        try {
+            mappings.put("firstname", findUser.getFirstname());
+            mappings.put("lastname", findUser.getLastname());
+            mappings.put("patronomic", findUser.getPatronomic());
+            mappings.put("age", String.valueOf(findUser.getAge()));
+            mappings.put("address", findUser.getAddress());
+            mappings.put("diagnosisSize", String.valueOf(findUser.getDiagnosis().size()));
+            mappings.put("hospitalization", findUser.getHospiztalization() == true ? "YES" : "NO");
+            mappings.put("treatmentSize", String.valueOf(findUser.getTreatment().size()));
+            mappings.put("dateNow", formatter.format(LocalDateTime.now()));
+            mappings.put("doctor", SecurityContextHolder.getContext().getAuthentication().getName());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
         String nameFile = findUser.getLastname() + "_" + UUID.randomUUID().toString().substring(0, 7);

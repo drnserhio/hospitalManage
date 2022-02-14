@@ -19,17 +19,6 @@ public interface UserService {
 
     User register(String firstname, String lastname, String username, String email, String password) throws MessagingException, UserNotFoundException, UserNameExistsException, EmailExistsException;
 
-    User addNewUser(String firstname,
-                    String lastname,
-                    String username,
-                    String patronomic,
-                    Long age,
-                    String address,
-                    String email,
-                    String password,
-                    String role,
-                    boolean isNonLocked,
-                    boolean isActive) throws UserNotFoundException, UserNameExistsException, EmailExistsException, IOException;
     User updateUser(
             String currentUsername,
             String firstname,
