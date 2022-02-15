@@ -55,6 +55,29 @@ public class EmailService {
         smtpTransport.close();
     }
 
+    public void sendMessageDeleteAccount(String firstname, String lastname, String username, String email)
+            throws MessagingException {
+        Message message = deleteProfile(firstname, lastname, username, email);
+        SMTPTransport smtpTransport = (SMTPTransport) getEmailSession().getTransport(SIMPLE_MAIL_TRANSFER_PROTOCOL);
+        smtpTransport.connect(GMAIL_SMTP_SERVER, USERNAME, PASSWORD);
+        smtpTransport.sendMessage(message, message.getAllRecipients());
+        smtpTransport.close();
+    }
+
+    private Message deleteProfile(String firstname, String lastname, String username, String email)
+            throws MessagingException {
+        javax.mail.Message message = new MimeMessage(getEmailSession());
+        message.setFrom(new InternetAddress(FROM_EMAIL));
+        message.setRecipients(javax.mail.Message.RecipientType.TO, InternetAddress.parse(email, false));
+        message.setSubject(EMAIL_SUBJECT);
+        message.setText(
+                "Hello " + firstname + " " + lastname +
+                        ", \n \n Your delete account: " + username + " is successfull: \n \n" +
+                        "The support Team Hospital ");
+        message.setSentDate(new Date());
+        return message;
+    }
+
     private Message updatePasswordProfile(String firstname, String lastname, String newPass, String email)
             throws MessagingException {
         javax.mail.Message message = new MimeMessage(getEmailSession());
@@ -122,6 +145,7 @@ public class EmailService {
         properties.put(SMTP_STARTTLS_REQUIRED, true);
         return Session.getInstance(properties, null);
     }
+
 }
 
 

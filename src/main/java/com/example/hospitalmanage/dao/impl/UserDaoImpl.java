@@ -164,13 +164,16 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public void deleteUser(String username) {
+        User user = findUserByUsername(username);
         try {
             entityManager.createQuery("delete from User usr where usr.username = :username")
                     .setParameter("username", username)
                     .executeUpdate();
+            this.emailService.sendMessageDeleteAccount(user.getFirstname(), user.getLastname(), user.getUsername(), user.getEmail());
         } catch (Exception e) {
             log.info(e.getMessage());
         }
+
     }
 
     @Override
