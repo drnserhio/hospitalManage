@@ -26,7 +26,7 @@ public interface UserDao {
                     String lastname,
                     String username,
                     String patronomic,
-                    Long age,
+                    int age,
                     String address,
                     String email,
                     String password,

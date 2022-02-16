@@ -26,11 +26,11 @@ public class InitialData {
             userDao.deleteUser("betty");
             userDao.deleteUser("jerry");
         }
-        userDao.addNewUser("Rick", "Sanchez", "rick", "Tered", 54L, "Kampage St. 54 - D", "rick@gmail.com", "5600", "role_super_admin", true, true);
-        userDao.addNewUser("Morthy", "Smith", "morthy", "Uie", 28L, "Village St. 9823, 12","morthy@gmail.com", "5600", "role_admin", true, true);
-        userDao.addNewUser("Summer", "Smith", "summer","Pouy", 29L, "Campures St. 5f32", "summer@gmail.com", "5600", "role_doctor", true, true);
-        userDao.addNewUser("Bett", "Smith", "betty", "Qwert",  34L, "Stadet St. 452","betty@gmail.com", "5600", "role_secretary", true, true);
-        userDao.addNewUser("Jerry", "Smith", "jerry", "Trewq", 54L, "Poridet St. 2342dW","jerry@gmail.com", "5600", "role_user", true, true);
+        userDao.addNewUser("Rick", "Sanchez", "rick", "Tered", 54, "Kampage St. 54 - D", "rick@gmail.com", "5600", "role_super_admin", true, true);
+        userDao.addNewUser("Morthy", "Smith", "morthy", "Uie", 28, "Village St. 9823, 12","morthy@gmail.com", "5600", "role_admin", true, true);
+        userDao.addNewUser("Summer", "Smith", "summer","Pouy", 29, "Campures St. 5f32", "summer@gmail.com", "5600", "role_doctor", true, true);
+        userDao.addNewUser("Bett", "Smith", "betty", "Qwert",  34, "Stadet St. 452","betty@gmail.com", "5600", "role_secretary", true, true);
+        userDao.addNewUser("Jerry", "Smith", "jerry", "Trewq", 54, "Poridet St. 2342dW","jerry@gmail.com", "5600", "role_user", true, true);
 
     }
 }

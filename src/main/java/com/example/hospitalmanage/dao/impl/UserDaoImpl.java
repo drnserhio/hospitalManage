@@ -106,7 +106,7 @@ public class UserDaoImpl implements UserDao {
                            String lastname,
                            String username,
                            String patronomic,
-                           Long age,
+                           int age,
                            String address,
                            String email,
                            String password,
@@ -121,6 +121,7 @@ public class UserDaoImpl implements UserDao {
         user.setLastname(lastname);
         user.setUsername(username);
         user.setPatronomic(patronomic);
+        user.setAge(Math.toIntExact(age));
         user.setAddress(address);
         user.setEmail(email);
         user.setPassword(encryptPassoword(password));
