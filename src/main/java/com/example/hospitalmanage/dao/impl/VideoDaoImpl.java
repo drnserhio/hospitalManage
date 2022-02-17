@@ -3,7 +3,7 @@ package com.example.hospitalmanage.dao.impl;
 import com.example.hospitalmanage.dao.UserDao;
 import com.example.hospitalmanage.dao.VideoDao;
 import com.example.hospitalmanage.model.User;
-import com.example.hospitalmanage.model.video.Video;
+import com.example.hospitalmanage.model.Video;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
@@ -47,7 +47,7 @@ public class VideoDaoImpl implements VideoDao {
             addVideoToSetUser(byUsername,fileName);
             fileNames.add(fileName);
         }
-        userDao.saveUser(byUsername);
+        userDao.updateUser(byUsername);
         return fileNames;
     }
 
@@ -92,8 +92,8 @@ public class VideoDaoImpl implements VideoDao {
             throws FileNotFoundException {
         User user = userDao.findUserByUsername(username);
         findVideoFileInSet(user, filename);
-        User save = userDao.saveUser(user);
-        return save;
+        userDao.updateUser(user);
+        return user;
     }
 
     private void findVideoFileInSet(User user, String filename)

@@ -10,8 +10,7 @@ import com.example.hospitalmanage.exception.domain.PasswordNotValidException;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
 import com.example.hospitalmanage.model.Treatment;
 import com.example.hospitalmanage.model.User;
-import com.example.hospitalmanage.model.icd.AnalyzeICDDate;
-import com.example.hospitalmanage.model.icd.ICD;
+import com.example.hospitalmanage.model.AnalyzeICDDate;
 import com.example.hospitalmanage.converter.DocXGenerator;
 import com.example.hospitalmanage.util.RequestTableHelper;
 import lombok.AllArgsConstructor;
@@ -25,14 +24,10 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.Query;
-import javax.persistence.Tuple;
+import javax.persistence.*;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.example.hospitalmanage.constant.HandlingExceptionConstant.PASSWORD_IS_NOT_VALID;
 import static com.example.hospitalmanage.constant.UserImplConstant.USER_NOT_FOUND_BY_USERNAME;
@@ -47,7 +42,7 @@ public class ProfileDaoImpl implements ProfileDao {
     private final DocXGenerator docXGenerator;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
-    private final EntityManager entityManager;
+    private final EntityManagerFactory entityManagerFactory;
 
     public byte[] getDocument(String username)
             throws Exception {
@@ -63,36 +58,50 @@ public class ProfileDaoImpl implements ProfileDao {
             throw new UserNotFoundException(USER_NOT_FOUND_BY_USERNAME + currentUsername);
         }
         user.setTimeToVisitAt(LocalDateTime.of(timeVisit.toLocalDate(), timeVisit.toLocalTime()));
-        User save = userDao.saveUser(user);
+        userDao.updateUser(user);
         LOGGER.info("Time visit created");
-        return save;
-    }
-
-    public User addDiagnosis(String username, List<ICD> diagnosis) {
-        User findUser = userDao.findUserByUsername(username);
-        Set<AnalyzeICDDate> icds = convertToSet(diagnosis);
-
-//        TODO:refactor add to user diagnosis
-        Set<AnalyzeICDDate> d = findUser.getDiagnosis();
-        for (AnalyzeICDDate icd : icds) {
-            if (d.equals(icd)) {
-                continue;
-            } else {
-                d.add(icd);
-            }
-        }
-        findUser.setDiagnosis(d);
-        User user = userDao.saveUser(findUser);
         return user;
     }
 
-    private Set<AnalyzeICDDate> convertToSet(List<ICD> diagnosis) {
-        if (diagnosis.size() < 0 ||
-                Objects.isNull(diagnosis)) {
-            throw new NoResultException("Diagnosis list send empty");
+    @Override
+    public void addDiagnosis(Long userId, Long icdId) {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+
+        try {
+            transaction.begin();
+            AnalyzeICDDate analyzeICDDate = new AnalyzeICDDate();
+            analyzeICDDate.setIcdId(icdId);
+            analyzeICDDate.setDateAddAnalyze(new Date());
+            entityManager.persist(analyzeICDDate);
+            transaction.commit();
+            insertDiagnosToUser(userId, analyzeICDDate.getId());
+        } catch (Exception e) {
+            transaction.rollback();
+            e.printStackTrace();
+        } finally {
+            entityManager.close();
         }
-        return diagnosis.stream().map(icd -> new AnalyzeICDDate(icd, new Date())).collect(Collectors.toSet());
     }
+
+    private void insertDiagnosToUser(Long userId, Long diagnosId) {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+        try {
+            transaction.begin();
+            entityManager.createNativeQuery("insert into users_diagnosis values (:userId, :diagnosId)")
+                    .setParameter("userId", userId)
+                    .setParameter("diagnosId", diagnosId)
+                    .executeUpdate();
+            transaction.commit();
+        } catch (Exception e) {
+            transaction.rollback();
+            e.printStackTrace();
+        } finally {
+            entityManager.close();
+        }
+    }
+
 
     @Override
     public User changePassByUsernameAndOldPassword(String oldPassword, String newPassword)
@@ -125,29 +134,44 @@ public class ProfileDaoImpl implements ProfileDao {
         return findUser;
     }
 
-    public User deleteDiagnos(String username, String code) {
-        User findUser = userDao.findUserByUsername(username);
-        AnalyzeICDDate icd = findUser.getDiagnosis().stream().filter(c -> c.getIcd().getCode().equals(code)).findFirst().get();
-        if (Objects.isNull(icd)) {
-            throw new NoResultException("Didn't find ICD for patient");
+    @Override
+    public void addTreatment(Long userId, String treatment) {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+        try {
+            transaction.begin();
+            Treatment newTreatment = new Treatment();
+            newTreatment.setTreatment(treatment);
+            newTreatment.setDateCreate(new Date());
+            entityManager.persist(newTreatment);
+            transaction.commit();
+            insertTreatmentToUser(userId, newTreatment.getId());
+        } catch (Exception e) {
+            transaction.rollback();
+            e.printStackTrace();
+        } finally {
+            entityManager.close();
         }
-        findUser.getDiagnosis().remove(icd);
-        User user = userDao.saveUser(findUser);
-        return user;
     }
 
-    public User addTreatment(String username, String treatmentJson) {
-        User user = userDao.findUserByUsername(username);
-        String treatmentSave = JsonToStringNameTreatment(treatmentJson);
-        user.getTreatment().add(new Treatment(treatmentSave, new Date()));
-        User save = userDao.saveUser(user);
-        return save;
+    private void insertTreatmentToUser(Long userId, Long treatmentId) {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+        try {
+            transaction.begin();
+            entityManager.createNativeQuery("insert into users_treatments values (:userId, :treatmentId)")
+                    .setParameter("userId", userId)
+                    .setParameter("treatmentId", treatmentId)
+                    .executeUpdate();
+            transaction.commit();
+        } catch (Exception e) {
+            transaction.rollback();
+            e.printStackTrace();
+        } finally {
+            entityManager.close();
+        }
     }
 
-    private String JsonToStringNameTreatment(String treatmentNotice) {
-        JSONObject jsonObject = new JSONObject(treatmentNotice);
-        return jsonObject.getString("treatment");
-    }
 
     public User deleteAllTreatment(String username) {
         User user = userDao.findUserByUsername(username);
@@ -156,29 +180,49 @@ public class ProfileDaoImpl implements ProfileDao {
         return save;
     }
 
-    public User deleteChooseTreatment(String username, Long id) {
-        User user = userDao.findUserByUsername(username);
-        List<Treatment> treatments = deleteTreatmentInDataBase(user.getTreatment(), id);
-        user.setTreatment(treatments);
-        User save = userDao.saveUser(user);
-        return save;
+    public void deleteChooseTreatment(Long userId, Long treatmentId) {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+        try {
+            transaction.begin();
+            entityManager
+                    .createNativeQuery("delete from users_treatments where user_id = :userId and treatment_id = :treatmentId")
+                    .setParameter("userId", userId)
+                    .setParameter("treatmentId", treatmentId)
+                    .executeUpdate();
+            transaction.commit();
+        } catch (Exception e) {
+            transaction.rollback();
+            e.printStackTrace();
+        } finally {
+            entityManager.close();
+        }
+        deleteTreatmentById(treatmentId);
     }
 
-    public List<Treatment> deleteTreatmentInDataBase(List<Treatment> treatment, Long id) {
-
-        Treatment treatmentDelete = treatment.stream().filter(t -> t.getId().equals(id)).findFirst().get();
-        if (treatmentDelete == null) {
-            throw new NoResultException("Not treatment in list treatments");
+    public void deleteTreatmentById(Long treatmentId) {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+        try {
+            transaction.begin();
+            entityManager
+                    .createQuery("delete from Treatment tr where tr.id = :treatmentId")
+                    .setParameter("treatmentId", treatmentId)
+                    .executeUpdate();
+            transaction.commit();
+        } catch (Exception e) {
+            transaction.rollback();
+            e.printStackTrace();
+        } finally {
+            entityManager.close();
         }
-        treatment.remove(treatmentDelete);
-        return treatment;
     }
 
     public User changeHospitalisation(String username, String hospitalization) {
         User user = userDao.findUserByUsername(username);
         user.setHospiztalization(jsonToBoolean(hospitalization));
-        User save = userDao.saveUser(user);
-        return save;
+        userDao.updateUser(user);
+        return user;
     }
 
     private boolean jsonToBoolean(String hospitalization) {
@@ -189,6 +233,7 @@ public class ProfileDaoImpl implements ProfileDao {
 
     @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
     public ResponseTable findAllDiagnosisByUser(RequestTabel request, Long id) {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
         RequestTableHelper.init(request);
         List<AnalizeProjectionDto>analizeProjectionDtos =new ArrayList<>();
         try {
@@ -201,6 +246,7 @@ public class ProfileDaoImpl implements ProfileDao {
                     .setMaxResults(request.getSize()).getResultList();
             analizeProjectionDtos = resultList.stream().map(v -> new AnalizeProjectionDto((BigInteger) v.get(0), (Date) v.get(1), (String) v.get(2))).toList();
         } catch (Exception e) {
+            entityManager.close();
             log.info(e.getMessage());
         }
         int itemsSize = countAnaliziesForUserId(id);
@@ -216,41 +262,70 @@ public class ProfileDaoImpl implements ProfileDao {
     }
 
     @Override
-    public boolean deleteAnalize(String username, Long analizeId) {
+    public boolean deleteAnalize(Long userId, Long analizeId) {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
         try {
-            User findUser = userDao.findUserByUsername(username);
-            AnalyzeICDDate icd = findUser.getDiagnosis().stream().filter(c -> c.getId().equals(analizeId)).findFirst().get();
-            if (Objects.isNull(icd)) {
-                throw new NoResultException("Didn't find ICD for patient");
-            }
-            findUser.getDiagnosis().remove(icd);
-            userDao.saveUser(findUser);
+            transaction.begin();
+            entityManager.
+                    createNativeQuery("delete from users_diagnosis where user_id = :userId  and diagnos_id = :diagnos")
+                    .setParameter("userId", userId)
+                    .setParameter("diagnos", analizeId)
+                    .executeUpdate();
+            transaction.commit();
+        } catch (Exception e) {
+            transaction.rollback();
+            e.printStackTrace();
+        }
+        try {
+            transaction.begin();
+            entityManager.createQuery("delete from AnalyzeICDDate az where az.id = :id ")
+                    .setParameter("id", analizeId)
+                    .executeUpdate();
+            transaction.commit();
             return true;
         } catch (Exception e) {
-            log.info(e.getMessage());
+            transaction.rollback();
+            e.printStackTrace();
+        } finally {
+            entityManager.close();
         }
         return false;
     }
 
     @Override
     public Boolean updateTreatment(Treatment treatment) {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
         boolean update = false;
         try {
+            transaction.begin();
             treatment.setDateCreate(new Date());
             entityManager
                     .merge(treatment);
+            transaction.commit();
             update = true;
         } catch (Exception e) {
+            transaction.rollback();
             e.printStackTrace();
+        } finally {
+            entityManager.close();
         }
         return update;
     }
 
     private int countAnaliziesForUserId(Long userId) {
-        Query query = entityManager
-                .createNativeQuery("select count(id) from analyzeicddate az where az.id in (select a_z.diagnos_id from users_diagnosis a_z where a_z.user_id = :userId)")
-                .setParameter("userId", userId);
-        int count = ((Number) query.getSingleResult()).intValue();
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        int count = 0;
+        try {
+            Query query = entityManager
+                    .createNativeQuery("select count(id) from analyzeicddate az where az.id in (select a_z.diagnos_id from users_diagnosis a_z where a_z.user_id = :userId)")
+                    .setParameter("userId", userId);
+            count = ((Number) query.getSingleResult()).intValue();
+        } catch (Exception e) {
+            entityManager.close();
+            e.printStackTrace();
+        }
         return count;
     }
 

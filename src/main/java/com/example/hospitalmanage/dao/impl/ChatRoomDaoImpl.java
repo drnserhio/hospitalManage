@@ -1,7 +1,7 @@
 package com.example.hospitalmanage.dao.impl;
 
 import com.example.hospitalmanage.dao.ChatRoomDao;
-import com.example.hospitalmanage.model.chat.ChatRoom;
+import com.example.hospitalmanage.model.ChatRoom;
 import com.example.hospitalmanage.repos.ChatRoomRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;

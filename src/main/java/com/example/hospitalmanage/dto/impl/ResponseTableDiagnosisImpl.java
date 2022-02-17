@@ -2,9 +2,6 @@ package com.example.hospitalmanage.dto.impl;
 
 import com.example.hospitalmanage.dto.RequestTabel;
 import com.example.hospitalmanage.dto.ResponseTable;
-import com.example.hospitalmanage.dto.impl.projection.AnalizeProjectionDto;
-import com.example.hospitalmanage.model.Treatment;
-import com.example.hospitalmanage.model.icd.AnalyzeICDDate;
 import lombok.Data;
 
 import javax.persistence.Tuple;

@@ -1,8 +1,8 @@
 package com.example.hospitalmanage.resource;
 
 import com.example.hospitalmanage.exception.ExceptionHandling;
-import com.example.hospitalmanage.model.chat.ChatMessage;
-import com.example.hospitalmanage.model.chat.ChatNotification;
+import com.example.hospitalmanage.model.ChatMessage;
+import com.example.hospitalmanage.model.ChatNotification;
 import com.example.hospitalmanage.service.ChatMessageService;
 import com.example.hospitalmanage.service.ChatRoomService;
 import lombok.AllArgsConstructor;
@@ -10,13 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 

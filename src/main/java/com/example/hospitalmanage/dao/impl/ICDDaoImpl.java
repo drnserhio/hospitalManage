@@ -1,7 +1,7 @@
 package com.example.hospitalmanage.dao.impl;
 
 import com.example.hospitalmanage.dao.ICDDao;
-import com.example.hospitalmanage.model.icd.ICD;
+import com.example.hospitalmanage.model.ICD;
 import com.example.hospitalmanage.util.OAuthTokenProvider;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,10 +9,13 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 import java.io.IOException;
 import java.util.HashMap;
@@ -29,12 +32,12 @@ public class ICDDaoImpl implements ICDDao {
 
     private OAuthTokenProvider oAuthTokenProvider;
     private RestTemplate restTemplate;
-    private EntityManager entityManager;
+    private EntityManagerFactory entityManagerFactory;
 
     public ICD getCodeICD(String code) throws IOException {
         HttpEntity<String > entity = new HttpEntity<>(getOAuthHeader());
         ResponseEntity<String> response = restTemplate.exchange("http://id.who.int/icd/release/10/2019/" + code.toUpperCase(), HttpMethod.GET, entity, String.class);
-        TypeReference<HashMap<String,Object>> typeRef = new TypeReference<HashMap<String,Object>>() {};
+        TypeReference<HashMap<String,Object>> typeRef = new TypeReference<>() {};
         ObjectMapper mapper = new ObjectMapper();
         HashMap<String,Object> map = mapper.readValue(response.getBody(), typeRef);
         LinkedHashMap<String, String> title = (LinkedHashMap<String, String>) map.get("title");
@@ -71,6 +74,7 @@ public class ICDDaoImpl implements ICDDao {
 
     @Override
     public ICD findByCode(String code) {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
         ICD icd = null;
         try {
             Query query = entityManager
@@ -78,6 +82,7 @@ public class ICDDaoImpl implements ICDDao {
                     .setParameter("code", code);
             icd = (ICD) query.getResultList().get(0);
         } catch (Exception e) {
+            entityManager.close();
             log.info(e.getMessage());
         }
         return icd;
@@ -85,8 +90,18 @@ public class ICDDaoImpl implements ICDDao {
 
     @Override
     public ICD saveICD(ICD icd) {
-        entityManager.persist(icd);
-        ICD save = findByCode(icd.getCode());
-        return save;
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+        try {
+            transaction.begin();
+            entityManager.persist(icd);
+            transaction.commit();
+        } catch (Exception e) {
+            transaction.rollback();
+            e.printStackTrace();
+        } finally {
+            entityManager.close();
+        }
+        return icd;
     }
 }

@@ -1,10 +1,6 @@
 package com.example.hospitalmanage.dao;
 
-import com.example.hospitalmanage.model.chat.ChatMessage;
-import com.example.hospitalmanage.model.chat.Message;
-import com.example.hospitalmanage.model.chat.MessageStatus;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+import com.example.hospitalmanage.model.ChatMessage;
 
 import java.util.List;
 

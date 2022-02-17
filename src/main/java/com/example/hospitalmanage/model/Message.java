@@ -1,4 +1,4 @@
-package com.example.hospitalmanage.model.chat;
+package com.example.hospitalmanage.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,7 +1,5 @@
 package com.example.hospitalmanage.model;
 
-import com.example.hospitalmanage.model.icd.AnalyzeICDDate;
-import com.example.hospitalmanage.model.video.Video;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -40,21 +38,21 @@ public class User {
     private String infoAboutSick;
     private String infoDiagnosis;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinTable(
             name = "users_diagnosis",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "diagnos_id")
     )
-    private Set<AnalyzeICDDate> diagnosis; //исследование secretary
+    private Set<AnalyzeICDDate> diagnosis;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinTable(
             name = "users_treatments",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "treatment_id")
     )
-    private List<Treatment> treatment; // лечение // change after visit treatment (doctor) чем лечить role doctor
+    private List<Treatment> treatment;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(
@@ -63,11 +61,6 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "video_id")
     )
     private Set<Video> videoFiles;
-
-    //TODO add log to front
-//    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    @ElementCollection
-//    private Set<String> log;
 
     private Boolean hospiztalization; // role doctor
     private Date joindDate;

@@ -7,13 +7,11 @@ import com.example.hospitalmanage.exception.domain.PasswordNotValidException;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
 import com.example.hospitalmanage.model.Treatment;
 import com.example.hospitalmanage.model.User;
-import com.example.hospitalmanage.model.icd.ICD;
 import com.example.hospitalmanage.service.ProfileService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -34,9 +32,8 @@ public class ProfileServiceImpl implements ProfileService {
         return user;
     }
 
-    public User addDiagnosis(String username, List<ICD> diagnosis) {
-        User user = profileDao.addDiagnosis(username, diagnosis);
-        return user;
+    public void addDiagnosis(Long userId, Long icdID) {
+        profileDao.addDiagnosis(userId, icdID);
     }
 
     public User changePassByUsernameAndOldPassword(String oldPassword, String newPassword)
@@ -51,14 +48,8 @@ public class ProfileServiceImpl implements ProfileService {
         return user;
     }
 
-    public User deleteDiagnos(String username, String code) {
-        User user = profileDao.deleteDiagnos(username, code);
-        return user;
-    }
-
-    public User addTreatment(String username, String treatmentJson) {
-        User user = profileDao.addTreatment(username, treatmentJson);
-        return user;
+    public void addTreatment(Long userId, String treatmentJson) {
+        profileDao.addTreatment(userId, treatmentJson);
     }
 
 
@@ -67,9 +58,8 @@ public class ProfileServiceImpl implements ProfileService {
         return user;
     }
 
-    public User deleteChooseTreatment(String username, Long id) {
-        User user = profileDao.deleteChooseTreatment(username, id);
-        return user;
+    public void deleteChooseTreatment(Long userId, Long treatmentId) {
+       profileDao.deleteChooseTreatment(userId, treatmentId);
     }
 
     public User changeHospitalisation(String username, String hospitalization) {
@@ -84,8 +74,8 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public boolean deleteAnalize(String username, Long analizeId) {
-       return profileDao.deleteAnalize(username, analizeId);
+    public boolean deleteAnalize(Long userId, Long analizeId) {
+       return profileDao.deleteAnalize(userId, analizeId);
     }
 
     @Override

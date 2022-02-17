@@ -1,9 +1,8 @@
 package com.example.hospitalmanage.resource;
 
 import com.example.hospitalmanage.exception.ExceptionHandling;
-import com.example.hospitalmanage.model.icd.ICD;
+import com.example.hospitalmanage.model.ICD;
 import com.example.hospitalmanage.service.ICDService;
-import com.example.hospitalmanage.service.impl.ICDServiceImpl;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

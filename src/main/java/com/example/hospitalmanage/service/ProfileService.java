@@ -6,36 +6,32 @@ import com.example.hospitalmanage.exception.domain.PasswordNotValidException;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
 import com.example.hospitalmanage.model.Treatment;
 import com.example.hospitalmanage.model.User;
-import com.example.hospitalmanage.model.icd.ICD;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 public interface ProfileService {
 
-    public byte[] getDocument(String username) throws Exception;
+     byte[] getDocument(String username) throws Exception;
 
-    public User updateUserTimeVisitByUsername(String currentUsername, LocalDateTime timeVisit) throws UserNotFoundException;
+     User updateUserTimeVisitByUsername(String currentUsername, LocalDateTime timeVisit) throws UserNotFoundException;
 
-    public User addDiagnosis(String username, List<ICD> diagnosis);
+     void addDiagnosis(Long userId, Long icdId);
 
     User deleteSetDiagnosis(String username);
 
-    public User deleteDiagnos(String username, String code);
+     void addTreatment(Long userId, String treatment) ;
 
-    public User addTreatment(String username, String treatmentJson) ;
+     User deleteAllTreatment(String username);
 
-    public User deleteAllTreatment(String username);
+    void deleteChooseTreatment(Long userId, Long treatmentId);
 
-    public User deleteChooseTreatment(String username, Long id);
+     User changePassByUsernameAndOldPassword(String oldPassword, String newPassword) throws UserNotFoundException, PasswordNotValidException;
 
-    public User changePassByUsernameAndOldPassword(String oldPassword, String newPassword) throws UserNotFoundException, PasswordNotValidException;
-
-    public User changeHospitalisation(String username, String hospitalization);
+     User changeHospitalisation(String username, String hospitalization);
 
      ResponseTable findAllDiagnosisByUser(RequestTabel request, Long id);
 
-    boolean deleteAnalize(String username, Long analizeId);
+    boolean deleteAnalize(Long userId, Long analizeId);
 
     Boolean updateTreatment(Treatment treatment);
 }

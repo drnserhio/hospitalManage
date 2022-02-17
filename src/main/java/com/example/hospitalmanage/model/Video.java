@@ -1,13 +1,9 @@
-package com.example.hospitalmanage.model.video;
+package com.example.hospitalmanage.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import java.io.File;
+import javax.persistence.*;
 import java.util.Comparator;
 import java.util.Date;
 
@@ -18,7 +14,9 @@ public class Video implements Comparator<Video> {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    @Column(name = "name_file")
     private String nameFile;
+    @Column(name = "create_date")
     private Date createDate;
 
     public Video(String nameFile) {

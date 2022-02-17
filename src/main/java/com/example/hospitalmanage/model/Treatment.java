@@ -13,6 +13,7 @@ public class Treatment {
     private Long id;
     @Column(length = Integer.MAX_VALUE)
     private String treatment;
+    @Column(name = "date_create")
     private Date dateCreate;
 
     public Treatment() {}

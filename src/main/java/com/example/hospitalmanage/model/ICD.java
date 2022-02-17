@@ -1,4 +1,4 @@
-package com.example.hospitalmanage.model.icd;
+package com.example.hospitalmanage.model;
 
 import com.fasterxml.jackson.annotation.*;
 import lombok.AllArgsConstructor;

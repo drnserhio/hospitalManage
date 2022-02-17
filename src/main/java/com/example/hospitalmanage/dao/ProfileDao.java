@@ -6,10 +6,8 @@ import com.example.hospitalmanage.exception.domain.PasswordNotValidException;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
 import com.example.hospitalmanage.model.Treatment;
 import com.example.hospitalmanage.model.User;
-import com.example.hospitalmanage.model.icd.ICD;
 
 import java.time.LocalDateTime;
-import java.util.*;
 
 public interface ProfileDao {
 
@@ -17,17 +15,15 @@ public interface ProfileDao {
 
     public User updateUserTimeVisitByUsername(String currentUsername, LocalDateTime timeVisit) throws UserNotFoundException;
 
-    public User addDiagnosis(String username, List<ICD> diagnosis);
+    public void addDiagnosis(Long userId, Long icdId);
 
     User deleteSetDiagnosis(String username);
 
-    public User deleteDiagnos(String username, String code);
-
-    public User addTreatment(String username, String treatmentJson);
+    public void addTreatment(Long userId, String treatmentJson);
 
     public User deleteAllTreatment(String username);
 
-    public User deleteChooseTreatment(String username, Long id);
+    public void deleteChooseTreatment(Long userId, Long treatmentId);
 
     public User changePassByUsernameAndOldPassword(String oldPassword, String newPassword) throws UserNotFoundException, PasswordNotValidException;
 
@@ -35,7 +31,7 @@ public interface ProfileDao {
 
     ResponseTable findAllDiagnosisByUser(RequestTabel request, Long id);
 
-    boolean deleteAnalize(String username, Long analizeId);
+    boolean deleteAnalize(Long userId, Long analizeId);
 
     Boolean updateTreatment(Treatment treatment);
 }

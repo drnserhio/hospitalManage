@@ -1,9 +1,7 @@
 package com.example.hospitalmanage.service.impl;
 
 import com.example.hospitalmanage.dao.ChatMessageDao;
-import com.example.hospitalmanage.model.chat.ChatMessage;
-import com.example.hospitalmanage.model.chat.Message;
-import com.example.hospitalmanage.model.chat.MessageStatus;
+import com.example.hospitalmanage.model.ChatMessage;
 import com.example.hospitalmanage.service.ChatMessageService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,6 @@
 package com.example.hospitalmanage.dao;
 
-import com.example.hospitalmanage.model.icd.ICD;
+import com.example.hospitalmanage.model.ICD;
 
 import java.io.IOException;
 

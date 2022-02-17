@@ -1,8 +1,6 @@
 package com.example.hospitalmanage.service;
 
-import com.example.hospitalmanage.model.chat.ChatMessage;
-import com.example.hospitalmanage.model.chat.Message;
-import com.example.hospitalmanage.model.chat.MessageStatus;
+import com.example.hospitalmanage.model.ChatMessage;
 
 import java.util.List;
 

@@ -10,7 +10,7 @@ import com.example.hospitalmanage.exception.domain.UserNameExistsException;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
 import com.example.hospitalmanage.model.Treatment;
 import com.example.hospitalmanage.model.User;
-import com.example.hospitalmanage.model.video.Video;
+import com.example.hospitalmanage.model.Video;
 import com.example.hospitalmanage.role.Role;
 import com.example.hospitalmanage.service.impl.EmailService;
 import com.example.hospitalmanage.service.impl.UserServiceImpl;
@@ -22,14 +22,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.mail.MessagingException;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
+import javax.persistence.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -46,13 +46,13 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 @Repository
 @Slf4j
 @AllArgsConstructor
-@Transactional
+@Transactional(isolation = Isolation.REPEATABLE_READ, propagation = Propagation.REQUIRES_NEW)
 public class UserDaoImpl implements UserDao {
 
     private final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final EmailService emailService;
-    private EntityManager entityManager;
+    private EntityManagerFactory entityManagerFactory;
 
 
     @Override
@@ -93,12 +93,34 @@ public class UserDaoImpl implements UserDao {
     }
 
     public User saveUser(User user) {
-        entityManager.persist(user);
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+        try {
+            transaction.begin();
+            entityManager.persist(user);
+            transaction.commit();
+        } catch (Exception e) {
+            transaction.rollback();
+            e.printStackTrace();
+        } finally {
+            entityManager.close();
+        }
         return user;
     }
 
     public void update(User user) {
-        entityManager.merge(user);
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+        try {
+            transaction.begin();
+            entityManager.merge(user);
+            transaction.commit();
+        } catch (Exception e) {
+            transaction.rollback();
+            e.printStackTrace();
+        } finally {
+            entityManager.close();
+        }
     }
 
     @Override
@@ -126,6 +148,7 @@ public class UserDaoImpl implements UserDao {
         user.setEmail(email);
         user.setPassword(encryptPassoword(password));
         user.setJoindDate(new Date());
+        user.setOnline(false);
         user.setIsActive(true);
         user.setIsNotLocked(true);
         user.setInfoDiagnosis(PUT_YOUR_INFORMATION);
@@ -165,20 +188,28 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public void deleteUser(String username) {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
         User user = findUserByUsername(username);
         try {
+            transaction.begin();
             entityManager.createQuery("delete from User usr where usr.username = :username")
                     .setParameter("username", username)
                     .executeUpdate();
+            transaction.commit();
             this.emailService.sendMessageDeleteAccount(user.getFirstname(), user.getLastname(), user.getUsername(), user.getEmail());
         } catch (Exception e) {
+            transaction.rollback();
             log.info(e.getMessage());
+        } finally {
+            entityManager.close();
         }
 
     }
 
     @Override
     public User findUserByUserId(Long id) {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
         User user = null;
         try {
             Query query = entityManager
@@ -186,6 +217,7 @@ public class UserDaoImpl implements UserDao {
                     .setParameter("id", id);
             user = (User) query.getResultList().get(0);
         } catch (Exception e) {
+            entityManager.close();
             e.printStackTrace();
         }
         if (Objects.isNull(user)) {
@@ -196,10 +228,18 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public boolean isExistUser(Long id) {
-        Query query = entityManager.
-                createQuery("select count(usr) from User usr where usr.id = :id").
-                setParameter("id", id);
-        return (long) query.getSingleResult() == 1;
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        long count = 0;
+        try {
+            Query query = entityManager.
+                    createQuery("select count(usr) from User usr where usr.id = :id").
+                    setParameter("id", id);
+            count = (long) query.getSingleResult();
+        } catch (Exception e) {
+            entityManager.close();
+            e.printStackTrace();
+        }
+        return count == 1;
     }
 
     @Override
@@ -217,11 +257,13 @@ public class UserDaoImpl implements UserDao {
 
 
     public List<User> getRoleUser() {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
         List<User> listUsers = new ArrayList<>();
         try {
             Query query = entityManager.createQuery("select usr from User usr where usr.role = 'ROLE_USER'", User.class);
             listUsers = (List<User>) query.getResultList();
         } catch (Exception e) {
+            entityManager.close();
             log.info(e.getMessage());
         }
         return listUsers;
@@ -305,13 +347,20 @@ public class UserDaoImpl implements UserDao {
 
     public boolean logOut(User user) {
         User usr = findUserByUsername(user.getUsername());
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
         try {
             usr.setOnline(false);
             usr.setJoindDate(new Date());
-            saveUser(usr);
+            transaction.begin();
+            updateUser(usr);
+            transaction.commit();
             return true;
         } catch (Exception e) {
+            transaction.rollback();
             e.printStackTrace();
+        } finally {
+            entityManager.close();
         }
         return false;
     }
@@ -340,6 +389,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public User findUserByEmail(String email) {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
         User user = null;
         try {
             Query query = entityManager
@@ -347,6 +397,7 @@ public class UserDaoImpl implements UserDao {
                     .setParameter("email", email);
             user = (User) query.getResultList().get(0);
         } catch (Exception e) {
+            entityManager.close();
             log.info(e.getMessage());
         }
         return user;
@@ -354,6 +405,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public User findUserByUsername(String useraname) {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
         User user = null;
         try {
             Query query = entityManager
@@ -361,6 +413,7 @@ public class UserDaoImpl implements UserDao {
                     .setParameter("username", useraname);
             user = (User) query.getResultList().get(0);
         } catch (Exception e) {
+            entityManager.close();
             log.info(e.getMessage());
         }
         return user;
@@ -369,12 +422,14 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public List<User> findAll() {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
         List<User> listUsers = new ArrayList<>();
         try {
             Query query = entityManager
                     .createQuery("select usr from User usr", User.class);
             listUsers = (List<User>) query.getResultList();
         } catch (Exception e) {
+            entityManager.close();
             log.info(e.getMessage());
         }
         return listUsers;
@@ -382,6 +437,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public ResponseTable findAllPage(RequestTabel request) {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
         RequestTableHelper.init(request);
         List<User> users = new ArrayList<>();
         try {
@@ -392,6 +448,7 @@ public class UserDaoImpl implements UserDao {
                     .setMaxResults(request.getSize());
             users = userTypedQuery.getResultList();
         } catch (Exception e) {
+            entityManager.close();
             log.info(e.getMessage());
         }
 
@@ -409,13 +466,22 @@ public class UserDaoImpl implements UserDao {
     }
 
     private long countUsers() {
-        Query query = entityManager
-                .createQuery("select count(usr.id) from User usr");
-        return (Long) query.getSingleResult();
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        long count = 0;
+        try {
+            Query query = entityManager
+                    .createQuery("select count(usr.id) from User usr");
+            count = (Long) query.getSingleResult();
+        } catch (Exception e) {
+            entityManager.close();
+            e.printStackTrace();
+        }
+        return count;
     }
 
 
     public ResponseTable getTreatmentsByUserId(RequestTabel request, Long userId) {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
         RequestTableHelper.init(request);
         List<Treatment> treatments = Collections.emptyList();
         try {
@@ -426,6 +492,7 @@ public class UserDaoImpl implements UserDao {
                     .setMaxResults(request.getSize());
             treatments = query.getResultList();
         } catch (Exception e) {
+            entityManager.close();
             log.debug("Query exception result");
         }
 
@@ -444,18 +511,18 @@ public class UserDaoImpl implements UserDao {
 
 
     public ResponseTable getVideosByUserId(RequestTabel request, Long userId) {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
         RequestTableHelper.init(request);
         List<Video> videos = Collections.emptyList();
         try {
+            String sql = String.format("select id, create_date, name_file from video v where v.id in (select u_v.video_id from users_videos u_v where u_v.user_id = %d) order by %s %s", userId, request.getColumn(), request.getSort());
             Query query = entityManager
-                    .createNativeQuery("select id, create_date, name_file from video v where v.id in (select u_v.video_id from users_videos u_v where u_v.user_id = :userId) order by :column :sort", Video.class)
-                    .setParameter("userId", userId)
-                    .setParameter("column", request.getColumn())
-                    .setParameter("sort", request.getSort())
+                    .createNativeQuery(sql, Video.class)
                     .setFirstResult((request.getPage() - 1) * request.getSize())
                     .setMaxResults(request.getSize());
             videos = (List<Video>) query.getResultList();
         } catch (Exception e) {
+            entityManager.close();
             log.debug("Query exception result");
         }
 
@@ -472,7 +539,25 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
+    public void updateUser(User user) {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+        try {
+            transaction.begin();
+            entityManager
+                    .merge(user);
+            transaction.commit();
+        } catch (Exception e) {
+            transaction.rollback();
+            e.printStackTrace();
+        } finally {
+            entityManager.close();
+        }
+    }
+
+    @Override
     public List<User> findAllChatUsersByUserId(Long userId) {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
         List<User> users = new ArrayList<>();
         try {
             Query query = entityManager
@@ -480,24 +565,39 @@ public class UserDaoImpl implements UserDao {
                     .setParameter("userId", userId);
             users = (List<User>) query.getResultList();
         } catch (Exception e) {
+            entityManager.close();
             e.printStackTrace();
         }
         return users;
     }
 
     private int countVideosByUserId(Long userId) {
-        Query query = entityManager
-                .createNativeQuery("select count(id) from video v where v.id in (select u_v.video_id from users_videos u_v where u_v.user_id = :userId)")
-                .setParameter("userId", userId);
-        int count = ((Number) query.getSingleResult()).intValue();
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        int count = 0;
+        try {
+            Query query = entityManager
+                    .createNativeQuery("select count(id) from video v where v.id in (select u_v.video_id from users_videos u_v where u_v.user_id = :userId)")
+                    .setParameter("userId", userId);
+            count = ((Number) query.getSingleResult()).intValue();
+        } catch (Exception e) {
+            entityManager.close();
+            e.printStackTrace();
+        }
         return count;
     }
 
     private int countTreatmentsByUserId(Long userId) {
-        Query query = entityManager
-                .createNativeQuery("select count(id) from treatment t where t.id in (select u_t.treatment_id from users_treatments u_t where u_t.user_id = :userId)")
-                .setParameter("userId", userId);
-        int count = ((Number) query.getSingleResult()).intValue();
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        int count = 0;
+        try {
+            Query query = entityManager
+                    .createNativeQuery("select count(id) from treatment t where t.id in (select u_t.treatment_id from users_treatments u_t where u_t.user_id = :userId)")
+                    .setParameter("userId", userId);
+            count = ((Number) query.getSingleResult()).intValue();
+        } catch (Exception e) {
+            entityManager.close();
+            e.printStackTrace();
+        }
         return count;
     }
 

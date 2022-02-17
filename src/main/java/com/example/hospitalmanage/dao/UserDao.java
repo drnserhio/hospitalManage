@@ -78,4 +78,5 @@ public interface UserDao {
     ResponseTable getVideosByUserId(RequestTabel request, Long userId);
 
 
+    void updateUser(User user);
 }

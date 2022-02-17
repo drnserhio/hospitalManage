@@ -48,7 +48,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             user.setLastLoginDateDisplay(user.getLastLoginDate());
             user.setLastLoginDate(new Date());
             user.setOnline(true);
-            userDao.saveUser(user);
+            userDao.updateUser(user);
             UserPrincipal userPrincipal = new UserPrincipal(user);
             return userPrincipal;
         }

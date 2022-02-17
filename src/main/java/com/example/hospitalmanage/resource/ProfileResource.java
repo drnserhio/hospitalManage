@@ -6,7 +6,7 @@ import com.example.hospitalmanage.exception.ExceptionHandling;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
 import com.example.hospitalmanage.model.Treatment;
 import com.example.hospitalmanage.model.User;
-import com.example.hospitalmanage.model.icd.ICD;
+import com.example.hospitalmanage.model.ICD;
 import com.example.hospitalmanage.service.ProfileService;
 import com.example.hospitalmanage.service.UserService;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -72,27 +72,17 @@ public class ProfileResource extends ExceptionHandling {
 
     @PostMapping("/diagnosis/{username}")
     @PreAuthorize("hasAnyAuthority('god:all', 'patient:all')")
-    public ResponseEntity<User> addCodeICD(
-            @PathVariable("username") String username,
-            @RequestBody List<ICD> diagnosis) {
-        User user = profileService.addDiagnosis(username, diagnosis);
-        return new ResponseEntity<>(user, OK);
+    public void addCodeICD(
+            @PathVariable("username") Long userId,
+            @RequestBody Long icdId) {
+        profileService.addDiagnosis(userId, icdId);
     }
 
-    @PostMapping("/diagnosis-remove/{username}")
-    @PreAuthorize("hasAnyAuthority('god:all', 'patient:all')")
-    public ResponseEntity<User> removeCodeICD(
-            @PathVariable("username") String username,
-            @RequestBody String code) {
-        User user = profileService.deleteDiagnos(username, code);
-        return new ResponseEntity<>(user, OK);
-    }
-
-    @PutMapping("/timevisit")
+    @PutMapping("/timevisit/{currentUsername}")
     @PreAuthorize("hasAnyAuthority('god:all', 'patient:all')")
     public ResponseEntity<User> updateUserTimeVisitByUsername(
-            @RequestParam("currentUsername") String currentUsername,
-            @RequestParam("timeVisit")
+            @PathVariable("currentUsername") String currentUsername,
+            @RequestBody
             @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss") LocalDateTime timeVisit)
             throws UserNotFoundException {
         User updateUser = profileService.updateUserTimeVisitByUsername(currentUsername, timeVisit);
@@ -100,13 +90,12 @@ public class ProfileResource extends ExceptionHandling {
     }
 
 
-    @PostMapping("/add-treatment/{username}")
+    @PostMapping("/add-treatment/{userId}")
     @PreAuthorize("hasAnyAuthority('god:all', 'patient:all')")
-    public ResponseEntity<User> addTreatment(
-            @PathVariable("username") String username,
+    public void addTreatment(
+            @PathVariable("userId") Long userId,
             @RequestBody String treatment) {
-        User user = profileService.addTreatment(username, treatment);
-        return new ResponseEntity<>(user, OK);
+            profileService.addTreatment(userId, treatment);
     }
 
     @PutMapping("/treatment-change")
@@ -126,13 +115,12 @@ public class ProfileResource extends ExceptionHandling {
         return new ResponseEntity<>(user, OK);
     }
 
-    @DeleteMapping("/del/choose/treatment/{username}/{id}")
+    @DeleteMapping("/del/choose/treatment/{userId}/{treatmentId}")
     @PreAuthorize("hasAnyAuthority('god:all', 'patient:all')")
-    public ResponseEntity<User> deleteChooseTreatment(
-            @PathVariable("username") String username,
-            @PathVariable("id") Long id) {
-        User user = profileService.deleteChooseTreatment(username, id);
-        return new ResponseEntity<>(user, OK);
+    public void deleteChooseTreatment(
+            @PathVariable("userId") Long userId,
+            @PathVariable("treatmentId") Long treatmentId) {
+       profileService.deleteChooseTreatment(userId, treatmentId);
     }
 
     @PostMapping("/change/hospitalization/{username}")
@@ -153,12 +141,12 @@ public class ProfileResource extends ExceptionHandling {
         return new ResponseEntity<>(allDiagnosisByUser, OK);
     }
 
-    @DeleteMapping("/delete/analize/{username}/{analizeId}")
+    @DeleteMapping("/delete/analize/{userId}/{analizeId}")
     @PreAuthorize("hasAnyAuthority('god:all', 'patient:all')")
     public boolean deleteAnalize(
-            @PathVariable String username,
+            @PathVariable Long userId,
             @PathVariable Long analizeId) {
-        return profileService.deleteAnalize(username, analizeId);
+        return profileService.deleteAnalize(userId, analizeId);
     }
 
     @PutMapping("/logout")
