@@ -36,6 +36,7 @@ import java.util.List;
 
 import static com.example.hospitalmanage.constant.FileConstant.*;
 import static com.example.hospitalmanage.constant.SecurityConstant.JWT_TOKEN_HEADER;
+import static com.example.hospitalmanage.constant.UserImplConstant.USER_DELETE_SUCCESSFULLY;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
@@ -46,7 +47,7 @@ import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 @Slf4j
 public class UserResource extends ExceptionHandling {
 
-    public static final String USER_DELETE_SUCCESSFULLY = "User delete successfully";
+
 
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
@@ -223,5 +224,4 @@ public class UserResource extends ExceptionHandling {
         ResponseTable responseTable = userService.getVideosByUserId(request , id);
         return new ResponseEntity<>(responseTable, OK);
     }
-
 }

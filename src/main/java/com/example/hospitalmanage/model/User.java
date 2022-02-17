@@ -64,6 +64,11 @@ public class User {
     )
     private Set<Video> videoFiles;
 
+    //TODO add log to front
+//    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//    @ElementCollection
+//    private Set<String> log;
+
     private Boolean hospiztalization; // role doctor
     private Date joindDate;
     private Date lastLoginDate;

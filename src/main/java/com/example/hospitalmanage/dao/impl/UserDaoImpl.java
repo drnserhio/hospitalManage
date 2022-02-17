@@ -388,7 +388,8 @@ public class UserDaoImpl implements UserDao {
             String sql = String.format("select usr from User usr order by %s %s", request.getColumn(), request.getSort());
             TypedQuery<User> userTypedQuery = entityManager
                     .createQuery(sql, User.class)
-                    .setFirstResult((request.getPage() - 1) * request.getSize()).setMaxResults(request.getSize());
+                    .setFirstResult((request.getPage() - 1) * request.getSize())
+                    .setMaxResults(request.getSize());
             users = userTypedQuery.getResultList();
         } catch (Exception e) {
             log.info(e.getMessage());
@@ -418,10 +419,11 @@ public class UserDaoImpl implements UserDao {
         RequestTableHelper.init(request);
         List<Treatment> treatments = Collections.emptyList();
         try {
+            String sql = String.format("select id, date_create, treatment from treatment t where t.id in (select u_t.treatment_id from users_treatments u_t where u_t.user_id = %d) order by %s %s", userId, request.getColumn(), request.getSort());
             Query query = entityManager
-                    .createNativeQuery("select id, date_create, treatment from treatment t where t.id in (select u_t.treatment_id from users_treatments u_t where u_t.user_id = :userId) order by :column :sort", Treatment.class)
-                    .setParameter("userId", userId).setParameter("column", request.getColumn()).setParameter("sort", request.getSort());
-            query.setFirstResult((request.getPage() - 1) * request.getSize()).setMaxResults(request.getSize());
+                    .createNativeQuery(sql, Treatment.class)
+                    .setFirstResult((request.getPage() - 1) * request.getSize())
+                    .setMaxResults(request.getSize());
             treatments = query.getResultList();
         } catch (Exception e) {
             log.debug("Query exception result");
