@@ -15,6 +15,7 @@ import com.example.hospitalmanage.converter.DocXGenerator;
 import com.example.hospitalmanage.util.RequestTableHelper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.jpa.QueryHints;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +36,6 @@ import static com.example.hospitalmanage.constant.UserConstant.USER_NOT_FOUND_BY
 @Repository
 @Slf4j
 @AllArgsConstructor
-@Transactional
 public class ProfileDaoImpl implements ProfileDao {
 
     private final UserDao userDao;
@@ -52,7 +52,7 @@ public class ProfileDaoImpl implements ProfileDao {
 
     public User updateUserTimeVisitByUsername(String currentUsername, LocalDateTime timeVisit)
             throws UserNotFoundException {
-        LOGGER.info(currentUsername , " " + timeVisit);
+        LOGGER.info(currentUsername, " " + timeVisit);
         User user = userDao.findUserByUsername(currentUsername);
         if (user == null) {
             throw new UserNotFoundException(USER_NOT_FOUND_BY_USERNAME + currentUsername);
@@ -64,14 +64,13 @@ public class ProfileDaoImpl implements ProfileDao {
     }
 
     @Override
-    public void addDiagnosis(Long userId, Long icdId) {
+    public void addDiagnosis(Long userId, String icdName) {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         EntityTransaction transaction = entityManager.getTransaction();
-
         try {
             transaction.begin();
             AnalyzeICDDate analyzeICDDate = new AnalyzeICDDate();
-            analyzeICDDate.setIcdId(icdId);
+            analyzeICDDate.setIcdId(icdName);
             analyzeICDDate.setDateAddAnalyze(new Date());
             entityManager.persist(analyzeICDDate);
             transaction.commit();
@@ -111,7 +110,7 @@ public class ProfileDaoImpl implements ProfileDao {
         if (user == null) {
             throw new UserNotFoundException(USER_NOT_FOUND_BY_USERNAME + currentUsername);
         }
-        if(validOldPassword(user.getPassword(), oldPassword)) {
+        if (validOldPassword(user.getPassword(), oldPassword)) {
             user.setPassword(bCryptPasswordEncoder.encode(newPassword));
         }
         return user;
@@ -122,7 +121,7 @@ public class ProfileDaoImpl implements ProfileDao {
 
         if (bCryptPasswordEncoder.matches(oldPassword, userPassword)) {
             return true;
-        } else  {
+        } else {
             throw new PasswordNotValidException(PASSWORD_IS_NOT_VALID + oldPassword);
         }
     }
@@ -216,29 +215,26 @@ public class ProfileDaoImpl implements ProfileDao {
         return isHospitalization;
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
     public ResponseTable findAllDiagnosisByUser(RequestTabel request, Long id) {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         RequestTableHelper.init(request);
-        List<AnalizeProjectionDto>analizeProjectionDtos =new ArrayList<>();
+        List<AnalyzeICDDate> content = new ArrayList<>();
         try {
-            List<Tuple> resultList = entityManager
-                    .createNativeQuery("select az.id, az.date_add_analyze , icd.value icd from analyzeicddate az, icd icd where icd_id = icd.id and az.id  in (select diagnos_id from users_diagnosis where user_id = :id) order by :column :sort", Tuple.class)
-                    .setParameter("id", id)
-                    .setParameter("column", request.getColumn())
-                    .setParameter("sort", request.getSort())
+            String sql = String.format("select az.id, date_add_analyze, icd_id from AnalyzeICDDate az where az.id in (select diagnos_id from users_diagnosis where user_id = %d) order by %s %s", id, request.getColumn(), request.getSort());
+            Query query = entityManager.createNativeQuery(sql, AnalyzeICDDate.class)
+                    .setHint(QueryHints.HINT_READONLY, true)
                     .setFirstResult((request.getPage() - 1) * request.getSize())
-                    .setMaxResults(request.getSize()).getResultList();
-            analizeProjectionDtos = resultList.stream().map(v -> new AnalizeProjectionDto((BigInteger) v.get(0), (Date) v.get(1), (String) v.get(2))).toList();
+                    .setMaxResults(request.getSize());
+            content = (List<AnalyzeICDDate>) query.getResultList();
         } catch (Exception e) {
             entityManager.close();
-            log.info(e.getMessage());
+            e.printStackTrace();
         }
         int itemsSize = countAnaliziesForUserId(id);
         int totalPages = totalPageConverter(itemsSize, request.getSize());
 
         ResponseTable responseTable = new ResponseTableDiagnosisImpl(request);
-        responseTable.setContent(analizeProjectionDtos);
+        responseTable.setContent(content);
         responseTable.setAllItemsSize(itemsSize);
         responseTable.setTotalPages(totalPages);
         responseTable.setColumnSort(request.getColumn());
@@ -305,6 +301,7 @@ public class ProfileDaoImpl implements ProfileDao {
         try {
             Query query = entityManager
                     .createNativeQuery("select count(id) from analyzeicddate az where az.id in (select a_z.diagnos_id from users_diagnosis a_z where a_z.user_id = :userId)")
+                    .setHint(QueryHints.HINT_READONLY, true)
                     .setParameter("userId", userId);
             count = ((Number) query.getSingleResult()).intValue();
         } catch (Exception e) {
@@ -316,9 +313,9 @@ public class ProfileDaoImpl implements ProfileDao {
 
     private int totalPageConverter(int itemSize, int showEntity) {
         if (itemSize % showEntity == 0) {
-            return  (itemSize / showEntity);
+            return (itemSize / showEntity);
         } else {
-            return (itemSize/ showEntity) + 1;
+            return (itemSize / showEntity) + 1;
         }
     }
 }

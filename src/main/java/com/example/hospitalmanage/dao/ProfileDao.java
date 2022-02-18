@@ -15,7 +15,7 @@ public interface ProfileDao {
 
     public User updateUserTimeVisitByUsername(String currentUsername, LocalDateTime timeVisit) throws UserNotFoundException;
 
-    public void addDiagnosis(Long userId, Long icdId);
+    public void addDiagnosis(Long userId, String icdName);
 
 
     public void addTreatment(Long userId, String treatmentJson);

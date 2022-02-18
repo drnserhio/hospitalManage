@@ -18,6 +18,7 @@ import com.example.hospitalmanage.util.RequestTableHelper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.hibernate.jpa.QueryHints;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -46,7 +47,6 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 @Repository
 @Slf4j
 @AllArgsConstructor
-@Transactional(isolation = Isolation.REPEATABLE_READ, propagation = Propagation.REQUIRES_NEW)
 public class UserDaoImpl implements UserDao {
 
     private final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
@@ -213,7 +213,7 @@ public class UserDaoImpl implements UserDao {
         User user = null;
         try {
             Query query = entityManager
-                    .createQuery("select usr from User usr where usr.id = :id")
+                    .createQuery("select usr from User usr where usr.id = :id").setHint(QueryHints.HINT_READONLY, true)
                     .setParameter("id", id);
             user = (User) query.getResultList().get(0);
         } catch (Exception e) {
@@ -232,8 +232,8 @@ public class UserDaoImpl implements UserDao {
         long count = 0;
         try {
             Query query = entityManager.
-                    createQuery("select count(usr) from User usr where usr.id = :id").
-                    setParameter("id", id);
+                    createQuery("select count(usr) from User usr where usr.id = :id").setHint(QueryHints.HINT_READONLY, true)
+                    .setParameter("id", id);
             count = (long) query.getSingleResult();
         } catch (Exception e) {
             entityManager.close();
@@ -260,7 +260,9 @@ public class UserDaoImpl implements UserDao {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         List<User> listUsers = new ArrayList<>();
         try {
-            Query query = entityManager.createQuery("select usr from User usr where usr.role = 'ROLE_USER'", User.class);
+            Query query = entityManager
+                    .createQuery("select usr from User usr where usr.role = 'ROLE_USER'", User.class)
+                    .setHint(QueryHints.HINT_READONLY, true);
             listUsers = (List<User>) query.getResultList();
         } catch (Exception e) {
             entityManager.close();
@@ -394,6 +396,7 @@ public class UserDaoImpl implements UserDao {
         try {
             Query query = entityManager
                     .createQuery("select usr from User usr where usr.email = :email")
+                    .setHint(QueryHints.HINT_READONLY, true)
                     .setParameter("email", email);
             user = (User) query.getResultList().get(0);
         } catch (Exception e) {
@@ -410,6 +413,7 @@ public class UserDaoImpl implements UserDao {
         try {
             Query query = entityManager
                     .createQuery("select usr from User usr where usr.username = :username", User.class)
+                    .setHint(QueryHints.HINT_READONLY, true)
                     .setParameter("username", useraname);
             user = (User) query.getResultList().get(0);
         } catch (Exception e) {
@@ -426,7 +430,8 @@ public class UserDaoImpl implements UserDao {
         List<User> listUsers = new ArrayList<>();
         try {
             Query query = entityManager
-                    .createQuery("select usr from User usr", User.class);
+                    .createQuery("select usr from User usr", User.class)
+                    .setHint(QueryHints.HINT_READONLY, true);
             listUsers = (List<User>) query.getResultList();
         } catch (Exception e) {
             entityManager.close();
@@ -444,6 +449,7 @@ public class UserDaoImpl implements UserDao {
             String sql = String.format("select usr from User usr order by %s %s", request.getColumn(), request.getSort());
             TypedQuery<User> userTypedQuery = entityManager
                     .createQuery(sql, User.class)
+                    .setHint(QueryHints.HINT_READONLY, true)
                     .setFirstResult((request.getPage() - 1) * request.getSize())
                     .setMaxResults(request.getSize());
             users = userTypedQuery.getResultList();
@@ -470,7 +476,8 @@ public class UserDaoImpl implements UserDao {
         long count = 0;
         try {
             Query query = entityManager
-                    .createQuery("select count(usr.id) from User usr");
+                    .createQuery("select count(usr.id) from User usr")
+                    .setHint(QueryHints.HINT_READONLY, true);
             count = (Long) query.getSingleResult();
         } catch (Exception e) {
             entityManager.close();
@@ -488,6 +495,7 @@ public class UserDaoImpl implements UserDao {
             String sql = String.format("select id, date_create, treatment from treatment t where t.id in (select u_t.treatment_id from users_treatments u_t where u_t.user_id = %d) order by %s %s", userId, request.getColumn(), request.getSort());
             Query query = entityManager
                     .createNativeQuery(sql, Treatment.class)
+                    .setHint(QueryHints.HINT_READONLY, true)
                     .setFirstResult((request.getPage() - 1) * request.getSize())
                     .setMaxResults(request.getSize());
             treatments = query.getResultList();
@@ -518,6 +526,7 @@ public class UserDaoImpl implements UserDao {
             String sql = String.format("select id, create_date, name_file from video v where v.id in (select u_v.video_id from users_videos u_v where u_v.user_id = %d) order by %s %s", userId, request.getColumn(), request.getSort());
             Query query = entityManager
                     .createNativeQuery(sql, Video.class)
+                    .setHint(QueryHints.HINT_READONLY, true)
                     .setFirstResult((request.getPage() - 1) * request.getSize())
                     .setMaxResults(request.getSize());
             videos = (List<Video>) query.getResultList();
@@ -562,6 +571,7 @@ public class UserDaoImpl implements UserDao {
         try {
             Query query = entityManager
                     .createQuery("select usr from User usr where usr.id <> :userId")
+                    .setHint(QueryHints.HINT_READONLY, true)
                     .setParameter("userId", userId);
             users = (List<User>) query.getResultList();
         } catch (Exception e) {
@@ -577,6 +587,7 @@ public class UserDaoImpl implements UserDao {
         try {
             Query query = entityManager
                     .createNativeQuery("select count(id) from video v where v.id in (select u_v.video_id from users_videos u_v where u_v.user_id = :userId)")
+                    .setHint(QueryHints.HINT_READONLY, true)
                     .setParameter("userId", userId);
             count = ((Number) query.getSingleResult()).intValue();
         } catch (Exception e) {
@@ -592,6 +603,7 @@ public class UserDaoImpl implements UserDao {
         try {
             Query query = entityManager
                     .createNativeQuery("select count(id) from treatment t where t.id in (select u_t.treatment_id from users_treatments u_t where u_t.user_id = :userId)")
+                    .setHint(QueryHints.HINT_READONLY, true)
                     .setParameter("userId", userId);
             count = ((Number) query.getSingleResult()).intValue();
         } catch (Exception e) {

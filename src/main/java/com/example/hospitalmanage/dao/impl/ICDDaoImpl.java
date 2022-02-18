@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.jpa.QueryHints;
 import org.springframework.http.*;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -28,7 +29,6 @@ import static com.example.hospitalmanage.constant.ICDConstant.*;
 @Repository
 @Slf4j
 @AllArgsConstructor
-@Transactional
 public class ICDDaoImpl implements ICDDao {
 
 
@@ -81,6 +81,7 @@ public class ICDDaoImpl implements ICDDao {
         try {
             Query query = entityManager
                     .createQuery("select icd from ICD icd where icd.code = :code")
+                    .setHint(QueryHints.HINT_READONLY, true)
                     .setParameter("code", code);
             icd = (ICD) query.getResultList().get(0);
         } catch (Exception e) {

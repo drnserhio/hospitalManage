@@ -32,8 +32,8 @@ public class ProfileServiceImpl implements ProfileService {
         return user;
     }
 
-    public void addDiagnosis(Long userId, Long icdID) {
-        profileDao.addDiagnosis(userId, icdID);
+    public void addDiagnosis(Long userId, String icdName) {
+        profileDao.addDiagnosis(userId, icdName);
     }
 
     public User changePassByUsernameAndOldPassword(String oldPassword, String newPassword)

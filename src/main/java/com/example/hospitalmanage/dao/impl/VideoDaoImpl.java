@@ -30,7 +30,6 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 @Repository
 @Slf4j
 @AllArgsConstructor
-@Transactional
 public class VideoDaoImpl implements VideoDao {
 
     private UserDao userDao;

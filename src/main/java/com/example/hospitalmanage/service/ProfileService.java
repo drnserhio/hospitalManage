@@ -15,7 +15,7 @@ public interface ProfileService {
 
      User updateUserTimeVisitByUsername(String currentUsername, LocalDateTime timeVisit) throws UserNotFoundException;
 
-     void addDiagnosis(Long userId, Long icdId);
+     void addDiagnosis(Long userId, String icdName);
 
      void addTreatment(Long userId, String treatment) ;
 

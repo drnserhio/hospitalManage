@@ -6,7 +6,6 @@ import com.example.hospitalmanage.exception.ExceptionHandling;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
 import com.example.hospitalmanage.model.Treatment;
 import com.example.hospitalmanage.model.User;
-import com.example.hospitalmanage.model.ICD;
 import com.example.hospitalmanage.service.ProfileService;
 import com.example.hospitalmanage.service.UserService;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
 import java.time.LocalDateTime;
-import java.util.List;
 
 import static org.springframework.http.HttpStatus.OK;
 
@@ -72,10 +70,10 @@ public class ProfileResource extends ExceptionHandling {
 
     @PostMapping("/diagnosis/{username}")
     @PreAuthorize("hasAnyAuthority('god:all', 'patient:all')")
-    public void addCodeICD(
+    public void addAnalyze(
             @PathVariable("username") Long userId,
-            @RequestBody Long icdId) {
-        profileService.addDiagnosis(userId, icdId);
+            @RequestBody String icdName) {
+        profileService.addDiagnosis(userId, icdName);
     }
 
     @PutMapping("/timevisit/{currentUsername}")

@@ -18,7 +18,7 @@ public class AnalyzeICDDate {
     private Long id;
 
     @Column(name = "icd_id")
-    private Long icdId;
+    private String icdId;
     @Column(name = "date_add_analyze")
     private Date dateAddAnalyze;
 }
