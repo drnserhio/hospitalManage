@@ -1,6 +1,8 @@
 package com.example.hospitalmanage.constant;
 
-public class HandlingExceptionConstant {
+public final class HandlingExceptionConstant {
+
+    private HandlingExceptionConstant() {}
 
     public static final String ACCOUNT_LOCKED = "Yor account has been locked. PLease contact administrator";
     public static final String METHOD_IS_NOT_ALLOWED = "This request method is not allowed on this endpoint. Please send a '%s' request";

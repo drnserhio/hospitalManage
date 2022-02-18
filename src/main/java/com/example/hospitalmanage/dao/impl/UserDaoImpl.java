@@ -37,7 +37,7 @@ import java.nio.file.Paths;
 import java.util.*;
 
 import static com.example.hospitalmanage.constant.FileConstant.*;
-import static com.example.hospitalmanage.constant.UserImplConstant.*;
+import static com.example.hospitalmanage.constant.UserConstant.*;
 import static com.example.hospitalmanage.role.Role.ROLE_USER;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.apache.commons.lang3.StringUtils.EMPTY;

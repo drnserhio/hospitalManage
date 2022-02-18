@@ -23,6 +23,8 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Objects;
 
+import static com.example.hospitalmanage.constant.ICDConstant.*;
+
 @Repository
 @Slf4j
 @AllArgsConstructor
@@ -36,12 +38,12 @@ public class ICDDaoImpl implements ICDDao {
 
     public ICD getCodeICD(String code) throws IOException {
         HttpEntity<String > entity = new HttpEntity<>(getOAuthHeader());
-        ResponseEntity<String> response = restTemplate.exchange("http://id.who.int/icd/release/10/2019/" + code.toUpperCase(), HttpMethod.GET, entity, String.class);
+        ResponseEntity<String> response = restTemplate.exchange(API_ICD_URI + code.toUpperCase(), HttpMethod.GET, entity, String.class);
         TypeReference<HashMap<String,Object>> typeRef = new TypeReference<>() {};
         ObjectMapper mapper = new ObjectMapper();
         HashMap<String,Object> map = mapper.readValue(response.getBody(), typeRef);
         LinkedHashMap<String, String> title = (LinkedHashMap<String, String>) map.get("title");
-        return  isICDHasInBase(code, title.get("@language"),  title.get("@value"));
+        return  isICDHasInBase(code, title.get(JSON_FIELD_LANGUAGE),  title.get(JSON_FIELD_VALUE));
     }
 
     private ICD isICDHasInBase(String code, String language, String value) {
@@ -57,9 +59,9 @@ public class ICDDaoImpl implements ICDDao {
     public HttpHeaders getOAuthHeader()
             throws IOException {
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("Authorization", "Bearer " + oAuthTokenProvider.getToken());
-        httpHeaders.set("API-Version", "v2");
-        httpHeaders.set("Accept-Language", "en");
+        httpHeaders.add(AUTHORIZATION, BEARER + oAuthTokenProvider.getToken());
+        httpHeaders.set(API_VERSION, V_2);
+        httpHeaders.set(ACCEPT_LANGUAGE, EN);
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         httpHeaders.setContentLanguage(Locale.ROOT);
         return httpHeaders;
@@ -68,7 +70,7 @@ public class ICDDaoImpl implements ICDDao {
     public String getList()
             throws IOException {
         HttpEntity<String> entity = new HttpEntity<>(getOAuthHeader());
-        ResponseEntity<String> response = restTemplate.exchange("http://id.who.int/icd/release/10/2019", HttpMethod.GET, entity, String.class);
+        ResponseEntity<String> response = restTemplate.exchange(API_ICD_URI, HttpMethod.GET, entity, String.class);
         return response.getBody();
     }
 

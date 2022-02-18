@@ -30,7 +30,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import static com.example.hospitalmanage.constant.HandlingExceptionConstant.PASSWORD_IS_NOT_VALID;
-import static com.example.hospitalmanage.constant.UserImplConstant.USER_NOT_FOUND_BY_USERNAME;
+import static com.example.hospitalmanage.constant.UserConstant.USER_NOT_FOUND_BY_USERNAME;
 
 @Repository
 @Slf4j
@@ -127,13 +127,6 @@ public class ProfileDaoImpl implements ProfileDao {
         }
     }
 
-    public User deleteSetDiagnosis(String username) {
-        User findUser = userDao.findUserByUsername(username);
-        findUser.setDiagnosis(new HashSet<>());
-        userDao.saveUser(findUser);
-        return findUser;
-    }
-
     @Override
     public void addTreatment(Long userId, String treatment) {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
@@ -170,14 +163,6 @@ public class ProfileDaoImpl implements ProfileDao {
         } finally {
             entityManager.close();
         }
-    }
-
-
-    public User deleteAllTreatment(String username) {
-        User user = userDao.findUserByUsername(username);
-        user.setTreatment(new ArrayList<>());
-        User save = userDao.saveUser((user));
-        return save;
     }
 
     public void deleteChooseTreatment(Long userId, Long treatmentId) {

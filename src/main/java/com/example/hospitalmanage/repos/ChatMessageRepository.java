@@ -2,7 +2,6 @@ package com.example.hospitalmanage.repos;
 
 import com.example.hospitalmanage.model.ChatMessage;
 import com.example.hospitalmanage.model.MessageStatus;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 

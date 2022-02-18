@@ -17,11 +17,8 @@ public interface ProfileDao {
 
     public void addDiagnosis(Long userId, Long icdId);
 
-    User deleteSetDiagnosis(String username);
 
     public void addTreatment(Long userId, String treatmentJson);
-
-    public User deleteAllTreatment(String username);
 
     public void deleteChooseTreatment(Long userId, Long treatmentId);
 

@@ -26,19 +26,18 @@ import java.util.Objects;
 @Component
 @AllArgsConstructor
 @NoArgsConstructor
-@PropertySource("classpath:application.yml")
 public class OAuthTokenProvider {
 
 
-    @Value("${introspection-uri}")
+    @Value("${spring.security.oauth2.client.introspection-uri}")
     private String TOKEN_URI;
-    @Value("${client-id}")
+    @Value("${spring.security.oauth2.client.client-id}")
     private String CLIENT_ID;
-    @Value("${client-secret}")
+    @Value("${spring.security.oauth2.client.client-secret}")
     private String CLIENT_SECRET;
-    @Value("${scope}")
+    @Value("${spring.security.oauth2.client.scope}")
     private String SCOPE;
-    @Value("${grand-type}")
+    @Value("${spring.security.oauth2.client.grand-type}")
     private String GRANT_TYPE;
 
     private String token;
@@ -66,9 +65,6 @@ public class OAuthTokenProvider {
         wr.flush();
         wr.close();
 
-        // response
-        int responseCode = con.getResponseCode();
-
         BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
         String inputLine;
         StringBuffer response = new StringBuffer();
@@ -77,25 +73,12 @@ public class OAuthTokenProvider {
         }
         in.close();
 
-        // parse JSON response
         JSONObject jsonObj = new JSONObject(response.toString());
         saveTokenDate = new Date();
         expiredTokenTime = new Date();
         expiredTokenTime.setMinutes(expiredTokenTime.getMinutes() + 20);
         this.token = jsonObj.getString("access_token");
     }
-
-
-    private boolean isTokenExpired(String token) {
-        if (saveTokenDate != null || expiredTokenTime != null) {
-            if (saveTokenDate.getTime() > expiredTokenTime.getTime() ||
-                    saveTokenDate.getTime() == expiredTokenTime.getTime()) {
-                return false;
-            }
-        }
-        return true;
-    }
-
 
     public String getToken() throws IOException {
         createTokenICD();

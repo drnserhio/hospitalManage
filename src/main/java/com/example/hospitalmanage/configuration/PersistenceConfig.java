@@ -6,22 +6,20 @@ import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.orm.hibernate5.HibernateTransactionManager;
-import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.orm.jpa.LocalEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
-import java.io.IOException;
 import java.util.Properties;
+
+import static com.example.hospitalmanage.constant.PersistenceConstant.*;
 
 @Configuration
 @EnableTransactionManagement
 @AllArgsConstructor
-public class ConnectionJpaFactory {
+public class PersistenceConfig {
 
     private ConnectionJpaProp connectionJpaProp;
 
@@ -31,7 +29,7 @@ public class ConnectionJpaFactory {
         entityManagerFactoryBean.setJpaVendorAdapter(vendorAdapter());
         entityManagerFactoryBean.setDataSource(dataSource());
         entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistenceProvider.class);
-        entityManagerFactoryBean.setPackagesToScan("com.example.hospitalmanage.model");
+        entityManagerFactoryBean.setPackagesToScan(ENTITY_PACKAGE_TO_SCAN);
         entityManagerFactoryBean.setJpaProperties(propertiesHibernate());
         return entityManagerFactoryBean;
     }
@@ -45,12 +43,12 @@ public class ConnectionJpaFactory {
 
     private Properties propertiesHibernate() {
         Properties properties = new Properties();
-        properties.setProperty("hibernate.show_sql", connectionJpaProp.getShow_sql());
-        properties.setProperty("hibernate.dialect", connectionJpaProp.getDialect());
-        properties.setProperty("hibernate.jdbc.max_size", connectionJpaProp.getMaxSize());
-        properties.setProperty("hibernate.jdbc.min_size", connectionJpaProp.getMinSize());
-        properties.setProperty("hibernate.jdbc.batch_size", connectionJpaProp.getBatchSize());
-        properties.setProperty("hibernate.jdbc.fetch_size", connectionJpaProp.getFetchSize());
+        properties.setProperty(HIBERNATE_SHOW_SQL, connectionJpaProp.getShow_sql());
+        properties.setProperty(HIBERNATE_DIALECT, connectionJpaProp.getDialect());
+        properties.setProperty(HIBERNATE_JDBC_MAX_SIZE, connectionJpaProp.getMaxSize());
+        properties.setProperty(HIBERNATE_JDBC_MIN_SIZE, connectionJpaProp.getMinSize());
+        properties.setProperty(HIBERNATE_JDBC_BATCH_SIZE, connectionJpaProp.getBatchSize());
+        properties.setProperty(HIBERNATE_JDBC_FETCH_SIZE, connectionJpaProp.getFetchSize());
         return properties;
     }
 

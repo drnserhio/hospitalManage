@@ -17,11 +17,8 @@ public interface ProfileService {
 
      void addDiagnosis(Long userId, Long icdId);
 
-    User deleteSetDiagnosis(String username);
-
      void addTreatment(Long userId, String treatment) ;
 
-     User deleteAllTreatment(String username);
 
     void deleteChooseTreatment(Long userId, Long treatmentId);
 

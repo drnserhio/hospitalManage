@@ -107,14 +107,6 @@ public class ProfileResource extends ExceptionHandling {
     }
 
 
-    @DeleteMapping("/del/all/treatment/{username}")
-    @PreAuthorize("hasAnyAuthority('god:all', 'patient:all')")
-    public ResponseEntity<User> deleteAllTreatment(
-            @PathVariable("username") String username) {
-        User user = profileService.deleteAllTreatment(username);
-        return new ResponseEntity<>(user, OK);
-    }
-
     @DeleteMapping("/del/choose/treatment/{userId}/{treatmentId}")
     @PreAuthorize("hasAnyAuthority('god:all', 'patient:all')")
     public void deleteChooseTreatment(

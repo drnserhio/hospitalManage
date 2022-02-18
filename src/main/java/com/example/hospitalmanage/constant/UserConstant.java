@@ -1,6 +1,8 @@
 package com.example.hospitalmanage.constant;
 
-public class UserImplConstant {
+public final class UserConstant {
+    private UserConstant() {}
+
     public static final String USER_NOT_FOUND_BY_USERNAME = "User was not found with username: ";
     public static final String EMAIL_ALREADY_EXISTS = "Email already exists";
     public static final String USER_NOT_FOUND_BY_EMAIL = "User was not found with email: ";

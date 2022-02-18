@@ -42,21 +42,10 @@ public class ProfileServiceImpl implements ProfileService {
         return user;
     }
 
-
-    public User deleteSetDiagnosis(String username) {
-        User user = profileDao.deleteSetDiagnosis(username);
-        return user;
-    }
-
     public void addTreatment(Long userId, String treatmentJson) {
         profileDao.addTreatment(userId, treatmentJson);
     }
 
-
-    public User deleteAllTreatment(String username) {
-        User user = profileDao.deleteAllTreatment(username);
-        return user;
-    }
 
     public void deleteChooseTreatment(Long userId, Long treatmentId) {
        profileDao.deleteChooseTreatment(userId, treatmentId);

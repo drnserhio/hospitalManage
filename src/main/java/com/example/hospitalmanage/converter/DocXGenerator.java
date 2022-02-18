@@ -30,12 +30,11 @@ import static com.example.hospitalmanage.constant.FileConstant.*;
 @Slf4j
 public class DocXGenerator {
 
-
     private Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
     public byte[] createDocument(User user)
             throws Exception {
-        File file = ResourceUtils.getFile("classpath:worked.docx");
+        File file = ResourceUtils.getFile(WORKED_DOCX);
         return Files.readAllBytes(changeDocument(file, user).toPath());
     }
 

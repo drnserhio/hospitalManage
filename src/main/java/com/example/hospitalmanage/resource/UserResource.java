@@ -36,7 +36,7 @@ import java.util.List;
 
 import static com.example.hospitalmanage.constant.FileConstant.*;
 import static com.example.hospitalmanage.constant.SecurityConstant.JWT_TOKEN_HEADER;
-import static com.example.hospitalmanage.constant.UserImplConstant.USER_DELETE_SUCCESSFULLY;
+import static com.example.hospitalmanage.constant.UserConstant.USER_DELETE_SUCCESSFULLY;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
@@ -46,8 +46,6 @@ import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 @AllArgsConstructor
 @Slf4j
 public class UserResource extends ExceptionHandling {
-
-
 
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
@@ -140,7 +138,6 @@ public class UserResource extends ExceptionHandling {
     public byte[] getProfileImage(
             @PathVariable("username") String username,
             @PathVariable("filename") String filename) throws IOException {
-
         return Files.readAllBytes(Paths.get(USER_FOLDER + username + FORWARD_SLASH + filename));
     }
 
@@ -162,7 +159,6 @@ public class UserResource extends ExceptionHandling {
         User user = profileServiceImpl.changePassByUsernameAndOldPassword(oldPassword, newPassword);
         return new ResponseEntity<>(user, OK);
     }
-
 
     @GetMapping("/list")
     @PreAuthorize("hasAnyAuthority('god:all')")

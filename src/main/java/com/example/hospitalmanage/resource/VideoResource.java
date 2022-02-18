@@ -21,8 +21,6 @@ import static org.springframework.http.HttpStatus.OK;
 public class VideoResource extends ExceptionHandling {
 
     private final VideoService videoService;
-    public static final String DIRECTORY = System.getProperty("user.home") + "/Downloads/uploads/";
-
 
     @PostMapping("/upload/{username}")
     @PreAuthorize("hasAnyAuthority('god:all', 'operation:all')")

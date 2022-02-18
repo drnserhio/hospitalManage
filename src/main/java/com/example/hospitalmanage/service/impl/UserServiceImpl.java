@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
-import static com.example.hospitalmanage.constant.UserImplConstant.USER_NOT_FOUND_BY_USERNAME;
+import static com.example.hospitalmanage.constant.UserConstant.USER_NOT_FOUND_BY_USERNAME;
 
 @Service
 @AllArgsConstructor
