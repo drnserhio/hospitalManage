@@ -157,33 +157,23 @@ public class UserDaoImpl implements UserDao {
         user.setQRCODE(DEFAULT_NONE);
         user.setRole(getRoleEnumName(role).name());
         user.setAuthorities(getRoleEnumName(role).getAuthorities());
+        user.setProfileImageUrl(null);
         User save = saveUser(user);
         return save;
     }
 
     @Override
-    public User updateUser(String currentUsername,
-                           String firstname,
-                           String lastname,
-                           String username,
-                           String email,
+    public User updateUser(String username,
                            String role,
-                           boolean isNonLocked,
-                           boolean isActive)
-            throws IOException, UserNotFoundException, UserNameExistsException, EmailExistsException {
-        User user = validationNewUsernameAndEmail(currentUsername, username, email);
-        user.setFirstname(firstname);
-        user.setLastname(lastname);
-        user.setUsername(username);
-        user.setJoindDate(new Date());
-        user.setEmail(email);
-        user.setIsActive(isActive);
-        user.setIsNotLocked(isNonLocked);
+                           boolean isNotLocaked)
+            throws UserNotFoundException, UserNameExistsException, EmailExistsException {
+        validationNewUsernameAndEmail(username, EMPTY, EMPTY);
+        User user = findUserByUsername(username);
+        user.setIsActive(isNotLocaked);
         user.setRole(getRoleEnumName(role).name());
         user.setAuthorities(getRoleEnumName(role).getAuthorities());
-        user.setProfileImageUrl(getTemporaryProfileImageUrl(username));
-        User update = saveUser(user);
-        return update;
+        updateUser(user);
+        return user;
     }
 
     @Override
@@ -247,6 +237,7 @@ public class UserDaoImpl implements UserDao {
             throws IOException, UserNotFoundException, UserNameExistsException, EmailExistsException {
         User user = validationNewUsernameAndEmail(username, null, null);
         saveProfileImage(user, profileImage);
+        update(user);
         try {
             emailService.sendMessageUpdateProfileImage(user.getFirstname(), user.getLastname(), user.getUsername(), user.getEmail());
         } catch (MessagingException e) {
@@ -294,13 +285,13 @@ public class UserDaoImpl implements UserDao {
         user.setAddress(address);
         user.setInfoAboutComplaint(infoAboutComplaint);
         user.setInfoAboutSick(infoAboutSick);
-        User update = saveUser(user);
+        updateUser(user);
         try {
-            emailService.sendMessageUpdateProfile(update.getFirstname(), user.getLastname(), user.getUsername(), user.getEmail());
+            emailService.sendMessageUpdateProfile(user.getFirstname(), user.getLastname(), user.getUsername(), user.getEmail());
         } catch (MessagingException e) {
             e.printStackTrace();
         }
-        return update;
+        return user;
     }
 
 

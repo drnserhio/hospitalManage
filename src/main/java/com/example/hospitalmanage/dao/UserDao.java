@@ -34,15 +34,8 @@ public interface UserDao {
                     boolean isNonLocked,
                     boolean isActive)
             throws UserNotFoundException, UserNameExistsException, EmailExistsException, IOException;
-    User updateUser(
-            String currentUsername,
-            String firstname,
-            String lastname,
-            String username,
-            String email,
-            String role,
-            boolean isNonLocked,
-            boolean isActive) throws IOException, UserNotFoundException, UserNameExistsException, EmailExistsException;
+    User updateUser(String username, String role, boolean isNotLocaked)
+            throws UserNotFoundException, UserNameExistsException, EmailExistsException;
 
     void deleteUser(String username);
 

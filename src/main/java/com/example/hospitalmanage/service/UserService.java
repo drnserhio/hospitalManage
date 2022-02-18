@@ -19,15 +19,8 @@ public interface UserService {
 
     User register(String firstname, String lastname, String username, String email, String password) throws MessagingException, UserNotFoundException, UserNameExistsException, EmailExistsException;
 
-    User updateUser(
-            String currentUsername,
-            String firstname,
-            String lastname,
-            String username,
-            String email,
-            String role,
-            boolean isNonLocked,
-            boolean isActive) throws IOException, UserNotFoundException, UserNameExistsException, EmailExistsException;
+    User updateUser(String username, String role, boolean isNotLocaked)
+            throws IOException, UserNotFoundException, UserNameExistsException, EmailExistsException;
 
    void deleteUser(String username);
 

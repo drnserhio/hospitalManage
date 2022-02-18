@@ -80,24 +80,14 @@ public class UserResource extends ExceptionHandling {
     @PutMapping("/update")
     @PreAuthorize("hasAnyAuthority('god:all')")
     public ResponseEntity<User> updateUser(
-           @RequestParam("currentUsername") String currentUsername,
-           @RequestParam("firstname") String firstname,
-           @RequestParam("lastname") String lastname,
            @RequestParam("username") String username,
-           @RequestParam("email") String email,
            @RequestParam("role") String role,
-           @RequestParam("isNonLocked") String isNonLocked,
-           @RequestParam("isActive") String isActive)
+           @RequestParam("isNonLocked") String isNonLocked)
             throws IOException, UserNotFoundException, UserNameExistsException, EmailExistsException {
         User updateUser = userService.updateUser(
-                currentUsername,
-                firstname,
-                lastname,
                 username,
-                email,
                 role,
-                Boolean.parseBoolean(isNonLocked),
-                Boolean.parseBoolean(isActive)
+                Boolean.parseBoolean(isNonLocked)
         );
         return new ResponseEntity<>(updateUser, OK);
     }
@@ -111,7 +101,6 @@ public class UserResource extends ExceptionHandling {
     }
 
     @GetMapping("/find/{username}")
-    @PreAuthorize("hasAnyAuthority('god:all', 'profile:all')")
     public ResponseEntity<User> getUser(@PathVariable("username") String username) {
         User userByUsername = userService.findUserByUsername(username);
         return new ResponseEntity<>(userByUsername, OK);

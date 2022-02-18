@@ -67,16 +67,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public User updateUser(String currentUsername,
-                           String firstname,
-                           String lastname,
-                           String username,
-                           String email,
+    public User updateUser(String username,
                            String role,
-                           boolean isNonLocked,
-                           boolean isActive)
+                           boolean isNotLocaked)
             throws IOException, UserNotFoundException, UserNameExistsException, EmailExistsException {
-        User user = userDao.updateUser(currentUsername, firstname, lastname, username, email, role, isNonLocked, isActive);
+        User user = userDao.updateUser(username, role, isNotLocaked);
         return user;
     }
 
