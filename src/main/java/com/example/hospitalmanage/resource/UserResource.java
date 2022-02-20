@@ -106,7 +106,6 @@ public class UserResource extends ExceptionHandling {
         return new ResponseEntity<>(userByUsername, OK);
     }
 
-
     @GetMapping(path = "/image/profile/{username}", produces = IMAGE_JPEG_VALUE)
     public byte[] getTempProfileImage(@PathVariable("username") String username)
             throws IOException {
@@ -118,7 +117,6 @@ public class UserResource extends ExceptionHandling {
             while ((bytesRead = inputStream.read(chunk)) > 0) {
                 byteArrayOutputStream.write(chunk, 0, bytesRead);
             }
-
         }
         return byteArrayOutputStream.toByteArray();
     }

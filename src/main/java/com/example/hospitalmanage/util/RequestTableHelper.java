@@ -16,10 +16,10 @@ public final class RequestTableHelper {
         if (StringUtils.isEmpty(request.getColumn())) {
             request.setColumn(ID_DEFAULT_COLUMN);
         }
-        if (request.getPage() < 0) {
+        if (request.getPage() <= 0) {
             request.setPage(PAGE_DEFAULT);
         }
-        if (request.getSize() < 0) {
+        if (request.getSize() <= 0) {
             request.setSize(SIZE_DEFAULT);
         }
         if (StringUtils.isEmpty(request.getSort())) {

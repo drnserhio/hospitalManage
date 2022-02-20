@@ -3,6 +3,7 @@ package com.example.hospitalmanage.resource;
 import com.example.hospitalmanage.dto.ResponseTable;
 import com.example.hospitalmanage.dto.impl.RequestTableDiagnosisImpl;
 import com.example.hospitalmanage.exception.ExceptionHandling;
+import com.example.hospitalmanage.exception.domain.UserFieldIsEmptyException;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
 import com.example.hospitalmanage.model.Treatment;
 import com.example.hospitalmanage.model.User;
@@ -10,11 +11,14 @@ import com.example.hospitalmanage.service.ProfileService;
 import com.example.hospitalmanage.service.UserService;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
+import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
+import javax.xml.bind.JAXBException;
+import java.io.IOException;
 import java.time.LocalDateTime;
 
 import static org.springframework.http.HttpStatus.OK;

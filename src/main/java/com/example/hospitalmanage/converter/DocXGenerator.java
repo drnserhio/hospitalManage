@@ -12,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
+import com.example.hospitalmanage.exception.domain.UserFieldIsEmptyException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -22,6 +23,7 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.UUID;
 
 import static com.example.hospitalmanage.constant.FileConstant.*;
@@ -46,7 +48,7 @@ public class DocXGenerator {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm:ss dd/MM/yyyy");
 
         HashMap<String, String> mappings = new HashMap<>();
-        try {
+        validateFieldUser(findUser);
             mappings.put("firstname", findUser.getFirstname());
             mappings.put("lastname", findUser.getLastname());
             mappings.put("patronomic", findUser.getPatronomic());
@@ -57,10 +59,6 @@ public class DocXGenerator {
             mappings.put("treatmentSize", String.valueOf(findUser.getTreatment().size()));
             mappings.put("dateNow", formatter.format(LocalDateTime.now()));
             mappings.put("doctor", SecurityContextHolder.getContext().getAuthentication().getName());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
 
         String nameFile = findUser.getLastname() + "_" + UUID.randomUUID().toString().substring(0, 7);
         mainDocumentPart.variableReplace(mappings);
@@ -82,6 +80,43 @@ public class DocXGenerator {
         saver.save(created);
 
         return created;
+    }
+
+    private void validateFieldUser(User user) throws UserFieldIsEmptyException {
+//        mappings.put("firstname", findUser.getFirstname());
+//        mappings.put("lastname", findUser.getLastname());
+//        mappings.put("patronomic", findUser.getPatronomic());
+//        mappings.put("age", String.valueOf(findUser.getAge()));
+//        mappings.put("address", findUser.getAddress());
+//        mappings.put("diagnosisSize", String.valueOf(findUser.getDiagnosis().size()));
+//        mappings.put("hospitalization", findUser.getHospiztalization() == true ? "YES" : "NO");
+//        mappings.put("treatmentSize", String.valueOf(findUser.getTreatment().size()));
+//        mappings.put("dateNow", formatter.format(LocalDateTime.now()));
+//        mappings.put("doctor", SecurityContextHolder.getContext().getAuthentication().getName());
+        if (Objects.isNull(user.getFirstname())) {
+            throw new UserFieldIsEmptyException(USER_EMPTY_FILED);
+        }
+        if (Objects.isNull(user.getLastname())) {
+            throw new UserFieldIsEmptyException(USER_EMPTY_FILED);
+        }
+        if (Objects.isNull(user.getPatronomic())) {
+            throw new UserFieldIsEmptyException(USER_EMPTY_FILED);
+        }
+        if (Objects.isNull(user.getAge())) {
+            throw new UserFieldIsEmptyException(USER_EMPTY_FILED);
+        }
+        if (Objects.isNull(user.getAddress())) {
+            throw new UserFieldIsEmptyException(USER_EMPTY_FILED);
+        }
+        if (Objects.isNull(user.getDiagnosis())) {
+            throw new UserFieldIsEmptyException(USER_EMPTY_FILED);
+        }
+        if (Objects.isNull(user.getHospiztalization())) {
+            throw new UserFieldIsEmptyException(USER_EMPTY_FILED);
+        }
+        if (Objects.isNull(user.getTreatment())) {
+            throw new UserFieldIsEmptyException(USER_EMPTY_FILED);
+        }
     }
 
     private void clearFolderIfSizeMoreHunderMegabyte() throws IOException {

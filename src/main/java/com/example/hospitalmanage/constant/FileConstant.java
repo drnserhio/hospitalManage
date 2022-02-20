@@ -14,6 +14,7 @@ public final class FileConstant {
     public static final String TEMP_PROFILE_IMAGE_BASE_URL = "https://robohash.org/";
 
     public static final String DOCUMENT_FORMAT = "docx";
+    public static final String USER_EMPTY_FILED = "User has empty field.Please fill in the new information.";
     public static final String DOCUMENT_FOLDER = System.getProperty("user.home") + "/document/patient/";
     public static final String WORKED_DOCX = "classpath:worked.docx";
 

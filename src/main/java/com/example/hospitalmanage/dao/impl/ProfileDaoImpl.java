@@ -7,6 +7,7 @@ import com.example.hospitalmanage.dto.ResponseTable;
 import com.example.hospitalmanage.dto.impl.ResponseTableDiagnosisImpl;
 import com.example.hospitalmanage.dto.impl.projection.AnalizeProjectionDto;
 import com.example.hospitalmanage.exception.domain.PasswordNotValidException;
+import com.example.hospitalmanage.exception.domain.UserFieldIsEmptyException;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
 import com.example.hospitalmanage.model.Treatment;
 import com.example.hospitalmanage.model.User;
@@ -15,6 +16,7 @@ import com.example.hospitalmanage.converter.DocXGenerator;
 import com.example.hospitalmanage.util.RequestTableHelper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.hibernate.jpa.QueryHints;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -26,6 +28,8 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
+import javax.xml.bind.JAXBException;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -47,6 +51,9 @@ public class ProfileDaoImpl implements ProfileDao {
     public byte[] getDocument(String username)
             throws Exception {
         User findUser = userDao.findUserByUsername(username);
+        if (findUser == null) {
+            throw new UserNotFoundException(USER_NOT_FOUND_BY_USERNAME + username);
+        }
         return docXGenerator.createDocument(findUser);
     }
 
@@ -57,6 +64,7 @@ public class ProfileDaoImpl implements ProfileDao {
         if (user == null) {
             throw new UserNotFoundException(USER_NOT_FOUND_BY_USERNAME + currentUsername);
         }
+        //TODO valid time and exception
         user.setTimeToVisitAt(LocalDateTime.of(timeVisit.toLocalDate(), timeVisit.toLocalTime()));
         userDao.updateUser(user);
         LOGGER.info("Time visit created");
@@ -99,6 +107,38 @@ public class ProfileDaoImpl implements ProfileDao {
         } finally {
             entityManager.close();
         }
+    }
+
+    @Override
+    public boolean deleteAnalize(Long userId, Long analizeId) {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+        try {
+            transaction.begin();
+            entityManager.
+                    createNativeQuery("delete from users_diagnosis where user_id = :userId  and diagnos_id = :diagnos")
+                    .setParameter("userId", userId)
+                    .setParameter("diagnos", analizeId)
+                    .executeUpdate();
+            transaction.commit();
+        } catch (Exception e) {
+            transaction.rollback();
+            e.printStackTrace();
+        }
+        try {
+            transaction.begin();
+            entityManager.createQuery("delete from AnalyzeICDDate az where az.id = :id ")
+                    .setParameter("id", analizeId)
+                    .executeUpdate();
+            transaction.commit();
+            return true;
+        } catch (Exception e) {
+            transaction.rollback();
+            e.printStackTrace();
+        } finally {
+            entityManager.close();
+        }
+        return false;
     }
 
 
@@ -242,37 +282,6 @@ public class ProfileDaoImpl implements ProfileDao {
         return responseTable;
     }
 
-    @Override
-    public boolean deleteAnalize(Long userId, Long analizeId) {
-        EntityManager entityManager = entityManagerFactory.createEntityManager();
-        EntityTransaction transaction = entityManager.getTransaction();
-        try {
-            transaction.begin();
-            entityManager.
-                    createNativeQuery("delete from users_diagnosis where user_id = :userId  and diagnos_id = :diagnos")
-                    .setParameter("userId", userId)
-                    .setParameter("diagnos", analizeId)
-                    .executeUpdate();
-            transaction.commit();
-        } catch (Exception e) {
-            transaction.rollback();
-            e.printStackTrace();
-        }
-        try {
-            transaction.begin();
-            entityManager.createQuery("delete from AnalyzeICDDate az where az.id = :id ")
-                    .setParameter("id", analizeId)
-                    .executeUpdate();
-            transaction.commit();
-            return true;
-        } catch (Exception e) {
-            transaction.rollback();
-            e.printStackTrace();
-        } finally {
-            entityManager.close();
-        }
-        return false;
-    }
 
     @Override
     public Boolean updateTreatment(Treatment treatment) {

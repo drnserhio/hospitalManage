@@ -4,57 +4,47 @@ import com.example.hospitalmanage.dao.UserDao;
 import com.example.hospitalmanage.exception.domain.EmailExistsException;
 import com.example.hospitalmanage.exception.domain.UserNameExistsException;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
+import com.example.hospitalmanage.repos.ChatMessageRepository;
+import com.example.hospitalmanage.repos.ChatRoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
+import static com.example.hospitalmanage.constant.InitialDataConst.*;
+
 @Component
 public class InitialData {
     @Autowired
     private UserDao userDao;
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
     @EventListener(ApplicationStartedEvent.class)
     public void initialDate()
             throws UserNotFoundException, UserNameExistsException, EmailExistsException, IOException {
-        if (userDao.findUserByUsername("rick") != null) {
-            userDao.deleteUser("rick");
-            userDao.deleteUser("morthy");
-            userDao.deleteUser("summer");
-            userDao.deleteUser("betty");
-            userDao.deleteUser("jerry");
+        if (userDao.findUserByUsername(USERNAME_RICK) != null) {
+            userDao.deleteUser(USERNAME_RICK);
+            userDao.deleteUser(USERNAME_MORTHY);
+            userDao.deleteUser(USERNAME_SUMMER);
+            userDao.deleteUser(USERNAME_BETTY);
+            userDao.deleteUser(USERNAME_JERRY);
+            try {
+                mongoTemplate.remove(new Query(), "chatMessage");
+                mongoTemplate.remove(new Query(), "chatRoom");
+            } catch (Exception e) {}
         }
-//        File rick = new File("src/main/resources/image/rick.jpeg");
-//        FileInputStream inputRick = new FileInputStream(rick);
-//        MultipartFile multipartFileRick = new MockMultipartFile("file", rick.getName(), "image/jpeg", IOUtils.toByteArray(inputRick));
-//
-//        File morthy = new File("src/main/resources/image/motrhy.png");
-//        FileInputStream inputMorthy = new FileInputStream(rick);
-//        MultipartFile multipartFileMorthy = new MockMultipartFile("file", rick.getName(), "image/jpeg", IOUtils.toByteArray(inputRick));
-//
-//        File summer = new File("src/main/resources/image/rick.jpeg");
-//        FileInputStream inputSummer = new FileInputStream(rick);
-//        MultipartFile multipartFileSummer = new MockMultipartFile("file", rick.getName(), "image/jpeg", IOUtils.toByteArray(inputRick));
-//
-//        File betty = new File("src/main/resources/image/rick.jpeg");
-//        FileInputStream inputBetty= new FileInputStream(rick);
-//        MultipartFile multipartFileBetty = new MockMultipartFile("file", rick.getName(), "image/jpeg", IOUtils.toByteArray(inputRick));
-//
-//        File jerry = new File("src/main/resources/image/rick.jpeg");
-//        FileInputStream inputJerry = new FileInputStream(rick);
-//        MultipartFile multipartFileJerry = new MockMultipartFile("file", rick.getName(), "image/jpeg", IOUtils.toByteArray(inputRick));
-//
-//
-        userDao.addNewUser("Rick", "Sanchez", "rick", "Tered", 54, "Kampage St. 54 - D", "rick@gmail.com", "5600", "role_super_admin", true, true);
-        userDao.addNewUser("Morthy", "Smith", "morthy", "Uie", 28, "Village St. 9823, 12", "morthy@gmail.com", "5600", "role_admin", true, true);
-        userDao.addNewUser("Summer", "Smith", "summer", "Pouy", 29, "Campures St. 5f32", "summer@gmail.com", "5600", "role_doctor", true, true);
-        userDao.addNewUser("Bett", "Smith", "betty", "Qwert", 34, "Stadet St. 452", "betty@gmail.com", "5600", "role_secretary", true, true);
-        userDao.addNewUser("Jerry", "Smith", "jerry", "Trewq", 54, "Poridet St. 2342dW", "jerry@gmail.com", "5600", "role_user", true, true);
 
+        userDao.addNewUser(FIRSTNAME_RICK, LASTNAME_RICK, USERNAME_RICK, PATRONOMIC_RICK, AGE_RICK, ADDRESS_RICK, EMAIL_RICK, PASSWORD_RICK, ROLE_FOR_RICK, IS_NOT_LOCKED, IS_ACTIVE);
+        userDao.addNewUser(FIRSTNAME_MORTHY, LASTNAME_MORTHY, USERNAME_MORTHY, PATRONOMIC_MORTHY, AGE_MORTHY, ADDRESS_MORTHY, EMAIL_MORTHY, PASSWORD_MORTHY, ROLE_FOR_MORTHY, IS_NOT_LOCKED, IS_ACTIVE);
+        userDao.addNewUser(FIRSTNAME_SUMMER, LASTNAME_SUMMER, USERNAME_SUMMER, PATRONOMIC_SUMMER, AGE_SUMMER, ADDRESS_SUMMER, EMAIL_SUMMER, PASSWORD_SUMMER, ROLE_FOR_SUMMER, IS_NOT_LOCKED, IS_ACTIVE);
+        userDao.addNewUser(FIRSTNAME_BETTY, LASTNAME_BETTY, USERNAME_BETTY, PATRONOMIC_BETTY, AGE_BETTY, ADDRESS_BETTY, EMAIL_BETTY, PASSWORD_BETTY, ROLE_FOR_BETTY, IS_NOT_LOCKED, IS_ACTIVE);
+        userDao.addNewUser(FIRSTNAME_JERRY, LASTNAME_JERRY, USERNAME_JERRY, PATRONOMIC_JERRY, AGE_JERRY, ADDRESS_JERRY, EMAIL_JERRY, PASSWORD_JERRY, ROLE_FOR_JERRY, IS_NOT_LOCKED, IS_ACTIVE);
     }
-
 }

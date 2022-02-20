@@ -81,16 +81,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     }
 
-//    @Override
-//    public void resetPassword(String email) {
-//        User user = userRepository.findByEmail(email);
-//        if (user == null) {
-//            throw new EmailExistsException(USER_NOT_FOUND_BY_EMAIL + email);
-//        }
-//        String password = generatePassword();
-//    }
-
-
     @Override
     public User updateProfileImage(String username, MultipartFile profileImage)
             throws IOException, UserNotFoundException, UserNameExistsException, EmailExistsException {
@@ -118,7 +108,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             throws MessagingException {
 
         User user = userDao.updateProfile(currentUsername, firstname, lastname, patronomic, age, username, email, QRCODE, address, infoAboutComplaint, infoAboutSick);
-        //email
         return user;
     }
 
