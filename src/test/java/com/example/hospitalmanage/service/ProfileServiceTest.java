@@ -51,12 +51,6 @@ public class ProfileServiceTest {
         assertThat(exception.getMessage()).isEqualTo(USER_NOT_FOUND_BY_USERNAME + "none");
     }
 
-//    @Test
-//    @Order(3)
-//    public void doThrowExceptionIfFieldInUserEmptyOrNull() {
-//
-//    }
-
     @Test
     @Order(3)
     public void shouldReturnUpdatableUserWithTimeVizit()

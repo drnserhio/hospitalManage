@@ -3,7 +3,6 @@ package com.example.hospitalmanage.configuration;
 import com.example.hospitalmanage.util.ConnectionJpaProp;
 import lombok.AllArgsConstructor;
 import org.hibernate.jpa.HibernatePersistenceProvider;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
