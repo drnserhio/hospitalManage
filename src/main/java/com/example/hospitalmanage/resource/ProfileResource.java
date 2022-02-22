@@ -32,7 +32,7 @@ public class ProfileResource extends ExceptionHandling {
     private final ProfileService profileService;
 
     @PutMapping("/updateProfile")
-    @PreAuthorize("hasAnyAuthority('god:all', 'profile:user')")
+    @PreAuthorize("hasAnyAuthority('god:all', 'profile:user', 'profile:all')")
     public ResponseEntity<User> updateProfile(
             @RequestParam("currentUsername") String currentUsername,
             @RequestParam(value = "firstname", required = false) String firstname,

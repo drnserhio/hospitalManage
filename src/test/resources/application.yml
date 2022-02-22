@@ -1,0 +1,20 @@
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  mvc:
+    format:
+      date-time: yyyy-MM-dd HH:mm:ss
+  jpa:
+    show_sql: true
+    ddl-auto: update
+    hibernate:
+      jdbc:
+        batch_size: 50
+        fetch_size: 50
+        max_size: 25
+        min_size: 5
+    dialect: org.hibernate.dialect.MySQL8Dialect

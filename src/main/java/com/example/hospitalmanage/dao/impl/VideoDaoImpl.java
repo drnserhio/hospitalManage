@@ -12,16 +12,19 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -33,7 +36,8 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 public class VideoDaoImpl implements VideoDao {
 
     private UserDao userDao;
-    private final String DIRECTORY = System.getProperty("user.home") + "/Downloads/uploads/";
+    private final String DIRECTORY = System.getProperty("user.home");
+    private final EntityManagerFactory entityManagerFactory;
 
     public List<String> uploadFiles(String username, List<MultipartFile> multipartFiles)
             throws IOException {
@@ -43,20 +47,48 @@ public class VideoDaoImpl implements VideoDao {
             String fileName = StringUtils.cleanPath(file.getOriginalFilename());
             Path fileStorage = Paths.get(DIRECTORY, fileName).toAbsolutePath().normalize();
             Files.copy(file.getInputStream(), fileStorage, REPLACE_EXISTING);
-            addVideoToSetUser(byUsername,fileName);
+            addVideoToUser(byUsername,fileName);
             fileNames.add(fileName);
         }
-        userDao.updateUser(byUsername);
         return fileNames;
     }
 
-    private void addVideoToSetUser(User user, String fileName){
-        for (Video file : user.getVideoFiles()) {
-            if (file.getNameFile().equals(fileName)) {
-                return;
-            }
+    private void addVideoToUser(User user, String fileName){
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+        try {transaction.begin();
+            Video video = new Video();
+            video.setCreateDate(new Date());
+            video.setNameFile(fileName);
+            entityManager.persist(video);
+            transaction.commit();
+            insertVideoToUser(user.getId(), video.getId());
+        } catch (Exception e) {
+            transaction.rollback();
+            e.printStackTrace();
+        } finally {
+            entityManager.close();
         }
-        user.getVideoFiles().add(new Video(fileName));
+    }
+
+
+    private void insertVideoToUser(Long userId, Long videoId) {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+        try {
+            transaction.begin();
+            entityManager
+                    .createNativeQuery("insert into users_videos values (:userId, :videoId)")
+                    .setParameter("userId", userId)
+                    .setParameter("videoId", videoId)
+                    .executeUpdate();
+            transaction.commit();
+        } catch (Exception e) {
+            transaction.rollback();
+            e.printStackTrace();
+        } finally {
+            entityManager.close();
+        }
     }
 
     public ResponseEntity<Resource> downloadFiles(String username, String filename)

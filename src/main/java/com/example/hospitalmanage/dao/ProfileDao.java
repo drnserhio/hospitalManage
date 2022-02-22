@@ -15,20 +15,19 @@ import java.time.LocalDateTime;
 
 public interface ProfileDao {
 
-    public byte[] getDocument(String username) throws Exception;
+    byte[] getDocument(String username) throws Exception;
 
-    public User updateUserTimeVisitByUsername(String currentUsername, LocalDateTime timeVisit) throws UserNotFoundException;
+    User updateUserTimeVisitByUsername(String currentUsername, LocalDateTime timeVisit) throws UserNotFoundException;
 
-    public void addDiagnosis(Long userId, String icdName);
+    void addDiagnosis(Long userId, String icdName);
 
+    void addTreatment(Long userId, String treatmentJson);
 
-    public void addTreatment(Long userId, String treatmentJson);
+    void deleteChooseTreatment(Long userId, Long treatmentId);
 
-    public void deleteChooseTreatment(Long userId, Long treatmentId);
+    User changePassByUsernameAndOldPassword(String oldPassword, String newPassword) throws UserNotFoundException, PasswordNotValidException;
 
-    public User changePassByUsernameAndOldPassword(String oldPassword, String newPassword) throws UserNotFoundException, PasswordNotValidException;
-
-    public User changeHospitalisation(String username, String hospitalization);
+    User changeHospitalisation(String username, String hospitalization);
 
     ResponseTable findAllDiagnosisByUser(RequestTabel request, Long id);
 

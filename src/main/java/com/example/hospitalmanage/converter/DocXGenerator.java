@@ -83,16 +83,6 @@ public class DocXGenerator {
     }
 
     private void validateFieldUser(User user) throws UserFieldIsEmptyException {
-//        mappings.put("firstname", findUser.getFirstname());
-//        mappings.put("lastname", findUser.getLastname());
-//        mappings.put("patronomic", findUser.getPatronomic());
-//        mappings.put("age", String.valueOf(findUser.getAge()));
-//        mappings.put("address", findUser.getAddress());
-//        mappings.put("diagnosisSize", String.valueOf(findUser.getDiagnosis().size()));
-//        mappings.put("hospitalization", findUser.getHospiztalization() == true ? "YES" : "NO");
-//        mappings.put("treatmentSize", String.valueOf(findUser.getTreatment().size()));
-//        mappings.put("dateNow", formatter.format(LocalDateTime.now()));
-//        mappings.put("doctor", SecurityContextHolder.getContext().getAuthentication().getName());
         if (Objects.isNull(user.getFirstname())) {
             throw new UserFieldIsEmptyException(USER_EMPTY_FILED);
         }

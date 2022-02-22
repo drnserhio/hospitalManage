@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 @AllArgsConstructor
 @RestController
@@ -22,13 +23,13 @@ public class VideoResource extends ExceptionHandling {
 
     private final VideoService videoService;
 
-    @PostMapping("/upload/{username}")
+    @PostMapping(value = "/upload/{username}")
     @PreAuthorize("hasAnyAuthority('god:all', 'operation:all')")
     public ResponseEntity<List<String>> uploadFiles(
             @PathVariable("username") String username,
             @RequestParam("files") List<MultipartFile> multipartFiles) throws IOException {
         List<String> fileNames = videoService.uploadFiles(username, multipartFiles);
-        return ResponseEntity.ok().body(fileNames);
+        return new ResponseEntity<>(fileNames, OK);
     }
 
     @GetMapping("download/{username}/{filename}")
