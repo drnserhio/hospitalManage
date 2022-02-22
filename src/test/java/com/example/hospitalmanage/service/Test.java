@@ -11,7 +11,6 @@ import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@TestPropertySource
 public class Test {
 
     @Autowired
