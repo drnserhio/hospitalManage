@@ -309,7 +309,7 @@ public class ProfileDaoImpl implements ProfileDao {
         int count = 0;
         try {
             Query query = entityManager
-                    .createNativeQuery("select count(id) from analyzeicddate az where az.id in (select a_z.diagnos_id from users_diagnosis a_z where a_z.user_id = :userId)")
+                    .createNativeQuery("select count(id) from AnalyzeICDDate az where az.id in (select a_z.diagnos_id from users_diagnosis a_z where a_z.user_id = :userId)")
                     .setHint(QueryHints.HINT_READONLY, true)
                     .setParameter("userId", userId);
             count = ((Number) query.getSingleResult()).intValue();

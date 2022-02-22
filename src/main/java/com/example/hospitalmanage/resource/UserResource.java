@@ -155,7 +155,7 @@ public class UserResource extends ExceptionHandling {
     }
 
     @GetMapping("/systemusers")
-    @PreAuthorize("hasAnyAuthority('god:all', 'profile:user')")
+    @PreAuthorize("hasAnyAuthority('god:all', 'profile:user', 'profile:all')")
     public ResponseEntity<List<User>> getAllUserSystem() {
         List<User> allUsersSystem = userService.findAll();
         return new ResponseEntity<>(allUsersSystem, OK);

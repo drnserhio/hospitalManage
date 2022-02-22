@@ -8,12 +8,17 @@ server:
 spring:
   data:
     mongodb:
-      uri: mongodb://root:5600@127.0.0.1:27017/chat?authSource=chat&readPreference=primary&appname=MongoDB%20Compass&directConnection=true&ssl=false
+#      uri: mongodb://root:5600@127.0.0.1:27017/chat?authSource=chat&readPreference=primary&appname=MongoDB%20Compass&directConnection=true&ssl=false
+#  datasource:
+#    url: jdbc:mysql://localhost:3306/hospitalDB
+#    username: root
+#    password:
+        uri: mongodb://root:5600@mongo:27017/chat?authSource=chat
   datasource:
-    url: jdbc:mysql://localhost:3306/hospitalDB
-    username: root
-    password:
-    driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://mysql:3306/hospitalDB
+        username: root
+        password: root
+        driver-class-name: com.mysql.cj.jdbc.Driver
   mvc:
     format:
       date-time: yyyy-MM-dd HH:mm:ss

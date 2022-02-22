@@ -203,7 +203,8 @@ public class UserDaoImpl implements UserDao {
         User user = null;
         try {
             Query query = entityManager
-                    .createQuery("select usr from User usr where usr.id = :id").setHint(QueryHints.HINT_READONLY, true)
+                    .createQuery("select usr from User usr where usr.id = :id")
+                    .setHint(QueryHints.HINT_READONLY, true)
                     .setParameter("id", id);
             user = (User) query.getResultList().get(0);
         } catch (Exception e) {
@@ -222,7 +223,8 @@ public class UserDaoImpl implements UserDao {
         long count = 0;
         try {
             Query query = entityManager.
-                    createQuery("select count(usr) from User usr where usr.id = :id").setHint(QueryHints.HINT_READONLY, true)
+                    createQuery("select count(usr) from User usr where usr.id = :id")
+                    .setHint(QueryHints.HINT_READONLY, true)
                     .setParameter("id", id);
             count = (long) query.getSingleResult();
         } catch (Exception e) {
@@ -239,7 +241,8 @@ public class UserDaoImpl implements UserDao {
         saveProfileImage(user, profileImage);
         update(user);
         try {
-            emailService.sendMessageUpdateProfileImage(user.getFirstname(), user.getLastname(), user.getUsername(), user.getEmail());
+            emailService
+                    .sendMessageUpdateProfileImage(user.getFirstname(), user.getLastname(), user.getUsername(), user.getEmail());
         } catch (MessagingException e) {
             e.printStackTrace();
         }
@@ -287,13 +290,13 @@ public class UserDaoImpl implements UserDao {
         user.setInfoAboutSick(infoAboutSick);
         updateUser(user);
         try {
-            emailService.sendMessageUpdateProfile(user.getFirstname(), user.getLastname(), user.getUsername(), user.getEmail());
+            emailService
+                    .sendMessageUpdateProfile(user.getFirstname(), user.getLastname(), user.getUsername(), user.getEmail());
         } catch (MessagingException e) {
             e.printStackTrace();
         }
         return user;
     }
-
 
     private User validationNewUsernameAndEmail(String currentUsername, String newUsername, String newEmail)
             throws UserNotFoundException, UserNameExistsException, EmailExistsException, UserNameExistsException {
@@ -362,7 +365,6 @@ public class UserDaoImpl implements UserDao {
         return ServletUriComponentsBuilder.fromCurrentContextPath().path(
                 USER_IMAGE_PATH + username + FORWARD_SLASH + username + DOT + JPG_EXSTENSION).toUriString();
     }
-
 
     private String getTemporaryProfileImageUrl(String username) {
         return ServletUriComponentsBuilder.fromCurrentContextPath().path(DEFAULT_USER_IMAGE_PATH + username).toUriString();
@@ -483,7 +485,7 @@ public class UserDaoImpl implements UserDao {
         RequestTableHelper.init(request);
         List<Treatment> treatments = Collections.emptyList();
         try {
-            String sql = String.format("select id, date_create, treatment from treatment t where t.id in (select u_t.treatment_id from users_treatments u_t where u_t.user_id = %d) order by %s %s", userId, request.getColumn(), request.getSort());
+            String sql = String.format("select id, date_create, treatment from Treatment t where t.id in (select u_t.treatment_id from users_treatments u_t where u_t.user_id = %d) order by %s %s", userId, request.getColumn(), request.getSort());
             Query query = entityManager
                     .createNativeQuery(sql, Treatment.class)
                     .setHint(QueryHints.HINT_READONLY, true)
@@ -514,7 +516,7 @@ public class UserDaoImpl implements UserDao {
         RequestTableHelper.init(request);
         List<Video> videos = Collections.emptyList();
         try {
-            String sql = String.format("select id, create_date, name_file from video v where v.id in (select u_v.video_id from users_videos u_v where u_v.user_id = %d) order by %s %s", userId, request.getColumn(), request.getSort());
+            String sql = String.format("select id, create_date, name_file from Video v where v.id in (select u_v.video_id from users_videos u_v where u_v.user_id = %d) order by %s %s", userId, request.getColumn(), request.getSort());
             Query query = entityManager
                     .createNativeQuery(sql, Video.class)
                     .setHint(QueryHints.HINT_READONLY, true)
@@ -577,7 +579,7 @@ public class UserDaoImpl implements UserDao {
         int count = 0;
         try {
             Query query = entityManager
-                    .createNativeQuery("select count(id) from video v where v.id in (select u_v.video_id from users_videos u_v where u_v.user_id = :userId)")
+                    .createNativeQuery("select count(id) from Video v where v.id in (select u_v.video_id from users_videos u_v where u_v.user_id = :userId)")
                     .setHint(QueryHints.HINT_READONLY, true)
                     .setParameter("userId", userId);
             count = ((Number) query.getSingleResult()).intValue();
@@ -593,7 +595,7 @@ public class UserDaoImpl implements UserDao {
         int count = 0;
         try {
             Query query = entityManager
-                    .createNativeQuery("select count(id) from treatment t where t.id in (select u_t.treatment_id from users_treatments u_t where u_t.user_id = :userId)")
+                    .createNativeQuery("select count(id) from Treatment t where t.id in (select u_t.treatment_id from users_treatments u_t where u_t.user_id = :userId)")
                     .setHint(QueryHints.HINT_READONLY, true)
                     .setParameter("userId", userId);
             count = ((Number) query.getSingleResult()).intValue();
