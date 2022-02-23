@@ -56,5 +56,16 @@ public final class InitialDataConst {
     public static final String PASSWORD_JERRY = "5600";
     public static final String ROLE_FOR_JERRY = "role_user";
 
+    public static final String FIRSTNAME_TEST = "TestName";
+    public static final String LASTNAME_TEST = "TestLastname";
+    public static final String USERNAME_TEST = "testUsername";
+    public static final String PATRONOMIC_TEST = "testPatronomic";
+    public static final int AGE_TEST = 54;
+    public static final String ADDRESS_TEST = "test - St.77";
+    public static final String EMAIL_TEST = "test@gmail.com";
+    public static final String PASSWORD_TEST = "abc";
+    public static final String ROLE_FOR_TEST = "role_super_admin";
+
+
 
 }

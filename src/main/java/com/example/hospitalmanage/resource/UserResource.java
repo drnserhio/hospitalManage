@@ -21,7 +21,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -37,8 +36,7 @@ import java.util.List;
 import static com.example.hospitalmanage.constant.FileConstant.*;
 import static com.example.hospitalmanage.constant.SecurityConstant.JWT_TOKEN_HEADER;
 import static com.example.hospitalmanage.constant.UserConstant.USER_DELETE_SUCCESSFULLY;
-import static org.springframework.http.HttpStatus.NO_CONTENT;
-import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 
 @RestController
@@ -73,7 +71,6 @@ public class UserResource extends ExceptionHandling {
         User loginUser = userService.findUserByUsername(user.getUsername());
         UserPrincipal userPrincipal = new UserPrincipal(loginUser);
         HttpHeaders jwtHeaders = getJwtHeader(userPrincipal);
-        log.info(SecurityContextHolder.getContext().getAuthentication().getAuthorities().toString());
         return new ResponseEntity<>(loginUser, jwtHeaders, OK);
     }
 
@@ -89,7 +86,7 @@ public class UserResource extends ExceptionHandling {
                 role,
                 Boolean.parseBoolean(isNonLocked)
         );
-        return new ResponseEntity<>(updateUser, OK);
+        return new ResponseEntity<>(updateUser, CREATED);
     }
 
     @DeleteMapping("/delete/{username}")
@@ -143,8 +140,9 @@ public class UserResource extends ExceptionHandling {
             @RequestParam("oldPassword") String oldPassword,
             @RequestParam("newPassword") String newPassword)
             throws UserNotFoundException, PasswordNotValidException {
+        //TODO: refactor
         User user = profileServiceImpl.changePassByUsernameAndOldPassword(oldPassword, newPassword);
-        return new ResponseEntity<>(user, OK);
+        return new ResponseEntity<>(user, CREATED);
     }
 
     @GetMapping("/list")
@@ -156,7 +154,7 @@ public class UserResource extends ExceptionHandling {
 
     @GetMapping("/systemusers")
     @PreAuthorize("hasAnyAuthority('god:all', 'profile:user', 'profile:all')")
-    public ResponseEntity<List<User>> getAllUserSystem() {
+    public ResponseEntity<List<User>> findAll() {
         List<User> allUsersSystem = userService.findAll();
         return new ResponseEntity<>(allUsersSystem, OK);
     }

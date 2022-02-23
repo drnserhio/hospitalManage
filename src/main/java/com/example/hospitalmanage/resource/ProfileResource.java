@@ -21,6 +21,7 @@ import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
+import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
 @RestController
@@ -41,7 +42,6 @@ public class ProfileResource extends ExceptionHandling {
             @RequestParam(value = "age", required = false) String age,
             @RequestParam(value = "username", required = false) String username,
             @RequestParam(value = "email", required = false) String email,
-//            @RequestParam("password") String password,
             @RequestParam(value = "QRCODE", required = false) String QRCODE,
             @RequestParam(value = "address", required = false) String address,
             @RequestParam(value = "infoAboutComplaint", required = false) String infoAboutComplaint,
@@ -59,7 +59,7 @@ public class ProfileResource extends ExceptionHandling {
                 address,
                 infoAboutComplaint,
                 infoAboutSick);
-        return new ResponseEntity<>(user, OK);
+        return new ResponseEntity<>(user, CREATED);
     }
 
 

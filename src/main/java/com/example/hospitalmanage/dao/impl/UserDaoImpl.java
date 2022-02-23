@@ -61,7 +61,7 @@ public class UserDaoImpl implements UserDao {
                          String username,
                          String email,
                          String password)
-            throws MessagingException, UserNotFoundException, UserNameExistsException, EmailExistsException {
+            throws UserNotFoundException, UserNameExistsException, EmailExistsException {
         validationNewUsernameAndEmail(EMPTY, username, email);
         User user = new User();
         user.setUserId(generateUserId());
@@ -400,14 +400,14 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public User findUserByUsername(String useraname) {
+    public User findUserByUsername(String username) {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         User user = null;
         try {
             Query query = entityManager
                     .createQuery("select usr from User usr where usr.username = :username", User.class)
                     .setHint(QueryHints.HINT_READONLY, true)
-                    .setParameter("username", useraname);
+                    .setParameter("username", username);
             user = (User) query.getResultList().get(0);
         } catch (Exception e) {
             entityManager.close();
