@@ -5,10 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.io.Serializable;
 
 
@@ -21,6 +18,7 @@ import java.io.Serializable;
         "value"
 })
 @Data
+@Table(name = "ICD")
 public class ICD implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

@@ -8,6 +8,7 @@ import com.example.hospitalmanage.repos.ChatMessageRepository;
 import com.example.hospitalmanage.repos.ChatRoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;

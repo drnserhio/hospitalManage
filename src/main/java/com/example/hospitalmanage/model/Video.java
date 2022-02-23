@@ -10,6 +10,7 @@ import java.util.Date;
 @Entity
 @Data
 @NoArgsConstructor
+@Table(name = "Video")
 public class Video implements Comparator<Video> {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

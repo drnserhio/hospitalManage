@@ -8,32 +8,33 @@ server:
 spring:
   data:
     mongodb:
-#      uri: mongodb://root:5600@127.0.0.1:27017/chat?authSource=chat&readPreference=primary&appname=MongoDB%20Compass&directConnection=true&ssl=false
-#  datasource:
-#    url: jdbc:mysql://localhost:3306/hospitalDB
-#    username: root
-#    password:
-        uri: mongodb://root:5600@mongo:27017/chat?authSource=chat
+      uri: mongodb://root:5600@127.0.0.1:27017/chat?authSource=chat&readPreference=primary&appname=MongoDB%20Compass&directConnection=true&ssl=false
   datasource:
-        url: jdbc:mysql://mysql:3306/hospitalDB
-        username: root
-        password: root
-        driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/hospitalDB
+    username: root
+    password:
+#        uri: mongodb://root:5600@mongo:27017/chat?authSource=chat
+#  datasource:
+#        url: jdbc:mysql://mysql:3306/hospitalDB
+#        username: root
+#        password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
   mvc:
     format:
       date-time: yyyy-MM-dd HH:mm:ss
   jpa:
     show_sql: true
-
     hibernate:
       jdbc:
         batch_size: 50
         fetch_size: 50
         max_size: 25
         min_size: 5
-      dialect: org.hibernate.dialect.MySQL85Dialect
+      dialect: org.hibernate.dialect.MySQL5Dialect
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+
+
 
   security:
     oauth2:

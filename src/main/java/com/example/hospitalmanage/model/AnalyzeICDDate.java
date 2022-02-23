@@ -12,6 +12,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Table(name = "AnalyzeICDDate")
 public class AnalyzeICDDate {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
