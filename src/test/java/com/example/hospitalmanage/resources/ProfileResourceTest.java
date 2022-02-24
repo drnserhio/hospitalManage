@@ -1,18 +1,24 @@
-package com.example.hospitalmanage.service;
+package com.example.hospitalmanage.resources;
 
 
+import com.example.hospitalmanage.dto.impl.RequestTableDiagnosisImpl;
+import com.example.hospitalmanage.dto.impl.RequestTableTreatmentImpl;
 import com.example.hospitalmanage.model.User;
+import com.example.hospitalmanage.util.RequestTableHelper;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.context.annotation.Profile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -26,9 +32,9 @@ import static org.springframework.http.HttpStatus.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:application-test.yml")
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@ActiveProfiles("test")
+@TestMethodOrder(OrderAnnotation.class)
 public class ProfileResourceTest {
 
     @LocalServerPort
@@ -38,21 +44,9 @@ public class ProfileResourceTest {
 
     @Test
     @Order(1)
-    public void putRequestUpdateUserProfileAndResponseCreated() {
+    public void putRequestUpdateUserProfileAndResponseCreated()
+            throws JSONException {
         createToken();
-//        JSONObject jsonUser = new JSONObject();
-//        jsonUser.put("currentUsername", USERNAME_SUMMER);
-//        jsonUser.put("firstname", FIRSTNAME_SUMMER);
-//        jsonUser.put("lastname", LASTNAME_SUMMER);
-//        jsonUser.put("patronomic", PATRONOMIC_SUMMER);
-//        jsonUser.put("age", AGE_SUMMER);
-//        jsonUser.put("username", "change" + USERNAME_SUMMER );
-//        jsonUser.put("email", EMAIL_TEST);
-//        jsonUser.put("QRCODE", "changeQRCODE");
-//        jsonUser.put("address", "changeAddress");
-//        jsonUser.put("infoAboutComplaint", "changeinfoAboutComplaint");
-//        jsonUser.put("infoAboutSick", "changeinfoAboutSick");
-
         Response put = RestAssured
                 .given()
                 .headers(
@@ -111,7 +105,8 @@ public class ProfileResourceTest {
 
     @Test
     @Order(3)
-    public void putRequestUpdateUserProfileWithBadOrEmptyField() {
+    public void putRequestUpdateUserProfileWithBadOrEmptyField()
+            throws JSONException {
         createToken();
         Response put = RestAssured
                 .given()
@@ -142,7 +137,8 @@ public class ProfileResourceTest {
 
     @Test
     @Order(4)
-    public void getRequestAndResponseDocument() {
+    public void getRequestAndResponseDocument()
+            throws JSONException {
         createToken();
         Response get = RestAssured
                 .given()
@@ -193,117 +189,170 @@ public class ProfileResourceTest {
 
     }
 
-    @Test
-    @Order(6)
-    public void postRequestAndAddNewAnalyzeToUser() {
-
-    }
 
     @Test
     @Order(6)
-    public void postRequestAndAddNewAnalyzeToUserWithoutAuthorization() {
-
+    public void postRequestAndChangeHospitalizationInUser()
+            throws JSONException {
+        createToken();
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("hospitalization", "true");
+        User user = findUser(USERNAME_BETTY);
+        Response response = RestAssured
+                .given()
+                .body(jsonObject.toString())
+                .headers(
+                        AUTHORIZATION,
+                        BEARER + token,
+                        CONTENT_TYPE,
+                        ContentType.JSON,
+                        ACCEPT,
+                        ContentType.JSON
+                )
+                .that()
+                .pathParams("username", USERNAME_BETTY)
+                .when()
+                .post(HOST_TEST + port + "/account/change/hospitalization/{username}");
+        User updateUser = response.andReturn().as(User.class);
+        assertNotNull(user);
+        assertNotNull(user.getId());
+        assertEquals(user.getHospiztalization(), null);
+        assertEquals(updateUser.getHospiztalization(), true);
+        assertNotEquals(user.getHospiztalization(), updateUser.getHospiztalization());
     }
 
     @Test
-    @Order(6)
-    public void postRequestAndAddNewAnalyzeToUserWithBadOrEmptyFiled() {
+    @Order(7)
+    public void postRequestAndChangeHospitalizationInUserWithoutAuthorization()
+            throws JSONException {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("hospitalization", "true");
+
+        Response response = RestAssured
+                .given()
+                .body(jsonObject.toString())
+                .that()
+                .pathParams("username", USERNAME_BETTY)
+                .when()
+                .post(HOST_TEST + port + "/account/change/hospitalization/{username}");
+        assertEquals(FORBIDDEN.value(), response.getStatusCode());
+    }
+
+    @Test
+    @Order(8)
+    public void postRequestAndChangeHospitalizationInUserWithBadOrEmptyFiled()
+            throws JSONException {
+        createToken();
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("ad2", "asd2");
+        Response response = RestAssured
+                .given()
+                .body(jsonObject.toString())
+                .headers(
+                        AUTHORIZATION,
+                        BEARER + token,
+                        CONTENT_TYPE,
+                        ContentType.JSON,
+                        ACCEPT,
+                        ContentType.JSON
+                )
+                .that()
+                .pathParams("username", USERNAME_BETTY)
+                .when()
+                .post(HOST_TEST + port + "/account/change/hospitalization/{username}");
+        assertEquals(INTERNAL_SERVER_ERROR.value(), response.getStatusCode());
 
     }
-//
-//    @Test
-//    @Order(6)
-//    public void postRequestAndAddNewTreatmentToUser() {
-//
-//    }
-//
-//    @Test
-//    @Order(6)
-//    public void postRequestAndAddNewTreatmentToUserWithoutAuthorization() {
-//
-//    }
-//
-//    @Test
-//    @Order(6)
-//    public void postRequestAndAddNewTreatmentToUserWithBadOrEmptyFiled() {
-//
-//    }
-//
-//    @Test
-//    @Order(6)
-//    public void delRequestAndRemoveTreatmentInUser() {
-//
-//    }
-//
-//    @Test
-//    @Order(6)
-//    public void delRequestAndRemoveTreatmentInUserWithoutAuthorization() {
-//
-//    }
-//
-//    @Test
-//    @Order(6)
-//    public void delRequestAndRemoveTreatmentInUserWithBadOrEmptyFiled() {
-//
-//    }
-//
-//
-//    @Test
-//    @Order(6)
-//    public void postRequestAndChangeHospitalizationInUser() {
-//
-//    }
-//
-//    @Test
-//    @Order(6)
-//    public void postRequestAndChangeHospitalizationInUserWithoutAuthorization() {
-//
-//    }
-//
-//    @Test
-//    @Order(6)
-//    public void postRequestAndChangeHospitalizationInUserWithBadOrEmptyFiled() {
-//
-//    }
-//
-//    @Test
-//    @Order(6)
-//    public void postRequestAndResponseTableDiagnosis() {
-//
-//    }
-//
-//    @Test
-//    @Order(6)
-//    public void postRequestAndResponseTableDiagnosisWithoutAuthorization() {
-//
-//    }
-//
-//    @Test
-//    @Order(6)
-//    public void postRequestAndResponseTableDiagnosisWithBadOrEmptyFiled() {
-//
-//    }
-//
-//
-//    @Test
-//    @Order(6)
-//    public void delRequestAndRemoveAnalyze() {
-//
-//    }
-//
-//    @Test
-//    @Order(6)
-//    public void delRequestAndRemoveAnalyzeWithoutAuthorization() {
-//
-//    }
-//
-//    @Test
-//    @Order(6)
-//    public void delRequestAndRemoveAnalyzeWithBadOrEmptyFiled() {
-//
-//    }
 
-    public void createToken() {
+
+    @Test
+    @Order(9)
+    public void postRequestAndResponseTableDiagnosis()
+            throws JSONException {
+        createToken();
+        RequestTableDiagnosisImpl requestTableUsers = new RequestTableDiagnosisImpl();
+        RequestTableHelper.init(requestTableUsers);
+        User find = findUser(USERNAME_RICK);
+        Response response = RestAssured
+                .given()
+                .headers(
+                        AUTHORIZATION,
+                        BEARER + token,
+                        CONTENT_TYPE,
+                        ContentType.JSON,
+                        ACCEPT,
+                        ContentType.JSON
+                )
+                .when()
+                .body(requestTableUsers)
+                .pathParams("id", find.getId())
+                .post(HOST_TEST + port + "/account/list/analize/user/{id}");
+        assertEquals(OK.value(), response.getStatusCode());
+    }
+
+    @Test
+    @Order(10)
+    public void postRequestAndResponseTableDiagnosisWithoutAuthorization() {
+        RequestTableDiagnosisImpl requestTableUsers = new RequestTableDiagnosisImpl();
+        RequestTableHelper.init(requestTableUsers);
+        User find = findUser(USERNAME_RICK);
+        Response response = RestAssured
+                .given()
+                .body(requestTableUsers)
+                .pathParams("id", find.getId())
+                .when()
+                .post(HOST_TEST + port + "/account/list/analize/user/{id}");
+        assertEquals(FORBIDDEN.value(), response.getStatusCode());
+    }
+
+    @Test
+    @Order(11)
+    public void postRequestAndResponseTableDiagnosisWithBadOrEmptyFiled()
+            throws JSONException {
+        createToken();
+        User find = findUser(USERNAME_RICK);
+        Response response = RestAssured
+                .given()
+                .headers(
+                        AUTHORIZATION,
+                        BEARER + token,
+                        CONTENT_TYPE,
+                        ContentType.JSON,
+                        ACCEPT,
+                        ContentType.JSON
+                )
+                .when()
+                .body(ContentType.JSON)
+                .pathParams("id", find.getId())
+                .post(HOST_TEST + port + "/account/list/analize/user/{id}");
+        assertEquals(INTERNAL_SERVER_ERROR.value(), response.getStatusCode());
+    }
+
+
+    public User findUser(Object username) {
+        User usr = null;
+        try {
+            usr = RestAssured
+                    .given()
+                    .headers(
+                            AUTHORIZATION,
+                            BEARER + token,
+                            CONTENT_TYPE,
+                            ContentType.JSON,
+                            ACCEPT,
+                            ContentType.JSON
+                    )
+                    .pathParams("username", username)
+                    .when()
+                    .get(HOST_TEST + port + "/user/find/{username}")
+                    .andReturn()
+                    .as(User.class);
+        } catch (Exception e) {
+        }
+        return usr;
+    }
+
+    public void createToken() throws JSONException {
         if (token != null
                 && token.length() > 0) {
             return;

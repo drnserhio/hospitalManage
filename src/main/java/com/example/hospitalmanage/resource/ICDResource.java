@@ -24,7 +24,6 @@ public class ICDResource extends ExceptionHandling {
 
     private ICDService icdService;
 
-
     @GetMapping(path = "/list")
     @PreAuthorize("hasAnyAuthority('god:all')")
     public ResponseEntity<String> getList()
@@ -33,17 +32,12 @@ public class ICDResource extends ExceptionHandling {
         return new ResponseEntity<>(list, OK);
     }
 
-
-    @GetMapping( path = "/{code}")
+    @GetMapping(path = "/{code}")
     @PreAuthorize("hasAnyAuthority('god:all', 'patient:all')")
     public ResponseEntity<ICD> getCodeICD(
             @PathVariable("code") String code)
             throws IOException {
         ICD icd = icdService.getCodeICD(code);
-        return new ResponseEntity<>(icd,  OK);
+        return new ResponseEntity<>(icd, OK);
     }
-
-
-
-
 }

@@ -10,8 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.hibernate.jpa.QueryHints;
 import org.springframework.http.*;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import javax.persistence.EntityManager;
@@ -31,19 +29,19 @@ import static com.example.hospitalmanage.constant.ICDConstant.*;
 @AllArgsConstructor
 public class ICDDaoImpl implements ICDDao {
 
-
     private OAuthTokenProvider oAuthTokenProvider;
     private RestTemplate restTemplate;
     private EntityManagerFactory entityManagerFactory;
 
     public ICD getCodeICD(String code) throws IOException {
-        HttpEntity<String > entity = new HttpEntity<>(getOAuthHeader());
+        HttpEntity<String> entity = new HttpEntity<>(getOAuthHeader());
         ResponseEntity<String> response = restTemplate.exchange(API_ICD_URI + code.toUpperCase(), HttpMethod.GET, entity, String.class);
-        TypeReference<HashMap<String,Object>> typeRef = new TypeReference<>() {};
+        TypeReference<HashMap<String, Object>> typeRef = new TypeReference<>() {
+        };
         ObjectMapper mapper = new ObjectMapper();
-        HashMap<String,Object> map = mapper.readValue(response.getBody(), typeRef);
+        HashMap<String, Object> map = mapper.readValue(response.getBody(), typeRef);
         LinkedHashMap<String, String> title = (LinkedHashMap<String, String>) map.get("title");
-        return  isICDHasInBase(code, title.get(JSON_FIELD_LANGUAGE),  title.get(JSON_FIELD_VALUE));
+        return isICDHasInBase(code, title.get(JSON_FIELD_LANGUAGE), title.get(JSON_FIELD_VALUE));
     }
 
     private ICD isICDHasInBase(String code, String language, String value) {

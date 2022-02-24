@@ -3,7 +3,6 @@ package com.example.hospitalmanage.resource;
 import com.example.hospitalmanage.dto.ResponseTable;
 import com.example.hospitalmanage.dto.impl.RequestTableDiagnosisImpl;
 import com.example.hospitalmanage.exception.ExceptionHandling;
-import com.example.hospitalmanage.exception.domain.UserFieldIsEmptyException;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
 import com.example.hospitalmanage.model.Treatment;
 import com.example.hospitalmanage.model.User;
@@ -11,14 +10,11 @@ import com.example.hospitalmanage.service.ProfileService;
 import com.example.hospitalmanage.service.UserService;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
-import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
 import java.time.LocalDateTime;
 
 import static org.springframework.http.HttpStatus.CREATED;
@@ -62,7 +58,6 @@ public class ProfileResource extends ExceptionHandling {
         return new ResponseEntity<>(user, CREATED);
     }
 
-
     @GetMapping("/document/{username}")
     @PreAuthorize("hasAnyAuthority('god:all', 'operation:all', 'operation:file')")
     public ResponseEntity<byte[]> getDocument(
@@ -70,7 +65,6 @@ public class ProfileResource extends ExceptionHandling {
             throws Exception {
         return new ResponseEntity<>(profileService.getDocument(username), OK);
     }
-
 
     @PostMapping("/diagnosis/{username}")
     @PreAuthorize("hasAnyAuthority('god:all', 'patient:all')")
@@ -91,13 +85,12 @@ public class ProfileResource extends ExceptionHandling {
         return new ResponseEntity<>(updateUser, OK);
     }
 
-
     @PostMapping("/add-treatment/{userId}")
     @PreAuthorize("hasAnyAuthority('god:all', 'patient:all')")
     public void addTreatment(
             @PathVariable("userId") Long userId,
             @RequestBody String treatment) {
-            profileService.addTreatment(userId, treatment);
+        profileService.addTreatment(userId, treatment);
     }
 
     @PutMapping("/treatment-change")
@@ -108,13 +101,12 @@ public class ProfileResource extends ExceptionHandling {
         return new ResponseEntity<>(update, OK);
     }
 
-
     @DeleteMapping("/del/choose/treatment/{userId}/{treatmentId}")
     @PreAuthorize("hasAnyAuthority('god:all', 'patient:all')")
     public void deleteChooseTreatment(
             @PathVariable("userId") Long userId,
             @PathVariable("treatmentId") Long treatmentId) {
-       profileService.deleteChooseTreatment(userId, treatmentId);
+        profileService.deleteChooseTreatment(userId, treatmentId);
     }
 
     @PostMapping("/change/hospitalization/{username}")
@@ -123,7 +115,7 @@ public class ProfileResource extends ExceptionHandling {
             @PathVariable("username") String username,
             @RequestBody String hospitalization) {
         User user = profileService.changeHospitalisation(username, hospitalization);
-        return new ResponseEntity<>(user, OK);
+        return new ResponseEntity<>(user, CREATED);
     }
 
     @PostMapping("/list/analize/user/{id}")
@@ -146,6 +138,6 @@ public class ProfileResource extends ExceptionHandling {
     @PutMapping("/logout")
     public boolean logOut(
             @RequestBody User user) {
-       return userService.logOut(user);
+        return userService.logOut(user);
     }
 }

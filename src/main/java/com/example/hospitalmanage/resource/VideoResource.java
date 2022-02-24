@@ -39,7 +39,6 @@ public class VideoResource extends ExceptionHandling {
             @PathVariable("filename") String filename)
             throws IOException {
         return videoService.downloadFiles(username, filename);
-
     }
 
     @DeleteMapping("remove/{username}/{filename}")

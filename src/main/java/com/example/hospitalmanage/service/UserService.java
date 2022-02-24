@@ -14,7 +14,6 @@ import java.util.List;
 
 public interface UserService {
 
-    User findUserByEmail(String email);
     User findUserByUsername(String useraname);
 
     User register(String firstname, String lastname, String username, String email, String password) throws MessagingException, UserNotFoundException, UserNameExistsException, EmailExistsException;
@@ -22,14 +21,11 @@ public interface UserService {
     User updateUser(String username, String role, boolean isNotLocaked)
             throws IOException, UserNotFoundException, UserNameExistsException, EmailExistsException;
 
-   void deleteUser(String username);
-
-//   void resetPassword(String email); // about phone reconnect account
+    void deleteUser(String username);
 
     boolean logOut(User user);
 
-  User updateProfileImage(String username, MultipartFile profileImage) throws IOException, UserNotFoundException, UserNameExistsException, EmailExistsException;
-
+    User updateProfileImage(String username, MultipartFile profileImage) throws IOException, UserNotFoundException, UserNameExistsException, EmailExistsException;
 
     List<User> getRoleUser();
 
@@ -45,19 +41,11 @@ public interface UserService {
                        String infoAboutComplaint,
                        String infoAboutSick) throws MessagingException;
 
-
     List<User> findAll();
-
 
     ResponseTable findAllPage(RequestTabel request);
 
     ResponseTable getTreatmentsByUserId(RequestTabel request, Long userId);
+
     ResponseTable getVideosByUserId(RequestTabel request, Long userId);
-
-
-    User findUserByUserId(Long id);
-    List<User> findAllChatUsersByUserId(Long userId);
-
-
-
 }

@@ -13,5 +13,5 @@ import org.springframework.test.context.junit4.SpringRunner;
 @ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:application-test.yml")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class VideoResourceTest {
+public class ProfileServiceTest {
 }

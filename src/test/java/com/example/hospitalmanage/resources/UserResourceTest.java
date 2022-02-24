@@ -1,31 +1,25 @@
-package com.example.hospitalmanage.service;
+package com.example.hospitalmanage.resources;
 
 import com.example.hospitalmanage.dto.impl.RequestTableTreatmentImpl;
 import com.example.hospitalmanage.dto.impl.RequestTableUsersImpl;
-import com.example.hospitalmanage.exception.domain.EmailExistsException;
-import com.example.hospitalmanage.exception.domain.UserNameExistsException;
-import com.example.hospitalmanage.exception.domain.UserNotFoundException;
 import com.example.hospitalmanage.model.User;
 import com.example.hospitalmanage.util.RequestTableHelper;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.context.annotation.Profile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import javax.mail.MessagingException;
 
 import static com.example.hospitalmanage.constant.ICDConstant.BEARER;
 import static com.example.hospitalmanage.constant.InitialDataConst.*;
@@ -38,20 +32,18 @@ import static org.springframework.http.HttpStatus.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:application-test.yml")
+@ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class UserResourceTest {
 
     @LocalServerPort
     private String port;
-    @Autowired
-    private TestRestTemplate testRestTemplate;
     private static String token;
 
     @Test
     @Order(1)
-    public void postRequestRegistrationUserAndResponseOk() throws JsonProcessingException, UserNotFoundException, MessagingException, UserNameExistsException, EmailExistsException {
+    public void postRequestRegistrationUserAndResponseOk() throws JSONException {
 
         JSONObject usr = new JSONObject();
         usr.put("firstname", FIRSTNAME_TEST);
@@ -64,7 +56,7 @@ public class UserResourceTest {
                 .given().contentType(ContentType.JSON)
                 .body(usr.toString())
                 .post(HOST_TEST + port + "/user/register");
-        User u = post.andReturn().as(User.class);
+        User u = post.thenReturn().as(User.class);
         assertEquals(OK.value(), post.getStatusCode());
         assertNotNull(post.getBody());
         assertNotNull(u.getId());
@@ -72,7 +64,8 @@ public class UserResourceTest {
 
     @Test
     @Order(2)
-    public void postRequestUserSignInAndResponseOk() {
+    public void postRequestUserSignInAndResponseOk()
+            throws JSONException {
         JSONObject usr = new JSONObject();
         usr.put("username", USERNAME_TEST);
         usr.put("password", PASSWORD_TEST);
@@ -81,7 +74,7 @@ public class UserResourceTest {
                 .given().contentType(ContentType.JSON)
                 .body(usr.toString())
                 .post(HOST_TEST + port + "/user/login");
-        User u = post.andReturn().as(User.class);
+        User u = post.thenReturn().as(User.class);
         assertEquals(OK.value(), post.getStatusCode());
         assertNotNull(post.getBody());
         assertNotNull(u.getId());
@@ -91,7 +84,8 @@ public class UserResourceTest {
 
     @Test
     @Order(3)
-    public void postRequestUserSignInWithBadlyOrEmptyFieldReruntBadRequest() {
+    public void postRequestUserSignInWithBadlyOrEmptyFieldReruntBadRequest()
+            throws JSONException {
         JSONObject usr = new JSONObject();
         usr.put("username", "");
         usr.put("password", "");
@@ -105,7 +99,8 @@ public class UserResourceTest {
 
     @Test
     @Order(4)
-    public void postRequestRegistrationUserWithBadOrEmptyField() {
+    public void postRequestRegistrationUserWithBadOrEmptyField()
+            throws JSONException {
         JSONObject usr = new JSONObject();
         usr.put("none", FIRSTNAME_TEST);
         usr.put("none", LASTNAME_TEST);
@@ -123,7 +118,8 @@ public class UserResourceTest {
 
     @Test
     @Order(5)
-    public void putRequestUpdateUserAccessToSystem() {
+    public void putRequestUpdateUserAccessToSystem()
+            throws JSONException {
         createToken();
         User userBeforeUpdate = findUser(USERNAME_JERRY);
 
@@ -164,7 +160,8 @@ public class UserResourceTest {
 
     @Test
     @Order(7)
-    public void putRequestUpdateUserAccessWithBadOrEmptyField() {
+    public void putRequestUpdateUserAccessWithBadOrEmptyField()
+            throws JSONException {
         createToken();
         Response putUpdateUserAccess = RestAssured
                 .given()
@@ -186,7 +183,8 @@ public class UserResourceTest {
 
     @Test
     @Order(8)
-    public void getRequestUsernameAndFindHim() {
+    public void getRequestUsernameAndFindHim()
+            throws JSONException {
         createToken();
         User user = findUser(USERNAME_BETTY);
 
@@ -210,7 +208,8 @@ public class UserResourceTest {
 
     @Test
     @Order(10)
-    public void getRequestUsernameWithBadOrEmptyField() {
+    public void getRequestUsernameWithBadOrEmptyField()
+            throws JSONException {
         createToken();
         Response response = RestAssured
                 .given()
@@ -243,7 +242,8 @@ public class UserResourceTest {
 
     @Test
     @Order(12)
-    public void delRequestUsernameWithBadOrEmptyField() {
+    public void delRequestUsernameWithBadOrEmptyField()
+            throws JSONException {
         createToken();
         User find = findUser(USERNAME_MORTHY);
         Response response = RestAssured
@@ -265,7 +265,8 @@ public class UserResourceTest {
 
     @Test
     @Order(13)
-    public void delRequestUsernameAndDeleteHim() {
+    public void delRequestUsernameAndDeleteHim()
+            throws JSONException {
         createToken();
         User find = findUser(USERNAME_MORTHY);
         Response response = RestAssured
@@ -308,7 +309,8 @@ public class UserResourceTest {
 //
     @Test
     @Order(14)
-    public void getRequestAndResponseListUsers() {
+    public void getRequestAndResponseListUsers()
+            throws JSONException {
         createToken();
         Response response = RestAssured
                 .given()
@@ -337,7 +339,8 @@ public class UserResourceTest {
 
     @Test
     @Order(16)
-    public void getRequestAndResponseTableUsers() {
+    public void getRequestAndResponseTableUsers()
+            throws JSONException {
         createToken();
         RequestTableUsersImpl requestTableUsers = new RequestTableUsersImpl();
         RequestTableHelper.init(requestTableUsers);
@@ -359,7 +362,8 @@ public class UserResourceTest {
 
     @Test
     @Order(17)
-    public void getRequestAndResponseTableUsersWithoutAuthorization() {
+    public void getRequestAndResponseTableUsersWithoutAuthorization()
+            throws JSONException {
         RequestTableUsersImpl requestTableUsers = new RequestTableUsersImpl();
         RequestTableHelper.init(requestTableUsers);
         createToken();
@@ -373,7 +377,8 @@ public class UserResourceTest {
 
     @Test
     @Order(18)
-    public void getRequestAndResponseTableTreatments() {
+    public void getRequestAndResponseTableTreatments()
+            throws JSONException {
         createToken();
         RequestTableTreatmentImpl requestTableUsers = new RequestTableTreatmentImpl();
         RequestTableHelper.init(requestTableUsers);
@@ -397,7 +402,8 @@ public class UserResourceTest {
 
     @Test
     @Order(19)
-    public void getRequestAndResponseTableTreatmentsWithoutAuthorization() {
+    public void getRequestAndResponseTableTreatmentsWithoutAuthorization()
+            throws JSONException {
         createToken();
         RequestTableTreatmentImpl requestTableUsers = new RequestTableTreatmentImpl();
         RequestTableHelper.init(requestTableUsers);
@@ -413,7 +419,8 @@ public class UserResourceTest {
 
     @Test
     @Order(20)
-    public void getRequestAndResponseTableVideos() {
+    public void getRequestAndResponseTableVideos()
+            throws JSONException {
         createToken();
         RequestTableTreatmentImpl requestTableUsers = new RequestTableTreatmentImpl();
         RequestTableHelper.init(requestTableUsers);
@@ -437,7 +444,8 @@ public class UserResourceTest {
 
     @Test
     @Order(21)
-    public void getRequestAndResponseTableVideosWithoutAuthorization() {
+    public void getRequestAndResponseTableVideosWithoutAuthorization()
+            throws JSONException {
         createToken();
         RequestTableTreatmentImpl requestTableUsers = new RequestTableTreatmentImpl();
         RequestTableHelper.init(requestTableUsers);
@@ -474,7 +482,8 @@ public class UserResourceTest {
         return usr;
     }
 
-    public void createToken() {
+    public void createToken()
+            throws JSONException {
         if (token != null
                 && token.length() > 0) {
             return;

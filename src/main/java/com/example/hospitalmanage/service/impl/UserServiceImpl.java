@@ -33,10 +33,8 @@ import static com.example.hospitalmanage.constant.UserConstant.USER_NOT_FOUND_BY
 @Qualifier("UserDetailsService")
 public class UserServiceImpl implements UserService, UserDetailsService {
 
-
     private final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
     private final UserDao userDao;
-
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -52,7 +50,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             UserPrincipal userPrincipal = new UserPrincipal(user);
             return userPrincipal;
         }
-
     }
 
     @Override
@@ -88,7 +85,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return user;
     }
 
-
     public List<User> getRoleUser() {
         return userDao.getRoleUser();
     }
@@ -111,17 +107,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return user;
     }
 
-
-    @Override
-    public User findUserByEmail(String email) {
-        return userDao.findUserByEmail(email);
-    }
-
     @Override
     public User findUserByUsername(String useraname) {
         return userDao.findUserByUsername(useraname);
     }
-
 
     @Override
     public List<User> findAll() {
@@ -134,30 +123,17 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return response;
     }
 
-
     public ResponseTable getTreatmentsByUserId(RequestTabel request, Long userId) {
         ResponseTable treatmentsByUserId = userDao.getTreatmentsByUserId(request, userId);
         return treatmentsByUserId;
     }
-
 
     public ResponseTable getVideosByUserId(RequestTabel request, Long userId) {
         ResponseTable videosByUserId = userDao.getVideosByUserId(request, userId);
         return videosByUserId;
     }
 
-    @Override
-    public User findUserByUserId(Long id) {
-        return userDao.findUserByUserId(id);
-    }
-
-    @Override
-    public List<User> findAllChatUsersByUserId(Long userId) {
-        return userDao.findAllChatUsersByUserId(userId);
-    }
-
     public boolean logOut(User user) {
-       return userDao.logOut(user);
+        return userDao.logOut(user);
     }
-
 }
