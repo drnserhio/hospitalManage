@@ -2,6 +2,7 @@ package com.example.hospitalmanage.resource;
 
 import com.example.hospitalmanage.dto.ResponseTable;
 import com.example.hospitalmanage.dto.impl.RequestTableTreatmentImpl;
+import com.example.hospitalmanage.dto.impl.RequestTableVideoImpl;
 import com.example.hospitalmanage.exception.ExceptionHandling;
 import com.example.hospitalmanage.exception.domain.EmailExistsException;
 import com.example.hospitalmanage.exception.domain.PasswordNotValidException;
@@ -200,7 +201,7 @@ public class UserResource extends ExceptionHandling {
     @PostMapping("/videos/in/user/{userId}")
     @PreAuthorize("hasAnyAuthority('god:all', 'oparation:all')")
     public ResponseEntity<ResponseTable> getVideosByUserId(
-            @RequestBody RequestTableTreatmentImpl request,
+            @RequestBody RequestTableVideoImpl request,
             @PathVariable("userId") Long id) {
         ResponseTable responseTable = userService.getVideosByUserId(request , id);
         return new ResponseEntity<>(responseTable, OK);

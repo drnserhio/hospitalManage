@@ -5,6 +5,7 @@ import com.example.hospitalmanage.dto.RequestTabel;
 import com.example.hospitalmanage.dto.ResponseTable;
 import com.example.hospitalmanage.dto.impl.ResponseTableTreatmentImpl;
 import com.example.hospitalmanage.dto.impl.ResponseTableUsersImpl;
+import com.example.hospitalmanage.dto.impl.ResponseTableVideoImpl;
 import com.example.hospitalmanage.exception.domain.EmailExistsException;
 import com.example.hospitalmanage.exception.domain.UserNameExistsException;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
@@ -92,6 +93,7 @@ public class UserDaoImpl implements UserDao {
         return save;
     }
 
+    @Override
     public User saveUser(User user) {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         EntityTransaction transaction = entityManager.getTransaction();
@@ -195,26 +197,6 @@ public class UserDaoImpl implements UserDao {
             entityManager.close();
         }
 
-    }
-
-    @Override
-    public User findUserByUserId(Long id) {
-        EntityManager entityManager = entityManagerFactory.createEntityManager();
-        User user = null;
-        try {
-            Query query = entityManager
-                    .createQuery("select usr from User usr where usr.id = :id")
-                    .setHint(QueryHints.HINT_READONLY, true)
-                    .setParameter("id", id);
-            user = (User) query.getResultList().get(0);
-        } catch (Exception e) {
-            entityManager.close();
-            e.printStackTrace();
-        }
-        if (Objects.isNull(user)) {
-            throw new RuntimeException("User not found: " + id);
-        }
-        return user;
     }
 
     @Override
@@ -531,7 +513,7 @@ public class UserDaoImpl implements UserDao {
         int itemsSize = countVideosByUserId(userId);
         int totalPages = totalPageConverter(itemsSize, request.getSize());
 
-        ResponseTable responseTable = new ResponseTableTreatmentImpl(request);
+        ResponseTable responseTable = new ResponseTableVideoImpl(request);
         responseTable.setContent(videos);
         responseTable.setAllItemsSize(itemsSize);
         responseTable.setTotalPages(totalPages);
@@ -555,23 +537,6 @@ public class UserDaoImpl implements UserDao {
         } finally {
             entityManager.close();
         }
-    }
-
-    @Override
-    public List<User> findAllChatUsersByUserId(Long userId) {
-        EntityManager entityManager = entityManagerFactory.createEntityManager();
-        List<User> users = new ArrayList<>();
-        try {
-            Query query = entityManager
-                    .createQuery("select usr from User usr where usr.id <> :userId")
-                    .setHint(QueryHints.HINT_READONLY, true)
-                    .setParameter("userId", userId);
-            users = (List<User>) query.getResultList();
-        } catch (Exception e) {
-            entityManager.close();
-            e.printStackTrace();
-        }
-        return users;
     }
 
     private int countVideosByUserId(Long userId) {

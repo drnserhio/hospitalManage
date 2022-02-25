@@ -24,4 +24,9 @@ public class Treatment {
         this.dateCreate = dateCreate;
     }
 
+    public Treatment(Long id, String treatment) {
+        this.id = id;
+        this.treatment = treatment;
+        this.dateCreate = new Date();
+    }
 }

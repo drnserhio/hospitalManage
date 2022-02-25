@@ -25,6 +25,12 @@ public class Video implements Comparator<Video> {
         createDate = new Date();
     }
 
+    public Video(Long id, String nameFile) {
+        this.id = id;
+        this.nameFile = nameFile;
+        this.createDate = new Date();
+    }
+
     @Override
     public int compare(Video o1, Video o2) {
         if (o1.getNameFile().equals(o2.getNameFile())) {

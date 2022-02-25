@@ -16,11 +16,12 @@ public interface UserDao {
 
 
     User findUserByEmail(String email);
-    User findUserByUsername(String useraname);
-    User saveUser(User user);
-    boolean logOut(User user);
 
-    User register(String firstname, String lastname, String username, String email, String password) throws MessagingException, UserNotFoundException, UserNameExistsException, EmailExistsException;
+    User findUserByUsername(String useraname);
+
+    User saveUser(User user);
+
+    boolean logOut(User user);
 
     User addNewUser(String firstname,
                     String lastname,
@@ -34,6 +35,9 @@ public interface UserDao {
                     boolean isNonLocked,
                     boolean isActive)
             throws UserNotFoundException, UserNameExistsException, EmailExistsException, IOException;
+
+    User register(String firstname, String lastname, String username, String email, String password) throws MessagingException, UserNotFoundException, UserNameExistsException, EmailExistsException;
+
     User updateUser(String username, String role, boolean isNotLocaked)
             throws UserNotFoundException, UserNameExistsException, EmailExistsException;
 
@@ -58,16 +62,14 @@ public interface UserDao {
                        String infoAboutComplaint,
                        String infoAboutSick) throws MessagingException;
 
-    User findUserByUserId(Long id);
     boolean isExistUser(Long id);
-    List<User> findAllChatUsersByUserId(Long userId);
 
     List<User> findAll();
-
 
     ResponseTable findAllPage(RequestTabel request);
 
     ResponseTable getTreatmentsByUserId(RequestTabel request, Long userId);
+
     ResponseTable getVideosByUserId(RequestTabel request, Long userId);
 
 
