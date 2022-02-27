@@ -103,12 +103,6 @@ public class ExceptionHandling {
         return createHttpResponse(BAD_REQUEST, e.getMessage());
     }
 
-    @ExceptionHandler(UserFieldIsEmptyException.class)
-    public ResponseEntity<HttpResponse> userHasEmptyFiledException(UserFieldIsEmptyException e) {
-        return createHttpResponse(PARTIAL_CONTENT, e.getMessage());
-    }
-
-
     private ResponseEntity<HttpResponse> createHttpResponse(HttpStatus status, String message) {
         return new ResponseEntity<>(
                 new HttpResponse(

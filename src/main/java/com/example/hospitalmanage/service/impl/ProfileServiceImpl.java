@@ -4,17 +4,13 @@ import com.example.hospitalmanage.dao.ProfileDao;
 import com.example.hospitalmanage.dto.RequestTabel;
 import com.example.hospitalmanage.dto.ResponseTable;
 import com.example.hospitalmanage.exception.domain.PasswordNotValidException;
-import com.example.hospitalmanage.exception.domain.UserFieldIsEmptyException;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
 import com.example.hospitalmanage.model.Treatment;
 import com.example.hospitalmanage.model.User;
 import com.example.hospitalmanage.service.ProfileService;
 import lombok.AllArgsConstructor;
-import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.springframework.stereotype.Service;
 
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
 import java.time.LocalDateTime;
 
 @Service

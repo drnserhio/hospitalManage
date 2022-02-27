@@ -10,10 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.ResourceUtils;
-import com.example.hospitalmanage.exception.domain.UserFieldIsEmptyException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -24,7 +22,6 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
-import java.util.Objects;
 import java.util.UUID;
 
 import static com.example.hospitalmanage.constant.FileConstant.*;

@@ -1,5 +1,6 @@
 package com.example.hospitalmanage.dao.impl;
 
+import com.example.hospitalmanage.converter.DocXGenerator;
 import com.example.hospitalmanage.dao.ProfileDao;
 import com.example.hospitalmanage.dao.UserDao;
 import com.example.hospitalmanage.dto.RequestTabel;
@@ -7,10 +8,9 @@ import com.example.hospitalmanage.dto.ResponseTable;
 import com.example.hospitalmanage.dto.impl.ResponseTableDiagnosisImpl;
 import com.example.hospitalmanage.exception.domain.PasswordNotValidException;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
+import com.example.hospitalmanage.model.AnalyzeICDDate;
 import com.example.hospitalmanage.model.Treatment;
 import com.example.hospitalmanage.model.User;
-import com.example.hospitalmanage.model.AnalyzeICDDate;
-import com.example.hospitalmanage.converter.DocXGenerator;
 import com.example.hospitalmanage.util.RequestTableHelper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,11 +21,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.ObjectUtils;
 
-import javax.persistence.*;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.Query;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import static com.example.hospitalmanage.constant.HandlingExceptionConstant.PASSWORD_IS_NOT_VALID;
 import static com.example.hospitalmanage.constant.UserConstant.USER_NOT_FOUND_BY_USERNAME;
@@ -47,35 +51,8 @@ public class ProfileDaoImpl implements ProfileDao {
         if (findUser == null) {
             throw new UserNotFoundException(USER_NOT_FOUND_BY_USERNAME + username);
         }
-        if (validationFieldUser(findUser)) {
-
-        }
         return docXGenerator.createDocument(findUser);
     }
-
-    private boolean validationFieldUser(User user) {
-        boolean isEmpty = false;
-
-        if (ObjectUtils.isEmpty(user.getFirstname())) {
-            isEmpty = true;
-        } else if (ObjectUtils.isEmpty(user.getLastname())) {
-            isEmpty = true;
-        } else if (ObjectUtils.isEmpty(user.getPatronomic())) {
-            isEmpty = true;
-        } else if (ObjectUtils.isEmpty(user.getAge())) {
-            isEmpty = true;
-        } else if (ObjectUtils.isEmpty(user.getAddress())) {
-            isEmpty = true;
-        } else if (ObjectUtils.isEmpty(user.getDiagnosis())) {
-            isEmpty = true;
-        } else if (ObjectUtils.isEmpty(user.getHospiztalization())) {
-            isEmpty = true;
-        } else if (ObjectUtils.isEmpty(user.getTreatment())) {
-            isEmpty = true;
-        }
-        return isEmpty;
-    }
-
 
     public User updateUserTimeVisitByUsername(String currentUsername, LocalDateTime timeVisit)
             throws UserNotFoundException {

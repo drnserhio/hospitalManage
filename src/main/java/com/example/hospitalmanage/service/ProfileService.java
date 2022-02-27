@@ -3,14 +3,10 @@ package com.example.hospitalmanage.service;
 import com.example.hospitalmanage.dto.RequestTabel;
 import com.example.hospitalmanage.dto.ResponseTable;
 import com.example.hospitalmanage.exception.domain.PasswordNotValidException;
-import com.example.hospitalmanage.exception.domain.UserFieldIsEmptyException;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
 import com.example.hospitalmanage.model.Treatment;
 import com.example.hospitalmanage.model.User;
-import org.docx4j.openpackaging.exceptions.Docx4JException;
 
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
 import java.time.LocalDateTime;
 
 public interface ProfileService {
