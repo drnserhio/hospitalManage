@@ -5,9 +5,7 @@ import com.example.hospitalmanage.dao.UserDao;
 import com.example.hospitalmanage.dto.RequestTabel;
 import com.example.hospitalmanage.dto.ResponseTable;
 import com.example.hospitalmanage.dto.impl.ResponseTableDiagnosisImpl;
-import com.example.hospitalmanage.dto.impl.projection.AnalizeProjectionDto;
 import com.example.hospitalmanage.exception.domain.PasswordNotValidException;
-import com.example.hospitalmanage.exception.domain.UserFieldIsEmptyException;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
 import com.example.hospitalmanage.model.Treatment;
 import com.example.hospitalmanage.model.User;
@@ -16,7 +14,6 @@ import com.example.hospitalmanage.converter.DocXGenerator;
 import com.example.hospitalmanage.util.RequestTableHelper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.hibernate.jpa.QueryHints;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -24,13 +21,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import javax.persistence.*;
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -54,8 +47,35 @@ public class ProfileDaoImpl implements ProfileDao {
         if (findUser == null) {
             throw new UserNotFoundException(USER_NOT_FOUND_BY_USERNAME + username);
         }
+        if (validationFieldUser(findUser)) {
+
+        }
         return docXGenerator.createDocument(findUser);
     }
+
+    private boolean validationFieldUser(User user) {
+        boolean isEmpty = false;
+
+        if (ObjectUtils.isEmpty(user.getFirstname())) {
+            isEmpty = true;
+        } else if (ObjectUtils.isEmpty(user.getLastname())) {
+            isEmpty = true;
+        } else if (ObjectUtils.isEmpty(user.getPatronomic())) {
+            isEmpty = true;
+        } else if (ObjectUtils.isEmpty(user.getAge())) {
+            isEmpty = true;
+        } else if (ObjectUtils.isEmpty(user.getAddress())) {
+            isEmpty = true;
+        } else if (ObjectUtils.isEmpty(user.getDiagnosis())) {
+            isEmpty = true;
+        } else if (ObjectUtils.isEmpty(user.getHospiztalization())) {
+            isEmpty = true;
+        } else if (ObjectUtils.isEmpty(user.getTreatment())) {
+            isEmpty = true;
+        }
+        return isEmpty;
+    }
+
 
     public User updateUserTimeVisitByUsername(String currentUsername, LocalDateTime timeVisit)
             throws UserNotFoundException {
