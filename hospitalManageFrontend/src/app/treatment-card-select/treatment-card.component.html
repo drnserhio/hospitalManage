@@ -1,0 +1,117 @@
+<div class="fone">
+<div class="container">
+  <br>
+  <br>
+  <br>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark rounded">
+    <a class="navbar-brand" href="#">Hospital</a>
+    <button class="navbar-toggler" type="button" >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+          <a  style="cursor: pointer;" routerLink="/selectprofile" class="nav-link">
+            <i class="fas fa-id-card"></i>
+            Back To Profile</a>
+        </li>
+        <li class="nav-item active">
+          <a  style="cursor: pointer;" routerLink="/user/home" class="nav-link">
+            <i class="fas fa-home-lg-alt"></i>
+            Back To Home</a>
+        </li>
+      </ul>
+      <form class="form-inline my-2 my-lg-0">
+        <input class="form-control mr-sm-2" name="searchTerm" #searchInput="ngModel" ngModel (ngModelChange)="searchUsers(searchInput.value)" type="search" placeholder="Search treatment..." aria-label="Search">
+        <div class="btn-group">
+          <button (click)="getResetTreatmentPage()" type="button" class="btn btn-primary">
+            <i *ngIf="loadIcon" class="fa fa-sync fa-spin"></i><i *ngIf="!loadIcon" class="fas fa-sync"></i>
+          </button>
+        </div>
+      </form>
+    </div>
+  </nav>
+
+  <br>
+  <select id="changeValue" (change)="pageChangeShowEntity($event)">
+    <option *ngFor="let size of pageSizes" [ngValue]="size">
+      {{ size }}
+    </option>
+  </select>
+  <hr>
+
+  <div  class="tab-content mt-3" id="myTabContent">
+    <div class="tab-pane fade show active" id="users">
+      <table class="table table-bordered table-white table-hover bg-white rounded">
+
+        <thead class="thead-dark small">
+        <tr class="text-center ">
+          <th style="cursor: pointer"  (click)="sortByColumn($event)" class="btn-outline-dark justify-content-between text-center" id="treatment">
+             <span [hidden]="activeColumn !== 'treatment'">
+            <i [hidden]="sort == 'asc'" class="fas fa-sort-up"></i>
+            <i [hidden]="sort == 'desc'" class="fas fa-sort-down"></i>
+            </span>
+            <i [hidden]="activeColumn === 'treatment'" class="fas fa-sort"></i>
+            TREATMENT
+          </th>
+          <th style="cursor: pointer" (click)="sortByColumn($event)" class="btn-outline-dark" id="date_create">
+        <span [hidden]="activeColumn !== 'date_create'">
+            <i [hidden]="sort == 'asc'" class="fas fa-sort-up"></i>
+            <i [hidden]="sort == 'desc'" class="fas fa-sort-down"></i>
+            </span>
+            <i [hidden]="activeColumn === 'date_create'" class="fas fa-sort"></i>
+            DATE CREATE</th>
+          <th style="cursor: pointer">DELETE</th>
+
+
+        </tr>
+        </thead>
+        <tbody *ngFor="let tr of treatmens">
+        <tr class="text-center">
+          <td style="cursor: pointer" title="icd" (click)="onSelectTreatmentDiagnos(tr)">{{tr?.treatment}}</td>
+          <td style="cursor: pointer" title="id" (click)="onSelectTreatmentDiagnos(tr)">{{tr.dateCreate | date: 'short'}}</td>
+          <td style="cursor: pointer" title="deleteTreament" (click)="deleteChooseTreatment(tr.id)"><button class="btn btn-outline-danger"><i class="far fa-trash-alt "></i></button></td>
+
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <button id="openModalUpdateTreatment" [hidden]="true"  data-toggle="modal" data-target="#updateTreatment"
+            (click)="openModal(updateTreatment)">Open Modal
+    </button>
+    <hr>
+    <ngb-pagination class="pagination justify-content-center" [collectionSize]="responseTable.allItemsSize"
+                    [(page)]="responseTable.page"
+                    [pageSize]="responseTable.size"
+                    (pageChange)="pageChange($event)">
+    </ngb-pagination>
+</div>
+</div>
+
+
+
+<ng-template #updateTreatment let-modal>
+
+  <div class="container">
+    <div class="modal-header modal-lg">
+      <h4 class="modal-title" id="modal">Change treatment</h4>
+    </div>
+
+
+    <form class="form-group" #value="ngForm">
+
+      <div class="form-group">
+        <label>Treatment</label>
+        <textarea class="form-control form-control-lg" ngModel [(ngModel)] = "selectUpdateTreatment.treatment" type="text" name="text"
+                  ngModel required placeholder="Enter new notice of treatment..."></textarea>
+      </div>
+
+    </form>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="updateTreatmentDiagnos()">save</button>
+      <button type="button" class="btn btn-secondary" (click)="close()">Close</button>
+    </div>
+  </div>
+</ng-template>
+</div>

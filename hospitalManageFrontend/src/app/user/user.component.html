@@ -1,0 +1,130 @@
+
+<div class="fone">
+<div class="container ">
+
+  <br>
+  <br>
+  <br>
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark rounded">
+    <a class="navbar-brand" href="#">Hospital</a>
+    <button class="navbar-toggler" type="button" >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+          <a style="cursor: pointer;"  class="nav-link" >
+            <i class="fas fa-users"></i>
+            Users</a>
+        </li>
+        <li class="nav-item">
+          <a style="cursor: pointer;" class="nav-link" (click)="onToProfile()">
+            <i class="fas fa-id-card"></i>
+            Profile</a>
+        </li>
+      </ul>
+      <form class="form-inline my-2 my-lg-0">
+        <input class="form-control mr-sm-2" name="searchTerm" #searchInput="ngModel" ngModel (ngModelChange)="searchUsers(searchInput.value)" type="search" placeholder="Search" aria-label="Search">
+        <div class="btn-group">
+          <button (click)="getResetUserPage()" type="button" class="btn btn-primary">
+            <i *ngIf="loadIcon" class="fa fa-sync fa-spin"></i><i *ngIf="!loadIcon" class="fas fa-sync"></i>
+          </button>
+        </div>
+      </form>
+    </div>
+  </nav>
+
+
+  <div *ngIf="sec" class="tab-content mt-3" id="myTabContent">
+    <div class="tab-pane fade show active" id="users">
+      <div class="mb-3 float-right">
+      </div>
+      <select id="changeValue" (change)="handlePageSizeChange($event)">
+        <option *ngFor="let size of pageSizes" [ngValue]="size">
+          {{ size }}
+        </option>
+      </select>
+      <table class="table table-hover table-borderless bg-white rounded">
+
+        <thead>
+        <tr class="text-center ">
+          <th>Photo</th>
+          <th style="cursor: pointer" class="btn-outline-dark" id="id" (click)="sortByColumn($event)" [hidden]="!checkAdmin">
+            <span [hidden]="activeColumn !== 'id'">
+            <i [hidden]="sort == 'asc'" class="fas fa-sort-up"></i>
+            <i [hidden]="sort == 'desc'" class="fas fa-sort-down"></i>
+            </span>
+            <i [hidden]="activeColumn === 'id'" class="fas fa-sort"></i>
+
+            User ID</th>
+          <th style="cursor: pointer" class="btn-outline-dark" id="firstname" (click)="sortByColumn($event)">
+            <span [hidden]="activeColumn !== 'firstname'">
+            <i [hidden]="sort == 'asc'" class="fas fa-sort-up"></i>
+            <i [hidden]="sort == 'desc'" class="fas fa-sort-down"></i>
+              </span>
+            <i [hidden]="activeColumn === 'firstname'" class="fas fa-sort"></i>
+            First Name</th>
+          <th style="cursor: pointer" class="btn-outline-dark" id="lastname" (click)="sortByColumn($event)">
+            <span [hidden]="activeColumn !== 'lastname'">
+            <i [hidden]="sort == 'asc'" class="fas fa-sort-up"></i>
+            <i [hidden]="sort == 'desc'" class="fas fa-sort-down"></i>
+               </span>
+            <i [hidden]="activeColumn === 'lastname'" class="fas fa-sort"></i>
+            Last Name</th>
+          <th style="cursor: pointer" class="btn-outline-dark" id="patronomic" (click)="sortByColumn($event)">
+            <span [hidden]="activeColumn !== 'patronomic'">
+            <i [hidden]="sort == 'asc'" class="fas fa-sort-up"></i>
+            <i [hidden]="sort == 'desc'" class="fas fa-sort-down"></i>
+              </span>
+            <i [hidden]="activeColumn === 'patronomic'" class="fas fa-sort"></i>
+            Patronimic Name</th>
+          <th style="cursor: pointer" class="btn-outline-dark" id="username" (click)="sortByColumn($event)">
+            <span [hidden]="activeColumn !== 'username'">
+            <i [hidden]="sort == 'asc'" class="fas fa-sort-up"></i>
+            <i [hidden]="sort == 'desc'" class="fas fa-sort-down"></i>
+               </span>
+            <i [hidden]="activeColumn === 'username'" class="fas fa-sort"></i>
+            username</th>
+          <th style="cursor: pointer" class="btn-outline-dark" id="email" (click)="sortByColumn($event)" [hidden]="!checkAdmin">
+            <span [hidden]="activeColumn !== 'email'">
+            <i [hidden]="sort == 'asc'" class="fas fa-sort-up"></i>
+            <i [hidden]="sort == 'desc'" class="fas fa-sort-down"></i>
+               </span>
+            <i [hidden]="activeColumn === 'email'" class="fas fa-sort"></i>
+            Email</th>
+
+
+        </tr>
+        </thead>
+        <tbody *ngFor="let user of users">
+        <tr class="text-center">
+          <td>
+            <img (click)="onSelected(user)" height="40" width="40" src="{{user?.profileImageUrl}}" alt=""
+                 class="rounded-circle img-fluid img-thumbnail">
+          </td>
+          <td [hidden]="!checkAdmin" (click)="onSelected(user)" style="cursor: pointer" title="id">{{user?.userId}}</td>
+          <td (click)="onSelected(user)" style="cursor: pointer" title="firstname">{{user?.firstname}}</td>
+          <td (click)="onSelected(user)" style="cursor: pointer" title="lastname">{{user?.lastname}}</td>
+          <td (click)="onSelected(user)" style="cursor: pointer" title="patronomic">{{user?.patronomic}}</td>
+          <td (click)="onSelected(user)" style="cursor: pointer" title="username">{{user?.username}}</td>
+          <td [hidden]="!checkAdmin" (click)="onSelected(user)" style="cursor: pointer" title="email">{{user?.email}}</td>
+
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <hr>
+    <div class="col-md-12">
+      <ngb-pagination class="pagination justify-content-center" [collectionSize]="responseTable.allItemsSize"
+                      [(page)]="responseTable.page"
+                      [pageSize]="responseTable.size"
+                      (pageChange)="pageChange($event)">
+      </ngb-pagination>
+    </div>
+    </div>
+
+</div>
+
+</div>

@@ -1,0 +1,125 @@
+<div class="fone">
+<div class="container">
+  <br>
+  <br>
+  <br>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark rounded">
+    <a class="navbar-brand" href="#">Hospital</a>
+    <button class="navbar-toggler" type="button">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+          <a style="cursor: pointer;" routerLink="/profile" class="nav-link">
+            <i class="fas fa-id-card"></i>
+            Back To Profile</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  <br>
+
+
+  <!-- Toolbar -->
+  <div class="messaging border-dark ">
+    <div class="inbox_msg rounded bg-white rounded">
+      <div class="inbox_people">
+        <div class="headind_srch table-dark">
+          <div class="text-black align-content-center align-items-center">
+            <h4 class="text-white text-center">Chats</h4>
+            <form class="form-inline my-2 my-lg-0 justify-content-center float-left">
+              <input name="searchTerm" #searchInput="ngModel" ngModel
+                     (ngModelChange)="searchUsers(searchInput.value)"
+                     class="form-control mr-sm-2" type="search" placeholder="Search users...">
+            </form>
+          </div>
+        </div>
+        <div class="inbox_chat ">
+          <div class="channels" *ngFor="let user of listUsers">
+            <div style="cursor: pointer" class="chat_list btn-outline-primary" (click)="selectChat(user)">
+              <div class="chat_people">
+                <div class="chat_ib text-center justify-content-center, align-content-center">
+                  <a style="cursor: pointer;" id="changeProfileImage" data-toggle="modal"
+                     data-target="#changeImage">
+                    <img src="{{user.profileImageUrl}}" alt="Admin" class="rounded-circle p-1 sm-primary"
+                         width="45"></a>
+                  <h5 class="text-dark">
+                    {{user.firstname}} {{user.lastname}}
+                  </h5>
+                  <p><small>{{user.role.substring(5)}}</small></p>
+                  <p><small>Login: {{user.username}}</small></p>
+                  <p *ngIf="user.online"><small>Online</small></p>
+                  <p *ngIf="!user.online"><small>Offline</small></p>
+
+                  <p *ngIf="!user.online"><small>Last join: {{user.joindDate | date: 'short'}}</small></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mesgs ">
+        <div #scrollMe [scrollTop]="scrollMe.scrollHeight" class="msg_history" >
+          <h2  [hidden]="!flag">Select chat with user and send messages</h2>
+          <li class="message"  *ngFor="let message of chatMessages">
+            <div
+              *ngIf="
+                  message.senderId !== sessionUser.id;
+                  then incoming_msg;
+                  else outgoing_msg
+                "
+            ></div>
+            <ng-template #incoming_msg>
+              <div class="incoming_msg">
+                <div class="incoming_msg_img">
+                  <img
+                    src="{{selectUser.profileImageUrl}}"
+                    alt="User avatar"
+                  />
+                </div>
+                <div class="received_msg">
+                  <div class="received_withd_msg">
+                    <p>{{ message.content }}</p>
+                    <div class="chat-hour"><small>{{message.timestamp | date: 'short'}}</small> <span
+                      class="fa fa-check-circle"></span></div>
+                  </div>
+                </div>
+              </div>
+            </ng-template>
+            <ng-template #outgoing_msg>
+              <div class="outgoing_msg">
+                <div class="outcoming_msg_img">
+                  <img
+                    src="{{sessionUser.profileImageUrl}}"
+                    alt="User avatar"
+                  />
+                </div>
+
+                <div class="sent_msg">
+                  <p>{{ message.content }}</p>
+                  <div class="chat-hour"><small>{{message.timestamp | date: 'short'}}</small> <span
+                    class=" fa fa-check-circle"></span></div>
+                </div>
+              </div>
+            </ng-template>
+          </li>
+        </div>
+        <div class="type_msg">
+          <form #msg="ngForm" ngForm class="input_msg_write"  (keyup.enter)="sendMessage(msg)">
+            <input [disabled]="selectUser == null"
+                   type="text"
+                   class="write_msg"
+                   placeholder="Type a message"
+                   id="newMessage" name="msg" ngModel required/>
+            <button class="msg_send_btn" (click)="sendMessage(msg)" type="button" [disabled]="msg.invalid || selectUser == null">
+              <i class="fas fa-paper-plane"></i>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>

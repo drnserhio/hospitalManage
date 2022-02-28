@@ -1,0 +1,354 @@
+<div class="fone">
+  <div class="container">
+    <br>
+    <br>
+    <br>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark rounded">
+      <a class="navbar-brand" href="#">Hospital</a>
+      <button class="navbar-toggler" type="button">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+          <a [hidden]="flag" style="cursor: pointer;" (click)="onToUsersList()" class="nav-link">
+            <i class="fas fa-home-lg-alt"></i>
+            Back To Menu</a>
+        </li>
+        <li class="nav-item">
+          <a style="cursor: pointer;" routerLink="/analize/card/profile" class="nav-link">
+            <i class="fas fa-microscope"></i>
+            Analize Card</a>
+        </li>
+        <li class="nav-item">
+          <a style="cursor: pointer;" routerLink="/treatments/profile/card" class="nav-link">
+            <i class="fas fa-pills"></i>
+            Treatment Card</a>
+        </li>
+        <li class="nav-item">
+          <a style="cursor: pointer;" routerLink="/chat" class="nav-link">
+            <i class="fas fa-comment-alt"></i>
+            Chat</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  <br>
+
+
+    <div class="container">
+      <div class="main-body">
+        <div class="row">
+          <div class="col-lg-4">
+            <div class="card">
+              <div class="card-body">
+              <span style="cursor: pointer;" class="link-dark" data-toggle="modal" data-target="#changePassword">
+                <i class="fas fa-ellipsis-v float-end"></i>
+              </span>
+
+                <div class="d-flex flex-column align-items-center text-center">
+                  <a style="cursor: pointer;" id="changeProfileImage" data-toggle="modal"
+                     data-target="#changeImage"><img
+                    src="{{userProfile.profileImageUrl}}" alt="Admin" class="rounded-circle p-1 bg-primary"
+                    width="110"></a>
+
+
+                  <a class="nav-item nav-link active ml-1 float-end" href="#" data-toggle="tab" (click)="onLogOut()"
+                     style="cursor: pointer;">
+                    Log out
+                    <i class="fas fa-sign-out-alt"></i>
+                  </a>
+                  <div class="mt-3">
+                    <h4>{{userProfile.firstname}} {{userProfile.lastname}}</h4>
+                    <p class="text-secondary mb-1">{{userProfile.role.substring(5)}}</p>
+                    <p class="text-muted font-size-sm">{{userProfile.address}}</p>
+                  </div>
+                </div>
+                <hr class="my-4">
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+                    <h6 class="mb-0">
+                      <i class="fas fa-hospital-user"></i>
+                      Hospitalization</h6>
+                    <span class="text-secondary">
+                      <i class="fas fa-procedures" [hidden]="!userProfile.hospiztalization"></i>
+                    </span>
+                  </li>
+                  <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+                    <h6 class="mb-0">
+                      <i class="fas fa-microscope"></i>
+                      Analyze</h6>
+                    <span class="text-secondary">
+                      {{userProfile.diagnosis.length}}
+                    </span>
+                  </li>
+                  <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+                    <h6 class="mb-0">
+                      <i class="fas fa-pills"></i>
+                      Treatments</h6>
+                    <span class="text-secondary">
+                      {{userProfile.treatment.length}}
+                    </span>
+                  </li>
+                  <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+                    <h6 class="mb-0">
+                      <i class="fas fa-syringe"></i>
+                      Code Vaccination</h6>
+                    <span class="text-secondary">
+                      {{userProfile.qrcode}}</span>
+                  </li>
+                </ul>
+              </div>
+
+            </div>
+          </div>
+
+          <form #updateProfile="ngForm" class="col-lg-8">
+
+
+            <div class="card">
+              <div style="cursor: pointer;" class="text-primary " (click)="onSettings()">
+                <i class="fas fa-cogs float-end"></i>
+              </div>
+
+              <div class="card-body">
+                <div class="row mb-3">
+                  <div class="col-sm-3">
+                    <h6 class="mb-0">First name</h6>
+                  </div>
+                  <div class="col-sm-9 text-secondary form-group">
+                    <input type="text" [disabled]="settingsFlag" class="form-control" name="firstname" ngModel
+                           [(ngModel)]="editProfile.firstname" required>
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <div class="col-sm-3">
+                    <h6 class="mb-0">Last name</h6>
+                  </div>
+                  <div class="col-sm-9 text-secondary">
+                    <input type="text" [disabled]="settingsFlag" class="form-control" name="lastname" ngModel
+                           [(ngModel)]="editProfile.lastname" required>
+
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <div class="col-sm-3">
+                    <h6 class="mb-0">Patronomic</h6>
+                  </div>
+                  <div class="col-sm-9 text-secondary">
+                    <input type="text" [disabled]="settingsFlag" class="form-control" name="patronomic" ngModel
+                           [(ngModel)]="editProfile.patronomic" required>
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <div class="col-sm-3">
+                    <h6 class="mb-0">Age</h6>
+                  </div>
+                  <div class="col-sm-9 text-secondary">
+                    <input type="number" [disabled]="settingsFlag" [min]="1" class="form-control"
+                           onkeyup="this.value=this.value.replace(/[^0-9]/g,'');" name="age" ngModel
+                           [(ngModel)]="editProfile.age" required>
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <div class="col-sm-3">
+                    <h6 class="mb-0">Username</h6>
+                  </div>
+                  <div class="col-sm-9 text-secondary">
+                    <input type="text" [disabled]="settingsFlag"
+                           class="form-control" name="username" ngModel [(ngModel)]="editProfile.username" required>
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <div class="col-sm-3">
+                    <h6 class="mb-0">Email</h6>
+                  </div>
+                  <div class="col-sm-9 text-secondary">
+                    <input type="email" [disabled]="settingsFlag" class="form-control" name="email" ngModel
+                           [(ngModel)]="editProfile.email" required>
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <div class="col-sm-3">
+                    <h6 class="mb-0">QRCODE</h6>
+                  </div>
+                  <div class="col-sm-9 text-secondary">
+                    <input type="text" [disabled]="settingsFlag" class="form-control" name="qrcode" ngModel
+                           [(ngModel)]="editProfile.qrcode" required>
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <div class="col-sm-3">
+                    <h6 class="mb-0">Address</h6>
+                  </div>
+                  <div class="col-sm-9 text-secondary">
+                    <input type="text" [disabled]="settingsFlag" class="form-control" name="address" ngModel
+                           [(ngModel)]="editProfile.address" required>
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <div class="col-sm-3">
+                    <h6 class="mb-0">Complaint</h6>
+                  </div>
+                  <div class="col-sm-9 text-secondary">
+                    <input type="text" [disabled]="settingsFlag" class="form-control" name="infoAboutComplaint" ngModel
+                           [(ngModel)]="editProfile.infoAboutComplaint" required>
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <div class="col-sm-3">
+                    <h6 class="mb-0">Sick</h6>
+                  </div>
+                  <div class="col-sm-9 text-secondary">
+                    <input type="text" [disabled]="settingsFlag" class="form-control" name="infoAboutSick" ngModel
+                           [(ngModel)]="editProfile.infoAboutSick" required>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-3"></div>
+                  <div class="col-sm-9 text-secondary">
+                    <button type="button" [hidden]="settingsFlag" (click)="changeProfile()"
+                            [disabled]="updateProfile.invalid" class="btn btn-primary px-4">
+                      <i *ngIf="loadIcon" class="fa fa-sync fa-spin"></i><i *ngIf="!loadIcon" class="fas fa-sync"></i>
+                      Save changes
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <br>
+            <p class="text-center">
+              <a style="cursor: pointer" data-toggle="modal" data-target="#deleteModal"
+                 (click)="onDeleteQuestionModal()" class="text-danger">
+                <small [hidden]="deleteFlag">Delete account</small>
+              </a>
+              <i style="cursor: pointer" (click)="onDeleteIcon()" class="fas fa-eraser text-danger"></i></p>
+          </form>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+
+  <!--modal image profile change-->
+
+  <div class="modal" tabindex="-1" role="dialog" id="changeImage">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Change image.</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>Take image in your computer</p>
+          <form #newProfileImage="ngForm">
+            <div class="custom-file">
+              <input type="file" name="file" class="form-control" ngModel
+                     (change)="changeProfileImage($event.target.files[0])">
+              <label class="custom-file-control"><span [hidden]="!filename">{{ filename }}</span>
+                <span [hidden]="filename">Choose your image</span>
+              </label>
+            </div>
+            <button type="submit" style="display: none" id="new-user-save"></button>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="close-change-image" data-dismiss="modal">Close</button>
+          <button type="button" (click)="saveNewProfileImage()" [disabled]="newProfileImage.invalid"
+                  class="btn btn-primary">Save changes
+          </button>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" tabindex="-1" role="dialog" id="deleteModal">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="container justify-content-center text-center">
+          <div class="modal-header modal-lg">
+            <h4 class="modal-title text-center" id="modalQuestion">Remove account</h4>
+            <button (click)="close()" type="button" class="close" id="closeModal" data-dismiss="modal"
+                    aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+
+
+          <label [hidden]="questionFlag" class="text-center">You are absolutely sure ?
+            All your data will be lost!</label>
+
+          <form [hidden]="!questionFlag" class="form-group">
+            <div class="form-group justify-content-center text-center">
+              <label class="text-center">Please your username to confirm.</label>
+            </div>
+            <input #remove="ngModel" class="text-center justify-content-sm-between" type="text" ngModel required
+                   name="username" id="username"/>
+          </form>
+
+          <div [hidden]="!questionFlag" class="btn-group">
+            <button type="button" class="btn btn-outline-danger" [disabled]="remove.invalid"
+                    (click)="validUsername(remove.value)" >I understand the consequences, delete account
+            </button>
+          </div>
+          <div [hidden]="questionFlag" class="modal-footer">
+            <button type="button" class="btn btn-danger" (click)="changeQuestionFlag()">Yes</button>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close" class="btn btn-success"
+                    (click)="close()">No
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" tabindex="-1" role="dialog" id="changePassword">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="card card-outline-secondary">
+          <div class="card-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <h5 class="mb-0">Change Password</h5>
+
+          </div>
+          <div class="card-body">
+            <form #changePass="ngForm">
+              <div class="form-group">
+                <label for="oldPassword">Current Password</label>
+                <input type="password" name="oldPassword" class="form-control" required ngModel id="oldPassword" >
+              </div>
+              <div class="form-group">
+                <label for="newPassword">New Password</label>
+                <input type="password" name="newPassword" class="form-control" required ngModel  id="newPassword">
+                <span class="form-text small text-muted">
+                                            The password must be 8-20 characters, and must <em>not</em> contain spaces.
+                                        </span>
+              </div>
+              <div class="form-group">
+                <label for="verifyPassword">Verify</label>
+                <input type="password" name="verifyPassword" class="form-control" required ngModel  id="verifyPassword">
+                <span class="form-text small text-muted">
+                                            To confirm, type the new password again.
+                                        </span>
+              </div>
+
+              <div class="form-group">
+                <button type="button" class="btn btn-success btn-lg float-right" (click)="onChangePassword(changePass)" [disabled]="changePass.invalid">Save</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</div>

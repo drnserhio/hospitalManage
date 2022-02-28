@@ -1,0 +1,12 @@
+@import "https://pro.fontawesome.com/releases/v5.10.0/css/all.css";
+
+.fone {
+  background: url("src/app/image/fone.jpg") no-repeat center fixed;
+  min-width: 50%;
+  min-height: 100%;
+  background-size: cover;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+
+}

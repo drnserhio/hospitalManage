@@ -1,0 +1,88 @@
+<div class="fone">
+<div class="container">
+  <br>
+  <br>
+  <br>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark rounded">
+    <a class="navbar-brand" href="#">Hospital</a>
+    <button class="navbar-toggler" type="button" >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+          <a  style="cursor: pointer;" routerLink="/profile" class="nav-link" >
+            <i class="fas fa-id-card"></i>
+            Back To Profile</a>
+        </li>
+      </ul>
+      <form class="form-inline my-2 my-lg-0">
+        <input class="form-control mr-sm-2" name="searchTerm" #searchInput="ngModel" ngModel (ngModelChange)="searchUsers(searchInput.value)" type="search" placeholder="Search analize..." aria-label="Search">
+        <div class="btn-group">
+          <button (click)="getResetAnalizePage()" type="button" class="btn btn-primary">
+            <i *ngIf="loadIcon" class="fa fa-sync fa-spin"></i><i *ngIf="!loadIcon" class="fas fa-sync"></i>
+          </button>
+        </div>
+      </form>
+    </div>
+  </nav>
+  <br>
+
+  <select id="changeValue" (change)="handlePageSizeChange($event)">
+    <option *ngFor="let size of pageSizes" [ngValue]="size">
+      {{ size }}
+    </option>
+  </select>
+  <hr>
+
+
+  <div  class="tab-content mt-3" id="myTabContent">
+    <div class="tab-pane fade show active" id="users">
+      <table class="table table-sm table-bordered table-white table-hover bg-white rounded">
+
+        <thead class="thead-dark">
+        <tr class="text-center">
+          <th style="cursor: pointer" class="btn-outline-dark" id="icd_id" (click)="sortByColumn($event)" >
+            <span [hidden]="activeColumn !== 'icd_id'">
+            <i [hidden]="sort == 'asc'" class="fas fa-sort-up"></i>
+            <i [hidden]="sort == 'desc'" class="fas fa-sort-down"></i>
+            </span>
+            <i [hidden]="activeColumn === 'icd_id'" class="fas fa-sort"></i>
+            ICD
+          </th>
+          <th style="cursor: pointer" class="btn-outline-dark" id="date_add_analyze" (click)="sortByColumn($event)">
+            <span [hidden]="activeColumn !== 'date_add_analyze'">
+            <i [hidden]="sort == 'asc'" class="fas fa-sort-up"></i>
+            <i [hidden]="sort == 'desc'" class="fas fa-sort-down"></i>
+            </span>
+            <i [hidden]="activeColumn === 'date_add_analyze'" class="fas fa-sort"></i>
+            DATE CREATE
+          </th>
+
+
+        </tr>
+        </thead>
+        <tbody *ngFor="let anz of analizes">
+        <tr class="text-center">
+          <td style="cursor: pointer" title="icd">{{anz?.icdId}}</td>
+          <td style="cursor: pointer" title="id">{{anz?.dateAddAnalyze | date: 'medium'}}</td>
+
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <hr>
+    <div class="col-md-12">
+      <ngb-pagination class="pagination justify-content-center" [collectionSize]="responseTable.allItemsSize"
+                      [(page)]="responseTable.page"
+                      [pageSize]="responseTable.size"
+                      (pageChange)="pageChange($event)">
+      </ngb-pagination>
+    </div>
+  </div>
+
+</div>
+
+</div>
+

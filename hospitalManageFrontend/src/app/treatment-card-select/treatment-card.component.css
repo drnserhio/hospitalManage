@@ -1,0 +1,19 @@
+.list-item {display:inline-flex; margin: 3px;}
+
+.fone {
+  background: url("src/app/image/fone.jpg") no-repeat center fixed;
+  min-width: 50%;
+  min-height: 100%;
+  background-size: cover;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+
+}
+
+.fone-treatment {
+  background: rgb(76,75,83);
+  background: linear-gradient(90deg, rgba(76,75,83,0.9430147058823529) 0%, rgba(33,37,41,1) 0%, rgba(40,44,47,0.9346113445378151) 100%);
+
+}
+
