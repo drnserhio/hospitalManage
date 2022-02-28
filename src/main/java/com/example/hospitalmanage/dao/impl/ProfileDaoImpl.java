@@ -11,6 +11,7 @@ import com.example.hospitalmanage.exception.domain.UserNotFoundException;
 import com.example.hospitalmanage.model.AnalyzeICDDate;
 import com.example.hospitalmanage.model.Treatment;
 import com.example.hospitalmanage.model.User;
+import com.example.hospitalmanage.service.impl.EmailService;
 import com.example.hospitalmanage.util.RequestTableHelper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 
+import javax.mail.MessagingException;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
@@ -39,10 +41,11 @@ import static com.example.hospitalmanage.constant.UserConstant.USER_NOT_FOUND_BY
 @AllArgsConstructor
 public class ProfileDaoImpl implements ProfileDao {
 
+    private final Logger LOGGER = LoggerFactory.getLogger(getClass());
     private final UserDao userDao;
     private final DocXGenerator docXGenerator;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final Logger LOGGER = LoggerFactory.getLogger(getClass());
+    private final EmailService emailService;
     private final EntityManagerFactory entityManagerFactory;
 
     public byte[] getDocument(String username)
@@ -140,22 +143,26 @@ public class ProfileDaoImpl implements ProfileDao {
 
 
     @Override
-    public User changePassByUsernameAndOldPassword(String oldPassword, String newPassword)
+    public User changePassByUsernameAndOldPassword(String username, String oldPassword, String newPassword)
             throws UserNotFoundException, PasswordNotValidException {
-        String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userDao.findUserByUsername(currentUsername);
+        User user = userDao.findUserByUsername(username);
         if (user == null) {
-            throw new UserNotFoundException(USER_NOT_FOUND_BY_USERNAME + currentUsername);
+            throw new UserNotFoundException(USER_NOT_FOUND_BY_USERNAME + username);
         }
-        if (validOldPassword(user.getPassword(), oldPassword)) {
-            user.setPassword(bCryptPasswordEncoder.encode(newPassword));
+        if (validOldPassword(oldPassword, user.getPassword())) {
+            user.setPassword(encryptPassoword(newPassword));
+            userDao.updateUser(user);
+        }
+        try {
+            emailService.sendMessageUpdatePasswordProfile(user.getFirstname(), user.getLastname(), newPassword, user.getEmail());
+        } catch (MessagingException e) {
+            e.printStackTrace();
         }
         return user;
     }
 
-    private boolean validOldPassword(String userPassword, String oldPassword)
+    private boolean validOldPassword(String oldPassword, String userPassword)
             throws PasswordNotValidException {
-
         if (bCryptPasswordEncoder.matches(oldPassword, userPassword)) {
             return true;
         } else {
@@ -323,6 +330,10 @@ public class ProfileDaoImpl implements ProfileDao {
         } else {
             return (itemSize / showEntity) + 1;
         }
+    }
+
+    private String encryptPassoword(String password) {
+        return bCryptPasswordEncoder.encode(password);
     }
 }
 

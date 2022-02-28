@@ -21,7 +21,7 @@ public interface ProfileService {
 
     void deleteChooseTreatment(Long userId, Long treatmentId);
 
-    User changePassByUsernameAndOldPassword(String oldPassword, String newPassword) throws UserNotFoundException, PasswordNotValidException;
+    User changePassByUsernameAndOldPassword(String username, String oldPassword, String newPassword) throws UserNotFoundException, PasswordNotValidException;
 
     User changeHospitalisation(String username, String hospitalization);
 

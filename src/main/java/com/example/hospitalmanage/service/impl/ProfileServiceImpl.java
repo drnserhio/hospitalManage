@@ -40,9 +40,9 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public User changePassByUsernameAndOldPassword(String oldPassword, String newPassword)
+    public User changePassByUsernameAndOldPassword(String username, String oldPassword, String newPassword)
             throws UserNotFoundException, PasswordNotValidException {
-        User user = profileDao.changePassByUsernameAndOldPassword(oldPassword, newPassword);
+        User user = profileDao.changePassByUsernameAndOldPassword(username, oldPassword, newPassword);
         return user;
     }
 

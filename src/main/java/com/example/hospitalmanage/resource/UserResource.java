@@ -138,11 +138,12 @@ public class UserResource extends ExceptionHandling {
     @PutMapping("/changepass")
     @PreAuthorize("hasAnyAuthority('god:all', 'profile:change-pass', 'profile:all')")
     public ResponseEntity<User> changePassByUsernameAndOldPassword(
+            @RequestParam("username") String username,
             @RequestParam("oldPassword") String oldPassword,
             @RequestParam("newPassword") String newPassword)
             throws UserNotFoundException, PasswordNotValidException {
         //TODO: refactor
-        User user = profileServiceImpl.changePassByUsernameAndOldPassword(oldPassword, newPassword);
+        User user = profileServiceImpl.changePassByUsernameAndOldPassword(username, oldPassword, newPassword);
         return new ResponseEntity<>(user, CREATED);
     }
 

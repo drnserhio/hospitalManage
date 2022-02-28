@@ -43,8 +43,6 @@ public interface UserDao {
 
     void deleteUser(String username);
 
-//   void resetPassword(String email); // about phone reconnect account\
-
     User updateProfileImage(String username, MultipartFile profileImage) throws IOException, UserNotFoundException, UserNameExistsException, EmailExistsException;
 
 
