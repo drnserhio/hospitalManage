@@ -103,6 +103,16 @@ public class ExceptionHandling {
         return createHttpResponse(BAD_REQUEST, e.getMessage());
     }
 
+    @ExceptionHandler(PasswordChangeVerifyException.class)
+    public ResponseEntity<HttpResponse> changePasswordVerifyException(PasswordChangeVerifyException e) {
+        return createHttpResponse(BAD_REQUEST, e.getMessage());
+    }
+
+    @ExceptionHandler(PasswordLengthIsNotValid.class)
+    public ResponseEntity<HttpResponse> passwordLenthIsNotValid(PasswordLengthIsNotValid e) {
+        return createHttpResponse(BAD_REQUEST, e.getMessage());
+    }
+
     private ResponseEntity<HttpResponse> createHttpResponse(HttpStatus status, String message) {
         return new ResponseEntity<>(
                 new HttpResponse(

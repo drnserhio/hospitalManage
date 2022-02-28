@@ -3,6 +3,8 @@ package com.example.hospitalmanage.service.impl;
 import com.example.hospitalmanage.dao.ProfileDao;
 import com.example.hospitalmanage.dto.RequestTabel;
 import com.example.hospitalmanage.dto.ResponseTable;
+import com.example.hospitalmanage.exception.domain.PasswordChangeVerifyException;
+import com.example.hospitalmanage.exception.domain.PasswordLengthIsNotValid;
 import com.example.hospitalmanage.exception.domain.PasswordNotValidException;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
 import com.example.hospitalmanage.model.Treatment;
@@ -40,10 +42,9 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public User changePassByUsernameAndOldPassword(String username, String oldPassword, String newPassword)
-            throws UserNotFoundException, PasswordNotValidException {
-        User user = profileDao.changePassByUsernameAndOldPassword(username, oldPassword, newPassword);
-        return user;
+    public boolean changePassByUsernameAndOldPassword(String username, String oldPassword, String newPassword, String verifyPassword)
+            throws UserNotFoundException, PasswordNotValidException, PasswordChangeVerifyException, PasswordLengthIsNotValid {
+        return profileDao.changePassByUsernameAndOldPassword(username, oldPassword, newPassword, verifyPassword);
     }
 
     @Override

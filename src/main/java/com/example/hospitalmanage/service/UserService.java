@@ -3,6 +3,7 @@ package com.example.hospitalmanage.service;
 import com.example.hospitalmanage.dto.RequestTabel;
 import com.example.hospitalmanage.dto.ResponseTable;
 import com.example.hospitalmanage.exception.domain.EmailExistsException;
+import com.example.hospitalmanage.exception.domain.PasswordLengthIsNotValid;
 import com.example.hospitalmanage.exception.domain.UserNameExistsException;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
 import com.example.hospitalmanage.model.User;
@@ -16,7 +17,7 @@ public interface UserService {
 
     User findUserByUsername(String useraname);
 
-    User register(String firstname, String lastname, String username, String email, String password) throws MessagingException, UserNotFoundException, UserNameExistsException, EmailExistsException;
+    User register(String firstname, String lastname, String username, String email, String password) throws MessagingException, UserNotFoundException, UserNameExistsException, EmailExistsException, PasswordLengthIsNotValid;
 
     User updateUser(String username, String role, boolean isNotLocaked)
             throws IOException, UserNotFoundException, UserNameExistsException, EmailExistsException;

@@ -3,6 +3,7 @@ package com.example.hospitalmanage.dao;
 import com.example.hospitalmanage.dto.RequestTabel;
 import com.example.hospitalmanage.dto.ResponseTable;
 import com.example.hospitalmanage.exception.domain.EmailExistsException;
+import com.example.hospitalmanage.exception.domain.PasswordLengthIsNotValid;
 import com.example.hospitalmanage.exception.domain.UserNameExistsException;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
 import com.example.hospitalmanage.model.User;
@@ -36,7 +37,7 @@ public interface UserDao {
                     boolean isActive)
             throws UserNotFoundException, UserNameExistsException, EmailExistsException, IOException;
 
-    User register(String firstname, String lastname, String username, String email, String password) throws MessagingException, UserNotFoundException, UserNameExistsException, EmailExistsException;
+    User register(String firstname, String lastname, String username, String email, String password) throws MessagingException, UserNotFoundException, UserNameExistsException, EmailExistsException, PasswordLengthIsNotValid;
 
     User updateUser(String username, String role, boolean isNotLocaked)
             throws UserNotFoundException, UserNameExistsException, EmailExistsException;

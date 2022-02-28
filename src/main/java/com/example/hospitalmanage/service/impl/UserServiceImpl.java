@@ -4,6 +4,7 @@ import com.example.hospitalmanage.dao.UserDao;
 import com.example.hospitalmanage.dto.RequestTabel;
 import com.example.hospitalmanage.dto.ResponseTable;
 import com.example.hospitalmanage.exception.domain.EmailExistsException;
+import com.example.hospitalmanage.exception.domain.PasswordLengthIsNotValid;
 import com.example.hospitalmanage.exception.domain.UserNameExistsException;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
 import com.example.hospitalmanage.model.User;
@@ -58,7 +59,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                          String username,
                          String email,
                          String password)
-            throws MessagingException, UserNotFoundException, UserNameExistsException, EmailExistsException {
+            throws MessagingException, UserNotFoundException, UserNameExistsException, EmailExistsException, PasswordLengthIsNotValid {
         User register = userDao.register(firstname, lastname, username, email, password);
         return register;
     }

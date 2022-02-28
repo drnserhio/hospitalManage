@@ -4,10 +4,7 @@ import com.example.hospitalmanage.dto.ResponseTable;
 import com.example.hospitalmanage.dto.impl.RequestTableTreatmentImpl;
 import com.example.hospitalmanage.dto.impl.RequestTableVideoImpl;
 import com.example.hospitalmanage.exception.ExceptionHandling;
-import com.example.hospitalmanage.exception.domain.EmailExistsException;
-import com.example.hospitalmanage.exception.domain.PasswordNotValidException;
-import com.example.hospitalmanage.exception.domain.UserNameExistsException;
-import com.example.hospitalmanage.exception.domain.UserNotFoundException;
+import com.example.hospitalmanage.exception.domain.*;
 import com.example.hospitalmanage.model.HttpResponse;
 import com.example.hospitalmanage.model.User;
 import com.example.hospitalmanage.model.UserPrincipal;
@@ -54,7 +51,7 @@ public class UserResource extends ExceptionHandling {
     @PostMapping("/register")
     public ResponseEntity<User> register(
             @RequestBody User user)
-            throws MessagingException, UserNotFoundException, UserNameExistsException, EmailExistsException {
+            throws MessagingException, UserNotFoundException, UserNameExistsException, EmailExistsException, PasswordLengthIsNotValid {
        User newUser = userService.register(
                 user.getFirstname(),
                 user.getLastname(),
@@ -135,16 +132,16 @@ public class UserResource extends ExceptionHandling {
      return new ResponseEntity<>(user, OK);
     }
 
-    @PutMapping("/changepass")
+    @PutMapping("/change_pass/{username}")
     @PreAuthorize("hasAnyAuthority('god:all', 'profile:change-pass', 'profile:all')")
-    public ResponseEntity<User> changePassByUsernameAndOldPassword(
-            @RequestParam("username") String username,
+    public ResponseEntity<Boolean> changePassByUsernameAndOldPassword(
+            @PathVariable("username") String username,
             @RequestParam("oldPassword") String oldPassword,
-            @RequestParam("newPassword") String newPassword)
-            throws UserNotFoundException, PasswordNotValidException {
-        //TODO: refactor
-        User user = profileServiceImpl.changePassByUsernameAndOldPassword(username, oldPassword, newPassword);
-        return new ResponseEntity<>(user, CREATED);
+            @RequestParam("newPassword") String newPassword,
+            @RequestParam("verifyPassword") String verifyPassword)
+            throws UserNotFoundException, PasswordNotValidException, PasswordChangeVerifyException, PasswordLengthIsNotValid {
+        Boolean isChange = profileServiceImpl.changePassByUsernameAndOldPassword(username, oldPassword, newPassword, verifyPassword);
+        return new ResponseEntity<>(isChange, CREATED);
     }
 
     @GetMapping("/list")

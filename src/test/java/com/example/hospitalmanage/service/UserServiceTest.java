@@ -4,6 +4,7 @@ import com.example.hospitalmanage.dao.UserDao;
 import com.example.hospitalmanage.dto.ResponseTable;
 import com.example.hospitalmanage.dto.impl.*;
 import com.example.hospitalmanage.exception.domain.EmailExistsException;
+import com.example.hospitalmanage.exception.domain.PasswordLengthIsNotValid;
 import com.example.hospitalmanage.exception.domain.UserNameExistsException;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
 import com.example.hospitalmanage.model.Treatment;
@@ -58,7 +59,7 @@ public class UserServiceTest {
 
     @Test
     public void shouldRegisterUserSuccessful()
-            throws UserNotFoundException, MessagingException, UserNameExistsException, EmailExistsException {
+            throws UserNotFoundException, MessagingException, UserNameExistsException, EmailExistsException, PasswordLengthIsNotValid {
 
         User user = new User();
         user.setId(10L);
@@ -101,7 +102,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void shouldDeleteUserSuccessful() throws UserNotFoundException, MessagingException, UserNameExistsException, EmailExistsException {
+    public void shouldDeleteUserSuccessful() throws UserNotFoundException, MessagingException, UserNameExistsException, EmailExistsException, PasswordLengthIsNotValid {
         User user = new User();
         user.setId(10L);
         user.setFirstname(FIRSTNAME_TEST);

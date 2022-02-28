@@ -7,6 +7,7 @@ import com.example.hospitalmanage.dto.impl.ResponseTableTreatmentImpl;
 import com.example.hospitalmanage.dto.impl.ResponseTableUsersImpl;
 import com.example.hospitalmanage.dto.impl.ResponseTableVideoImpl;
 import com.example.hospitalmanage.exception.domain.EmailExistsException;
+import com.example.hospitalmanage.exception.domain.PasswordLengthIsNotValid;
 import com.example.hospitalmanage.exception.domain.UserNameExistsException;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
 import com.example.hospitalmanage.model.Treatment;
@@ -62,8 +63,9 @@ public class UserDaoImpl implements UserDao {
                          String username,
                          String email,
                          String password)
-            throws UserNotFoundException, UserNameExistsException, EmailExistsException {
+            throws UserNotFoundException, UserNameExistsException, EmailExistsException, PasswordLengthIsNotValid {
         validationNewUsernameAndEmail(EMPTY, username, email);
+        validPassword(password);
         User user = new User();
         user.setUserId(generateUserId());
         user.setFirstname(firstname);
@@ -91,6 +93,13 @@ public class UserDaoImpl implements UserDao {
             e.printStackTrace();
         }
         return save;
+    }
+
+    private void validPassword(String password)
+            throws PasswordLengthIsNotValid {
+        if (password.length() < 8 || password.length() > 20) {
+            throw new PasswordLengthIsNotValid("You password has invalid length: " + password.length());
+        }
     }
 
     @Override

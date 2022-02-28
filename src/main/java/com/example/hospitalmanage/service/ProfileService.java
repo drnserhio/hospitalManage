@@ -2,6 +2,8 @@ package com.example.hospitalmanage.service;
 
 import com.example.hospitalmanage.dto.RequestTabel;
 import com.example.hospitalmanage.dto.ResponseTable;
+import com.example.hospitalmanage.exception.domain.PasswordChangeVerifyException;
+import com.example.hospitalmanage.exception.domain.PasswordLengthIsNotValid;
 import com.example.hospitalmanage.exception.domain.PasswordNotValidException;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
 import com.example.hospitalmanage.model.Treatment;
@@ -21,7 +23,7 @@ public interface ProfileService {
 
     void deleteChooseTreatment(Long userId, Long treatmentId);
 
-    User changePassByUsernameAndOldPassword(String username, String oldPassword, String newPassword) throws UserNotFoundException, PasswordNotValidException;
+    boolean changePassByUsernameAndOldPassword(String username, String oldPassword, String newPassword, String verifyPassword) throws UserNotFoundException, PasswordNotValidException, PasswordChangeVerifyException, PasswordLengthIsNotValid;
 
     User changeHospitalisation(String username, String hospitalization);
 

@@ -6,6 +6,8 @@ import com.example.hospitalmanage.dao.UserDao;
 import com.example.hospitalmanage.dto.RequestTabel;
 import com.example.hospitalmanage.dto.ResponseTable;
 import com.example.hospitalmanage.dto.impl.ResponseTableDiagnosisImpl;
+import com.example.hospitalmanage.exception.domain.PasswordChangeVerifyException;
+import com.example.hospitalmanage.exception.domain.PasswordLengthIsNotValid;
 import com.example.hospitalmanage.exception.domain.PasswordNotValidException;
 import com.example.hospitalmanage.exception.domain.UserNotFoundException;
 import com.example.hospitalmanage.model.AnalyzeICDDate;
@@ -143,22 +145,34 @@ public class ProfileDaoImpl implements ProfileDao {
 
 
     @Override
-    public User changePassByUsernameAndOldPassword(String username, String oldPassword, String newPassword)
-            throws UserNotFoundException, PasswordNotValidException {
+    public boolean changePassByUsernameAndOldPassword(String username, String oldPassword, String newPassword, String verifyPassword)
+            throws UserNotFoundException, PasswordNotValidException, PasswordChangeVerifyException, PasswordLengthIsNotValid {
+        boolean isChange = false;
         User user = userDao.findUserByUsername(username);
         if (user == null) {
             throw new UserNotFoundException(USER_NOT_FOUND_BY_USERNAME + username);
         }
+        if (!newPassword.equals(verifyPassword)) {
+            throw new PasswordChangeVerifyException("New password and verify don't same. Please entry correct new password.");
+        }
         if (validOldPassword(oldPassword, user.getPassword())) {
             user.setPassword(encryptPassoword(newPassword));
             userDao.updateUser(user);
+            isChange = true;
+        }
+
+        if (newPassword.length() > 20 &&
+                verifyPassword.length() > 20 ||
+                        newPassword.length() < 8 &&
+                                verifyPassword.length() < 8) {
+            throw new PasswordLengthIsNotValid("You password has " + newPassword.length() + " character is not valid.");
         }
         try {
             emailService.sendMessageUpdatePasswordProfile(user.getFirstname(), user.getLastname(), newPassword, user.getEmail());
         } catch (MessagingException e) {
             e.printStackTrace();
         }
-        return user;
+        return isChange;
     }
 
     private boolean validOldPassword(String oldPassword, String userPassword)
