@@ -14,7 +14,6 @@ public class ChatRoomDaoImpl implements ChatRoomDao {
 
     private final ChatRoomRepository chatRoomRepository;
 
-
     @Override
     public Optional<String> getChatId(Long senderId, Long recipientId, boolean createIfNotExist) {
 

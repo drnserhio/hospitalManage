@@ -25,7 +25,6 @@ public class ChatMessageDaoImpl implements ChatMessageDao {
     private final ChatRoomDao chatRoomDao;
     private final MongoOperations mongoOperations;
 
-
     @Override
     public ChatMessage save(ChatMessage chatMessage) {
         chatMessage.setStatus(MessageStatus.RECEIVED);
@@ -43,7 +42,7 @@ public class ChatMessageDaoImpl implements ChatMessageDao {
         while (length > 0) {
             stringBuilder.insert(i, "\n");
             length--;
-            i+=25;
+            i += 25;
         }
         return stringBuilder.toString();
     }
@@ -87,6 +86,4 @@ public class ChatMessageDaoImpl implements ChatMessageDao {
         Update update = Update.update("status", status);
         mongoOperations.updateMulti(query, update, ChatMessage.class);
     }
-
-
 }

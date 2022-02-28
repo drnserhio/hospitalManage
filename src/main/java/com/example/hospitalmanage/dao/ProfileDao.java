@@ -15,8 +15,6 @@ public interface ProfileDao {
 
     byte[] getDocument(String username) throws Exception;
 
-    User updateUserTimeVisitByUsername(String currentUsername, LocalDateTime timeVisit) throws UserNotFoundException;
-
     void addDiagnosis(Long userId, String icdName);
 
     void addTreatment(Long userId, String treatmentJson);

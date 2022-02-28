@@ -56,7 +56,6 @@ public class UserDaoImpl implements UserDao {
     private final EmailService emailService;
     private EntityManagerFactory entityManagerFactory;
 
-
     @Override
     public User register(String firstname,
                          String lastname,

@@ -21,7 +21,6 @@ import org.hibernate.jpa.QueryHints;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 
@@ -30,7 +29,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -59,19 +57,6 @@ public class ProfileDaoImpl implements ProfileDao {
         return docXGenerator.createDocument(findUser);
     }
 
-    public User updateUserTimeVisitByUsername(String currentUsername, LocalDateTime timeVisit)
-            throws UserNotFoundException {
-        LOGGER.info(currentUsername, " " + timeVisit);
-        User user = userDao.findUserByUsername(currentUsername);
-        if (user == null) {
-            throw new UserNotFoundException(USER_NOT_FOUND_BY_USERNAME + currentUsername);
-        }
-        //TODO valid time and exception
-        user.setTimeToVisitAt(LocalDateTime.of(timeVisit.toLocalDate(), timeVisit.toLocalTime()));
-        userDao.updateUser(user);
-        LOGGER.info("Time visit created");
-        return user;
-    }
 
     @Override
     public void addDiagnosis(Long userId, String icdName) {

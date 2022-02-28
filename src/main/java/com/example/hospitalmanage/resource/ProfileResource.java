@@ -74,17 +74,6 @@ public class ProfileResource extends ExceptionHandling {
         profileService.addDiagnosis(userId, icdName);
     }
 
-    @PutMapping("/timevisit/{currentUsername}")
-    @PreAuthorize("hasAnyAuthority('god:all', 'patient:all')")
-    public ResponseEntity<User> updateUserTimeVisitByUsername(
-            @PathVariable("currentUsername") String currentUsername,
-            @RequestBody
-            @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss") LocalDateTime timeVisit)
-            throws UserNotFoundException {
-        User updateUser = profileService.updateUserTimeVisitByUsername(currentUsername, timeVisit);
-        return new ResponseEntity<>(updateUser, OK);
-    }
-
     @PostMapping("/add-treatment/{userId}")
     @PreAuthorize("hasAnyAuthority('god:all', 'patient:all')")
     public void addTreatment(

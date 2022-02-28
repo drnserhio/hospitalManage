@@ -30,13 +30,6 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public User updateUserTimeVisitByUsername(String currentUsername, LocalDateTime timeVisit)
-            throws UserNotFoundException {
-        User user = profileDao.updateUserTimeVisitByUsername(currentUsername, timeVisit);
-        return user;
-    }
-
-    @Override
     public void addDiagnosis(Long userId, String icdName) {
         profileDao.addDiagnosis(userId, icdName);
     }
