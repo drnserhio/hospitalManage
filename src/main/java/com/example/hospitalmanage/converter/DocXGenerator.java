@@ -8,14 +8,14 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
-import org.springframework.util.ResourceUtils;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -34,13 +34,13 @@ public class DocXGenerator {
 
     public byte[] createDocument(User user)
             throws Exception {
-        File file = ResourceUtils.getFile(WORKED_DOCX);
+        InputStream file = new ClassPathResource(WORKED_DOCX).getInputStream();
         return Files.readAllBytes(changeDocument(file, user).toPath());
     }
 
-    private File changeDocument(File file, User findUser)
+    private File changeDocument(InputStream file, User findUser)
             throws Exception {
-        WordprocessingMLPackage template = WordprocessingMLPackage.load(new FileInputStream(file));
+        WordprocessingMLPackage template = WordprocessingMLPackage.load(file);
         VariablePrepare.prepare(template);
         MainDocumentPart mainDocumentPart = template.getMainDocumentPart();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm:ss dd/MM/yyyy");

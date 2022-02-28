@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import static com.example.hospitalmanage.constant.FileConstant.DIRECTORY_VIDEO;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 @Repository
@@ -36,7 +37,6 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 public class VideoDaoImpl implements VideoDao {
 
     private UserDao userDao;
-    private final String DIRECTORY = System.getProperty("user.home");
     private final EntityManagerFactory entityManagerFactory;
 
     public List<String> uploadFiles(String username, List<MultipartFile> multipartFiles)
@@ -45,7 +45,7 @@ public class VideoDaoImpl implements VideoDao {
         User byUsername = userDao.findUserByUsername(username);
         for (MultipartFile file : multipartFiles) {
             String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-            Path fileStorage = Paths.get(DIRECTORY, fileName).toAbsolutePath().normalize();
+            Path fileStorage = Paths.get(DIRECTORY_VIDEO, fileName).toAbsolutePath().normalize();
             Files.copy(file.getInputStream(), fileStorage, REPLACE_EXISTING);
             addVideoToUser(byUsername,fileName);
             fileNames.add(fileName);
@@ -93,7 +93,7 @@ public class VideoDaoImpl implements VideoDao {
 
     public ResponseEntity<Resource> downloadFiles(String username, String filename)
             throws IOException {
-        Path filePath = Paths.get(DIRECTORY).toAbsolutePath().normalize().resolve(filename);
+        Path filePath = Paths.get(DIRECTORY_VIDEO).toAbsolutePath().normalize().resolve(filename);
         User byUsername = userDao.findUserByUsername(username);
         if(fileIsExists(byUsername.getVideoFiles(), filename)) {
             if (!Files.exists(filePath)) {
