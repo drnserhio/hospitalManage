@@ -1,4 +1,4 @@
-# ![Hospital Social App](https://dz2cdn1.dzone.com/storage/temp/13881958-1598464861104.png=250x250))
+# ![Hospital Social App]<img src="https://dz2cdn1.dzone.com/storage/temp/13881958-1598464861104.png"  width="200" height="400" />
 
 
 > ### Spring-boot Angular Docker.
