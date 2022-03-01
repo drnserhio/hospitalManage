@@ -5,8 +5,6 @@
 
 
 
-> ### Info
-
 This is project for hospital center.People can registartrion and after this they are have account. In this account you have your complaint, diagnosis, treatment.Also if you want ask question, you can send chat message to doctor in application.
 
 
