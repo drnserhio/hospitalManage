@@ -1,10 +1,11 @@
-# ![Hospital Social App](https://dz2cdn1.dzone.com/storage/temp/13881958-1598464861104.png)
+# Hospital Social App
+<p  align="center" >
+  <img width="800" height="400" src="https://dz2cdn1.dzone.com/storage/temp/13881958-1598464861104.png">
+</p>
 
 
 
-> ### Hospital social.
-
-This is project for hospital center.Peopple can registartrion and after this they are have account. In this account you have your complaint, diagnosis, treatment.Also if you want ask question, you can send chat message to doctor in application.
+This is project for hospital center.People can registartrion and after this they are have account. In this account you have your complaint, diagnosis, treatment.Also if you want ask question, you can send chat message to doctor in application.
 
 
  
@@ -30,15 +31,14 @@ Full
 git clone https://github.com/drnserhio/hospitalManage.git
 ```
 
-# *NEW* GraphQL Support  
+# Diagram
 
-Following some DDD principles. REST or GraphQL is just a kind of adapter. And the domain layer will be consistent all the time. So this repository implement GraphQL and REST at the same time.
+In this diagram you can see diagram entity user and relationship with one to many to (Analyze, Treatment, Video)
 
-The GraphQL schema is https://github.com/gothinkster/spring-boot-realworld-example-app/blob/master/src/main/resources/schema/schema.graphqls and the visualization looks like below.
+<p align="center">
+  <img src="https://github.com/drnserhio/hospitalManage/blob/master/img-readme/diagram.png">
+</p>
 
-![](https://dochub.com/duran199756/gzdnE7NwJMnN5dzVQyW3BJ/снимок-экрана-2022-03-01-в-18-15-23-png)
-
-And this implementation is using [dgs-framework](https://github.com/Netflix/dgs-framework) which is a quite new java graphql server framework.
 # How it works
 
 The application uses Spring Boot (Web, Mybatis).
