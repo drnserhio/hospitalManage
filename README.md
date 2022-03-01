@@ -49,11 +49,11 @@ The secret key is stored in `application.yml`.
 
 When you start applicatiion you have 5 users.
 
-1. `Super Admin` - @@ text in purple (and bold)@@login: rick; password: 5600
-2. `Admin` - login: morthy; password: 5600
-3. `Secretary` - login: betty; password: 5600
-4. `Doctor` - login: summer; password: 5600
-5. `User`  - login: jerry; password: 5600
+1. `Super Admin` - `login:` rick `password:` 5600
+2. `Admin` - `login:` morthy `password:` 5600
+3. `Secretary` - `login:` betty `password:` 5600
+4. `Doctor` - `login:` summer `password:` 5600
+5. `User`  - `login:` jerry `password:` 5600
 
 
 # Database
