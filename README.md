@@ -50,7 +50,16 @@ The secret key is stored in `application.yml`.
 
 # Database
 
-It uses a ~~H2 in-memory database~~ sqlite database (for easy local test without losing test data after every restart), can be changed easily in the `application.properties` for any other database.
+- `H2`
+Test uses a ~~H2 in-memory database~~. In test folder resources initial sql schema and `application-test.yml`
+
+- `MySQL`
+ Hibernate auto create table. In folder resources properties `application.yml`.
+
+- `Mongo`
+ Collections auto create. In folder resources properties `application.yml`.
+
+
 
 # Getting started
 
