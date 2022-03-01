@@ -1,0 +1,12 @@
+FROM node:16.0
+
+WORKDIR /usr/src/app/hospitalManageFrontend
+
+COPY package*.json ./
+
+
+RUN npm install -g @angular/cli@8.0.0 @angular-devkit/build-angular && npm install
+
+EXPOSE 3080
+
+CMD ["npm", "start"]

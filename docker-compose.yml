@@ -22,7 +22,6 @@ services:
     volumes:
       - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
 
-
   hospital-container:
     restart: always
     image: hospital-manager
@@ -34,4 +33,17 @@ services:
     depends_on:
       - mysql
       - mongo
+
+  angular:
+    build:
+      context: ./hospitalManageFrontend
+      dockerfile: Dockerfile-angular
+    ports:
+      - 4200:4200
+    container_name: angular
+    volumes:
+      - ./hospitalManageFrontend:/usr/src/app/hospitalManageFrontend
+      - /usr/src/app/hospitalManageFrontend/node_modules
+
+
 

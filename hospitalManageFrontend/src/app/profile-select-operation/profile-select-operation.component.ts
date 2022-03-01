@@ -23,8 +23,6 @@ export class ProfileSelectOperationComponent implements OnInit {
   fileStatus = {status: '', requestType: '', percent: 0};
 
   select: User;
-  private fileName: string;
-  private formData = new FormData();
   public load = true;
 
   private column = 'create_date';

@@ -16,16 +16,14 @@ import {AuthInterceptor} from './interceptor/auth-interceptor';
 import {AuthGuard} from './guard/auth-guard.guard';
 import {NotificationModule} from './notification.module';
 import {ProfileSelectComponent} from './profile-select/profile-select.component';
-import { ProfileSelectOperationComponent } from './profile-select-operation/profile-select-operation.component';
-import {OwlDateTimeModule} from 'ng-pick-datetime';
-import {OwlNativeDateTimeModule} from 'ng-pick-datetime';
+import {ProfileSelectOperationComponent} from './profile-select-operation/profile-select-operation.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {NgxPaginationModule} from 'ngx-pagination';
-import { AnalizeCardComponent } from './analize-card-select/analize-card.component';
-import { TreatmentCardComponent } from './treatment-card-select/treatment-card.component';
+import {AnalizeCardComponent} from './analize-card-select/analize-card.component';
+import {TreatmentCardComponent} from './treatment-card-select/treatment-card.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
-import { TreatmentsCardUserProfileComponent } from './treatments-card-user-profile/treatments-card-user-profile.component';
-import { AnalizeCardUserProfileComponent } from './analize-card-user-profile/analize-card-user-profile.component';
+import {TreatmentsCardUserProfileComponent} from './treatments-card-user-profile/treatments-card-user-profile.component';
+import {AnalizeCardUserProfileComponent} from './analize-card-user-profile/analize-card-user-profile.component';
 import {ChatComponent} from './chat/chat.component';
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 
@@ -52,8 +50,6 @@ import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
         FormsModule,
         HttpClientModule,
         NotificationModule,
-        OwlDateTimeModule,
-        OwlNativeDateTimeModule,
         BrowserAnimationsModule,
         NgxPaginationModule,
         NgbModule,
