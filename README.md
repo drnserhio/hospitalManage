@@ -37,7 +37,7 @@ Following some DDD principles. REST or GraphQL is just a kind of adapter. And th
 The GraphQL schema is https://github.com/gothinkster/spring-boot-realworld-example-app/blob/master/src/main/resources/schema/schema.graphqls and the visualization looks like below.
 
 <p align="center">
-  <img width="460" height="300" src="https://github.com/drnserhio/hospitalManage/blob/master/img-readme/diagram.png">
+  <img src="https://github.com/drnserhio/hospitalManage/blob/master/img-readme/diagram.png">
 </p>
 
 And this implementation is using [dgs-framework](https://github.com/Netflix/dgs-framework) which is a quite new java graphql server framework.
