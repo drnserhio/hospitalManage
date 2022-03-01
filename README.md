@@ -67,9 +67,6 @@ You'll need Java 17 installed.
 
     deploy.sh
 
-To test that it works, open a browser tab at http://localhost:4200 .  
-
-
 # Try it out with [Docker](https://www.docker.com/)
 
 You'll need Docker installed.
