@@ -1,5 +1,5 @@
 # ![Hospital Social App]
-<p width="800" height="400" align="center" >
+<p width="700" height="300" align="center" >
   <img src="https://dz2cdn1.dzone.com/storage/temp/13881958-1598464861104.png">
 </p>
 
