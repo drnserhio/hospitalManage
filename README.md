@@ -43,19 +43,12 @@ In this diagram you can see diagram entity user and relationships with one to ma
 
 The application uses Spring Boot,Spring WebSocket, Java Mail, MySQL, Mongo, Angular.
 
-* Spring boot uses the idea of manipulation infromation about patient in hospital.
-* Spring WebSocket uses stomp connection in js ui.
-* Java mail uses google stmp and send message information for user.
-* MySQL uses manipulation entity User, Analyze, Treatmen, Video and relationships.
-* Mongo uses manipulation fast input, output chat messages.
-* Angular uses component manipulation data json for api backend.
-
-And the code is organized as this:
-
-1. `api` is the web layer implemented by Spring MVC
-2. `core` is the business model including entities and services
-3. `application` is the high-level services for querying the data transfer objects
-4. `infrastructure`  contains all the implementation classes as the technique details
+1. `Spring boot` uses the idea of manipulation infromation about patient in hospital.
+2. `Spring WebSocket` uses stomp connection in js ui.
+3. `Java mail` uses google stmp and send message information for user.
+4. `MySQL` uses manipulation entity User, Analyze, Treatmen, Video and relationships.
+5. `Mongo` uses manipulation fast input, output chat messages.
+6. `Angular` uses component manipulation data json for api backend.
 
 # Security
 
