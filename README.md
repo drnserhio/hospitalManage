@@ -63,16 +63,13 @@ Test uses a ~~H2 in-memory database~~. In test folder resources initial sql sche
 
 # Getting started 
 
-You'll need Java 17 installed. 
-
-`Maven jar`
+You'll need Java 17 installed. `Maven jar`
 
     deploy.sh
 
 # Try it out with [Docker](https://www.docker.com/)
 
-You'll need Docker installed. 
-`Docker compose`
+You'll need Docker installed. `Docker compose`
 	
     deploy-docker.sh
     
