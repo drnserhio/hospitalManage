@@ -38,7 +38,6 @@ In this diagram you can see diagram entity user and relationship with one to man
   <img src="https://github.com/drnserhio/hospitalManage/blob/master/img-readme/diagram.png">
 </p>
 
-And this implementation is using [dgs-framework](https://github.com/Netflix/dgs-framework) which is a quite new java graphql server framework.
 # How it works
 
 The application uses Spring Boot (Web, Mybatis).
