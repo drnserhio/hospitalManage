@@ -6,8 +6,22 @@
 
 This is project for hospital center.Peopple can registartrion and after this they are have account. In this account you have your complaint, diagnosis, treatment.Also if you want ask question, you can send chat message to doctor in application.
 
-For more information about backend [RealWorld](https://github.com/drnserhio/hospitalmanageAnnotation) repo.
-For more information about frontend [RealWorld](https://github.com/drnserhio/hospitalManageFrontend) repo.
+
+For more information about backend 
+Clone
+--------
+
+```sh
+git clone https://github.com/drnserhio/hospitalmanageAnnotation.git
+```
+
+For more information about frontend
+Clone
+--------
+
+```sh
+git clone https://github.com/drnserhio/hospitalManageFrontend.git
+```
 
 # *NEW* GraphQL Support  
 
