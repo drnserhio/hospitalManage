@@ -1,7 +1,7 @@
 # ![RealWorld Example App using Kotlin and Spring](example-logo.png)
 
 
-> ### Spring boot hospital social project  (https://github.com/gothinkster/realworld-example-apps).
+> ### Spring boot social hospital project.
 
 This codebase was created to demonstrate a fully fledged full-stack application built with Spring boot + Mybatis including CRUD operations, authentication, routing, pagination, and more.
 
