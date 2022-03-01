@@ -1,6 +1,6 @@
 # Hospital Social App
 <p  align="center" >
-  <img width="800" height="400" src="https://dz2cdn1.dzone.com/storage/temp/13881958-1598464861104.png">
+  <img width="800" height="400" src="https://github.com/drnserhio/hospitalManage/blob/master/img-readme/profile.png">
 </p>
 
 
