@@ -33,7 +33,7 @@ git clone https://github.com/drnserhio/hospitalManage.git
 
 # Diagram
 
-In this diagram you can see diagram entity user and relationship with one to many to (Analyze, Treatment, Video)
+In this diagram you can see diagram entity user and relationships with one to many to (Analyze, Treatment, Video)
 
 <p align="center">
   <img src="https://github.com/drnserhio/hospitalManage/blob/master/img-readme/diagram.png">
@@ -41,11 +41,14 @@ In this diagram you can see diagram entity user and relationship with one to man
 
 # How it works
 
-The application uses Spring Boot (Web, Mybatis).
+The application uses Spring Boot,Spring WebSocket, Java Mail, MySQL, Mongo, Angular.
 
-* Use the idea of Domain Driven Design to separate the business term and infrastructure term.
-* Use MyBatis to implement the [Data Mapper](https://martinfowler.com/eaaCatalog/dataMapper.html) pattern for persistence.
-* Use [CQRS](https://martinfowler.com/bliki/CQRS.html) pattern to separate the read model and write model.
+* Spring boot uses the idea of manipulation infromation about patient in hospital.
+* Spring WebSocket uses stomp connection in js ui.
+* Java mail uses google stmp and send message information for user.
+* MySQL uses manipulation entity User, Analyze, Treatmen, Video and relationships.
+* Mongo uses manipulation fast input, output chat messages.
+* Angular uses component manipulation data json for api backend.
 
 And the code is organized as this:
 
