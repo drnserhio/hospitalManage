@@ -105,4 +105,7 @@ To test that it works, open a browser tab at http://localhost:4200 .
 
 # Help
 
-Please fork and PR to improve the project.
+Send message to gmail : 
+`duran199756@gmail.com`
+or instagram : 
+`drn_serhio`
