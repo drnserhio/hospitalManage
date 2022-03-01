@@ -1,7 +1,7 @@
 # ![RealWorld Example App using Kotlin and Spring](example-logo.png)
 
 
-> ### Spring boot + MyBatis codebase containing real world examples (CRUD, auth, advanced patterns, etc) that adheres to the [RealWorld](https://github.com/gothinkster/realworld-example-apps) spec and API.
+> ### Spring boot + MySQL + Angular  (https://github.com/gothinkster/realworld-example-apps) spec and API.
 
 This codebase was created to demonstrate a fully fledged full-stack application built with Spring boot + Mybatis including CRUD operations, authentication, routing, pagination, and more.
 
