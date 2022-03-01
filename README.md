@@ -40,6 +40,14 @@ Spring Security was override and add other filter for jwt token process.
 
 The secret key is stored in `application.yml`.
 
+# Role
+1. `Super Admin`
+2. `Admin`
+3. `Secretary`
+4. `Doctor`
+5. `User` 
+
+
 # Database
 
 It uses a ~~H2 in-memory database~~ sqlite database (for easy local test without losing test data after every restart), can be changed easily in the `application.properties` for any other database.
