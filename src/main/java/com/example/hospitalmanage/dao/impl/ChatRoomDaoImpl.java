@@ -9,10 +9,13 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-@AllArgsConstructor
 public class ChatRoomDaoImpl implements ChatRoomDao {
 
     private final ChatRoomRepository chatRoomRepository;
+
+    public ChatRoomDaoImpl(ChatRoomRepository chatRoomRepository) {
+        this.chatRoomRepository = chatRoomRepository;
+    }
 
     @Override
     public Optional<String> getChatId(Long senderId, Long recipientId, boolean createIfNotExist) {

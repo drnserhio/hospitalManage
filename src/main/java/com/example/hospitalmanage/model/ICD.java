@@ -11,13 +11,10 @@ import java.io.Serializable;
 
 
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
 @JsonPropertyOrder({
         "languge",
         "value"
 })
-@Data
 @Table(name = "ICD")
 public class ICD implements Serializable {
     @Id
@@ -27,9 +24,50 @@ public class ICD implements Serializable {
     private String language;
     private String value;
 
+    public ICD() { }
+
     public ICD(String code, String language, String value) {
         this.code = code;
         this.language = language;
+        this.value = value;
+    }
+
+    public ICD(Long id, String code, String language, String value) {
+        this.id = id;
+        this.code = code;
+        this.language = language;
+        this.value = value;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
         this.value = value;
     }
 }

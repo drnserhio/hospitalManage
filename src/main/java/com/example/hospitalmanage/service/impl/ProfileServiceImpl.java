@@ -16,11 +16,13 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 
 @Service
-@AllArgsConstructor
 public class ProfileServiceImpl implements ProfileService {
+
     private final ProfileDao profileDao;
 
-
+    public ProfileServiceImpl(ProfileDao profileDao) {
+        this.profileDao = profileDao;
+    }
 
     @Override
     public byte[] getDocument(String username)

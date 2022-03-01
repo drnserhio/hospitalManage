@@ -16,12 +16,15 @@ import java.util.List;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
-@AllArgsConstructor
 @RestController
 @RequestMapping(path = {"/", "/video-operation"})
 public class VideoResource extends ExceptionHandling {
 
     private final VideoService videoService;
+
+    public VideoResource(VideoService videoService) {
+        this.videoService = videoService;
+    }
 
     @PostMapping(value = "/upload/{username}")
     @PreAuthorize("hasAnyAuthority('god:all', 'operation:all')")

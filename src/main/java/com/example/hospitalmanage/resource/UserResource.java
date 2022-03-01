@@ -39,7 +39,6 @@ import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 
 @RestController
 @RequestMapping(path = {"/", "/user"})
-@AllArgsConstructor
 @Slf4j
 public class UserResource extends ExceptionHandling {
 
@@ -47,6 +46,16 @@ public class UserResource extends ExceptionHandling {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
     private final ProfileServiceImpl profileServiceImpl;
+
+    public UserResource(UserService userService,
+                        AuthenticationManager authenticationManager,
+                        JwtTokenProvider jwtTokenProvider,
+                        ProfileServiceImpl profileServiceImpl) {
+        this.userService = userService;
+        this.authenticationManager = authenticationManager;
+        this.jwtTokenProvider = jwtTokenProvider;
+        this.profileServiceImpl = profileServiceImpl;
+    }
 
     @PostMapping("/register")
     public ResponseEntity<User> register(

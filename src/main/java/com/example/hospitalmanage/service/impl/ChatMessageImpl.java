@@ -9,10 +9,13 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-@AllArgsConstructor
 public class ChatMessageImpl implements ChatMessageService {
 
     private final ChatMessageDao chatMessageDao;
+
+    public ChatMessageImpl(ChatMessageDao chatMessageDao) {
+        this.chatMessageDao = chatMessageDao;
+    }
 
     @Override
     public ChatMessage save(ChatMessage chatMessage) {

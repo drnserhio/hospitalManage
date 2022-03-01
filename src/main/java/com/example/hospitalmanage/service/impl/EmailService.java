@@ -15,11 +15,11 @@ import java.util.Properties;
 import static com.example.hospitalmanage.constant.EmailConstant.*;
 
 @Service
-@AllArgsConstructor
 public class EmailService {
 
+    public EmailService() { }
 
-    public void sendMessageRegistartion(String firstname, String lastname,String username,String email)
+    public void sendMessageRegistartion(String firstname, String lastname, String username, String email)
             throws MessagingException {
         Message message = creatProfile(firstname, lastname, username, email);
         SMTPTransport smtpTransport = (SMTPTransport) getEmailSession().getTransport(SIMPLE_MAIL_TRANSFER_PROTOCOL);

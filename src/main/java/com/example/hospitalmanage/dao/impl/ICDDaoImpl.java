@@ -26,12 +26,19 @@ import static com.example.hospitalmanage.constant.ICDConstant.*;
 
 @Repository
 @Slf4j
-@AllArgsConstructor
 public class ICDDaoImpl implements ICDDao {
 
-    private OAuthTokenProvider oAuthTokenProvider;
-    private RestTemplate restTemplate;
-    private EntityManagerFactory entityManagerFactory;
+    private final OAuthTokenProvider oAuthTokenProvider;
+    private final RestTemplate restTemplate;
+    private final EntityManagerFactory entityManagerFactory;
+
+    public ICDDaoImpl(OAuthTokenProvider oAuthTokenProvider,
+                      RestTemplate restTemplate,
+                      EntityManagerFactory entityManagerFactory) {
+        this.oAuthTokenProvider = oAuthTokenProvider;
+        this.restTemplate = restTemplate;
+        this.entityManagerFactory = entityManagerFactory;
+    }
 
     public ICD getCodeICD(String code) throws IOException {
         HttpEntity<String> entity = new HttpEntity<>(getOAuthHeader());

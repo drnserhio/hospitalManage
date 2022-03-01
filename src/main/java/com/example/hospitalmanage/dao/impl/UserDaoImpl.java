@@ -48,13 +48,20 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Repository
 @Slf4j
-@AllArgsConstructor
 public class UserDaoImpl implements UserDao {
 
     private final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final EmailService emailService;
-    private EntityManagerFactory entityManagerFactory;
+    private final EntityManagerFactory entityManagerFactory;
+
+    public UserDaoImpl(BCryptPasswordEncoder bCryptPasswordEncoder,
+                       EmailService emailService,
+                       EntityManagerFactory entityManagerFactory) {
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.emailService = emailService;
+        this.entityManagerFactory = entityManagerFactory;
+    }
 
     @Override
     public User register(String firstname,
@@ -74,8 +81,8 @@ public class UserDaoImpl implements UserDao {
         user.setEmail(email);
         user.setPassword(encryptPassoword(password));
         user.setJoindDate(new Date());
-        user.setIsActive(true);
-        user.setIsNotLocked(true);
+        user.setActive(true);
+        user.setNotLocked(true);
         user.setRole(ROLE_USER.name());
         user.setAuthorities(ROLE_USER.getAuthorities());
         user.setProfileImageUrl(getTemporaryProfileImageUrl(username));
@@ -159,8 +166,8 @@ public class UserDaoImpl implements UserDao {
         user.setPassword(encryptPassoword(password));
         user.setJoindDate(new Date());
         user.setOnline(false);
-        user.setIsActive(true);
-        user.setIsNotLocked(true);
+        user.setActive(true);
+        user.setNotLocked(true);
         user.setInfoDiagnosis(PUT_YOUR_INFORMATION);
         user.setInfoAboutSick(PUT_YOUR_INFORMATION);
         user.setInfoAboutComplaint(PUT_YOUR_INFORMATION);
@@ -179,7 +186,7 @@ public class UserDaoImpl implements UserDao {
             throws UserNotFoundException, UserNameExistsException, EmailExistsException {
         validationNewUsernameAndEmail(username, EMPTY, EMPTY);
         User user = findUserByUsername(username);
-        user.setIsActive(isNotLocaked);
+        user.setActive(isNotLocaked);
         user.setRole(getRoleEnumName(role).name());
         user.setAuthorities(getRoleEnumName(role).getAuthorities());
         updateUser(user);

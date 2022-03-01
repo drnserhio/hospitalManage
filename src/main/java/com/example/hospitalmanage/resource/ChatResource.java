@@ -20,13 +20,19 @@ import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @Slf4j
-@AllArgsConstructor
 public class ChatResource extends ExceptionHandling {
 
     private final SimpMessagingTemplate simpleMessagingTemplate;
     private final ChatMessageService chatMessageService;
     private final ChatRoomService chatRoomService;
 
+    public ChatResource(SimpMessagingTemplate simpleMessagingTemplate,
+                        ChatMessageService chatMessageService,
+                        ChatRoomService chatRoomService) {
+        this.simpleMessagingTemplate = simpleMessagingTemplate;
+        this.chatMessageService = chatMessageService;
+        this.chatRoomService = chatRoomService;
+    }
 
     @MessageMapping("/chat")
     public void sendMessage(@Payload ChatMessage chatMessage) {

@@ -9,8 +9,6 @@ import java.util.Comparator;
 import java.util.Date;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "AnalyzeICDDate")
 public class AnalyzeICDDate {
@@ -22,4 +20,13 @@ public class AnalyzeICDDate {
     private String icdId;
     @Column(name = "date_add_analyze")
     private Date dateAddAnalyze;
+
+
+    public AnalyzeICDDate() {}
+
+    public AnalyzeICDDate(Long id, String icdId, Date dateAddAnalyze) {
+        this.id = id;
+        this.icdId = icdId;
+        this.dateAddAnalyze = dateAddAnalyze;
+    }
 }

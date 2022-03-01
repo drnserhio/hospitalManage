@@ -19,8 +19,6 @@ import static com.example.hospitalmanage.constant.WebSocketConstant.*;
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-
-
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry
@@ -29,14 +27,12 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 .withSockJS();
     }
 
-
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.enableSimpleBroker(SIMPLE_BROKER);
         registry.setApplicationDestinationPrefixes(APPLICATION_DESTINATION_PREFIXES);
         registry.setUserDestinationPrefix(USER_DESTINATION_PREFIX);
     }
-
 
     @Override
     public boolean configureMessageConverters(List<MessageConverter> messageConverters) {

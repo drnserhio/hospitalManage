@@ -21,12 +21,17 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
 @RestController
-@AllArgsConstructor
 @RequestMapping(path = {"/", "/account"})
 public class ProfileResource extends ExceptionHandling {
 
     private final UserService userService;
     private final ProfileService profileService;
+
+    public ProfileResource(UserService userService,
+                           ProfileService profileService) {
+        this.userService = userService;
+        this.profileService = profileService;
+    }
 
     @PutMapping("/updateProfile")
     @PreAuthorize("hasAnyAuthority('god:all', 'profile:user', 'profile:all')")

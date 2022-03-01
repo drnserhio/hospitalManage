@@ -18,10 +18,13 @@ import static com.example.hospitalmanage.constant.PersistenceConstant.*;
 
 @Configuration
 @EnableTransactionManagement
-@AllArgsConstructor
 public class PersistenceConfig {
 
     private ConnectionJpaProp connectionJpaProp;
+
+    public PersistenceConfig(ConnectionJpaProp connectionJpaProp) {
+        this.connectionJpaProp = connectionJpaProp;
+    }
 
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean() {

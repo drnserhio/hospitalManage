@@ -38,7 +38,6 @@ import static com.example.hospitalmanage.constant.UserConstant.USER_NOT_FOUND_BY
 
 @Repository
 @Slf4j
-@AllArgsConstructor
 public class ProfileDaoImpl implements ProfileDao {
 
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
@@ -47,6 +46,18 @@ public class ProfileDaoImpl implements ProfileDao {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final EmailService emailService;
     private final EntityManagerFactory entityManagerFactory;
+
+    public ProfileDaoImpl(UserDao userDao,
+                          DocXGenerator docXGenerator,
+                          BCryptPasswordEncoder bCryptPasswordEncoder,
+                          EmailService emailService,
+                          EntityManagerFactory entityManagerFactory) {
+        this.userDao = userDao;
+        this.docXGenerator = docXGenerator;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.emailService = emailService;
+        this.entityManagerFactory = entityManagerFactory;
+    }
 
     public byte[] getDocument(String username)
             throws Exception {

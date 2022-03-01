@@ -77,7 +77,7 @@ public class UserResourceTest {
         assertNotNull(post.getBody());
         assertNotNull(u.getId());
         assertEquals(ROLE_USER.name(), u.getRole());
-        assertEquals(true, u.getIsActive());
+        assertEquals(true, u.getActive());
     }
 
     @Test

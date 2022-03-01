@@ -10,10 +10,13 @@ import java.util.stream.Collectors;
 
 import static java.util.Arrays.stream;
 
-@AllArgsConstructor
 public class UserPrincipal implements UserDetails {
 
     private User user;
+
+    public UserPrincipal(User user) {
+        this.user = user;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -37,7 +40,7 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return this.user.getIsNotLocked();
+        return this.user.getNotLocked();
     }
 
     @Override
@@ -47,6 +50,6 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return this.user.getIsActive();
+        return this.user.getActive();
     }
 }

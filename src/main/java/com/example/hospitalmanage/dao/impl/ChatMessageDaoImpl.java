@@ -17,13 +17,20 @@ import org.springframework.data.mongodb.core.*;
 import java.util.*;
 
 @Repository
-@AllArgsConstructor
 @Transactional
 public class ChatMessageDaoImpl implements ChatMessageDao {
 
     private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomDao chatRoomDao;
     private final MongoOperations mongoOperations;
+
+    public ChatMessageDaoImpl(ChatMessageRepository chatMessageRepository,
+                              ChatRoomDao chatRoomDao,
+                              MongoOperations mongoOperations) {
+        this.chatMessageRepository = chatMessageRepository;
+        this.chatRoomDao = chatRoomDao;
+        this.mongoOperations = mongoOperations;
+    }
 
     @Override
     public ChatMessage save(ChatMessage chatMessage) {

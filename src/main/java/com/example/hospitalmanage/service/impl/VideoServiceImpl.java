@@ -13,10 +13,13 @@ import java.io.*;
 import java.util.List;
 
 @Service
-@AllArgsConstructor
 public class VideoServiceImpl implements VideoService {
 
     private final VideoDao videoDao;
+
+    public VideoServiceImpl(VideoDao videoDao) {
+        this.videoDao = videoDao;
+    }
 
     public List<String> uploadFiles(String username, List<MultipartFile> multipartFiles)
             throws IOException {

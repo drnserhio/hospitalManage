@@ -1,10 +1,6 @@
 package com.example.hospitalmanage.model;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -12,10 +8,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-@Data
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "User")
 public class User {
 
@@ -78,4 +71,287 @@ public class User {
 
     private Boolean online;
 
+    public User() { }
+
+    public User(Long id,
+                String userId,
+                String username,
+                String profileImageUrl,
+                String email,
+                String password,
+                String firstname,
+                String lastname,
+                String patronomic,
+                int age,
+                String address,
+                String infoAboutComplaint,
+                String QRCODE,
+                String infoAboutSick,
+                String infoDiagnosis,
+                Set<AnalyzeICDDate> diagnosis,
+                List<Treatment> treatment,
+                Set<Video> videoFiles,
+                Boolean hospiztalization,
+                Date joindDate,
+                Date lastLoginDate,
+                Date lastLoginDateDisplay,
+                LocalDateTime timeToVisitAt,
+                String role,
+                String[] authorities,
+                Boolean isActive,
+                Boolean isNotLocked,
+                Boolean online) {
+        this.id = id;
+        this.userId = userId;
+        this.username = username;
+        this.profileImageUrl = profileImageUrl;
+        this.email = email;
+        this.password = password;
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.patronomic = patronomic;
+        this.age = age;
+        this.address = address;
+        this.infoAboutComplaint = infoAboutComplaint;
+        this.QRCODE = QRCODE;
+        this.infoAboutSick = infoAboutSick;
+        this.infoDiagnosis = infoDiagnosis;
+        this.diagnosis = diagnosis;
+        this.treatment = treatment;
+        this.videoFiles = videoFiles;
+        this.hospiztalization = hospiztalization;
+        this.joindDate = joindDate;
+        this.lastLoginDate = lastLoginDate;
+        this.lastLoginDateDisplay = lastLoginDateDisplay;
+        this.timeToVisitAt = timeToVisitAt;
+        this.role = role;
+        this.authorities = authorities;
+        this.isActive = isActive;
+        this.isNotLocked = isNotLocked;
+        this.online = online;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getProfileImageUrl() {
+        return profileImageUrl;
+    }
+
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getFirstname() {
+        return firstname;
+    }
+
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
+    }
+
+    public String getLastname() {
+        return lastname;
+    }
+
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
+    }
+
+    public String getPatronomic() {
+        return patronomic;
+    }
+
+    public void setPatronomic(String patronomic) {
+        this.patronomic = patronomic;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getInfoAboutComplaint() {
+        return infoAboutComplaint;
+    }
+
+    public void setInfoAboutComplaint(String infoAboutComplaint) {
+        this.infoAboutComplaint = infoAboutComplaint;
+    }
+
+    public String getQRCODE() {
+        return QRCODE;
+    }
+
+    public void setQRCODE(String QRCODE) {
+        this.QRCODE = QRCODE;
+    }
+
+    public String getInfoAboutSick() {
+        return infoAboutSick;
+    }
+
+    public void setInfoAboutSick(String infoAboutSick) {
+        this.infoAboutSick = infoAboutSick;
+    }
+
+    public String getInfoDiagnosis() {
+        return infoDiagnosis;
+    }
+
+    public void setInfoDiagnosis(String infoDiagnosis) {
+        this.infoDiagnosis = infoDiagnosis;
+    }
+
+    public Set<AnalyzeICDDate> getDiagnosis() {
+        return diagnosis;
+    }
+
+    public void setDiagnosis(Set<AnalyzeICDDate> diagnosis) {
+        this.diagnosis = diagnosis;
+    }
+
+    public List<Treatment> getTreatment() {
+        return treatment;
+    }
+
+    public void setTreatment(List<Treatment> treatment) {
+        this.treatment = treatment;
+    }
+
+    public Set<Video> getVideoFiles() {
+        return videoFiles;
+    }
+
+    public void setVideoFiles(Set<Video> videoFiles) {
+        this.videoFiles = videoFiles;
+    }
+
+    public Boolean getHospiztalization() {
+        return hospiztalization;
+    }
+
+    public void setHospiztalization(Boolean hospiztalization) {
+        this.hospiztalization = hospiztalization;
+    }
+
+    public Date getJoindDate() {
+        return joindDate;
+    }
+
+    public void setJoindDate(Date joindDate) {
+        this.joindDate = joindDate;
+    }
+
+    public Date getLastLoginDate() {
+        return lastLoginDate;
+    }
+
+    public void setLastLoginDate(Date lastLoginDate) {
+        this.lastLoginDate = lastLoginDate;
+    }
+
+    public Date getLastLoginDateDisplay() {
+        return lastLoginDateDisplay;
+    }
+
+    public void setLastLoginDateDisplay(Date lastLoginDateDisplay) {
+        this.lastLoginDateDisplay = lastLoginDateDisplay;
+    }
+
+    public LocalDateTime getTimeToVisitAt() {
+        return timeToVisitAt;
+    }
+
+    public void setTimeToVisitAt(LocalDateTime timeToVisitAt) {
+        this.timeToVisitAt = timeToVisitAt;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public String[] getAuthorities() {
+        return authorities;
+    }
+
+    public void setAuthorities(String[] authorities) {
+        this.authorities = authorities;
+    }
+
+    public Boolean getActive() {
+        return isActive;
+    }
+
+    public void setActive(Boolean active) {
+        isActive = active;
+    }
+
+    public Boolean getNotLocked() {
+        return isNotLocked;
+    }
+
+    public void setNotLocked(Boolean notLocked) {
+        isNotLocked = notLocked;
+    }
+
+    public Boolean getOnline() {
+        return online;
+    }
+
+    public void setOnline(Boolean online) {
+        this.online = online;
+    }
 }

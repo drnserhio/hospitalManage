@@ -1,14 +1,7 @@
 package com.example.hospitalmanage.util;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.ImportResource;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -18,14 +11,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.time.LocalTime;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.Objects;
 
 @Component
-@AllArgsConstructor
-@NoArgsConstructor
 public class OAuthTokenProvider {
 
 
@@ -45,7 +33,25 @@ public class OAuthTokenProvider {
     private Date saveTokenDate;
     private Date expiredTokenTime;
 
+    public OAuthTokenProvider() { }
 
+    public OAuthTokenProvider(String TOKEN_URI,
+                              String CLIENT_ID,
+                              String CLIENT_SECRET,
+                              String SCOPE,
+                              String GRANT_TYPE,
+                              String token,
+                              Date saveTokenDate,
+                              Date expiredTokenTime) {
+        this.TOKEN_URI = TOKEN_URI;
+        this.CLIENT_ID = CLIENT_ID;
+        this.CLIENT_SECRET = CLIENT_SECRET;
+        this.SCOPE = SCOPE;
+        this.GRANT_TYPE = GRANT_TYPE;
+        this.token = token;
+        this.saveTokenDate = saveTokenDate;
+        this.expiredTokenTime = expiredTokenTime;
+    }
 
     public void createTokenICD() throws IOException {
 

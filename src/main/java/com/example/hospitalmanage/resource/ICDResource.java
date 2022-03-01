@@ -18,11 +18,14 @@ import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @Slf4j
-@AllArgsConstructor
 @RequestMapping(path = {"/", "/icd"})
 public class ICDResource extends ExceptionHandling {
 
-    private ICDService icdService;
+    private final ICDService icdService;
+
+    public ICDResource(ICDService icdService) {
+        this.icdService = icdService;
+    }
 
     @GetMapping(path = "/list")
     @PreAuthorize("hasAnyAuthority('god:all')")

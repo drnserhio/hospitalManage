@@ -33,11 +33,15 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 @Repository
 @Slf4j
-@AllArgsConstructor
 public class VideoDaoImpl implements VideoDao {
 
-    private UserDao userDao;
+    private final UserDao userDao;
     private final EntityManagerFactory entityManagerFactory;
+
+    public VideoDaoImpl(UserDao userDao, EntityManagerFactory entityManagerFactory) {
+        this.userDao = userDao;
+        this.entityManagerFactory = entityManagerFactory;
+    }
 
     public List<String> uploadFiles(String username, List<MultipartFile> multipartFiles)
             throws IOException {

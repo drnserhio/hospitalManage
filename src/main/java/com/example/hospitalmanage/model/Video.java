@@ -8,8 +8,6 @@ import java.util.Comparator;
 import java.util.Date;
 
 @Entity
-@Data
-@NoArgsConstructor
 @Table(name = "Video")
 public class Video implements Comparator<Video> {
     @Id
@@ -20,6 +18,8 @@ public class Video implements Comparator<Video> {
     @Column(name = "create_date")
     private Date createDate;
 
+    public Video() { }
+
     public Video(String nameFile) {
         this.nameFile = nameFile;
         createDate = new Date();
@@ -29,6 +29,30 @@ public class Video implements Comparator<Video> {
         this.id = id;
         this.nameFile = nameFile;
         this.createDate = new Date();
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getNameFile() {
+        return nameFile;
+    }
+
+    public void setNameFile(String nameFile) {
+        this.nameFile = nameFile;
+    }
+
+    public Date getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
     }
 
     @Override

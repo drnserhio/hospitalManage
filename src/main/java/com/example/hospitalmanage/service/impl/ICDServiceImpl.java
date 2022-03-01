@@ -9,10 +9,13 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 
 @Service
-@AllArgsConstructor
 public class ICDServiceImpl implements ICDService {
 
     private final ICDDao icdDao;
+
+    public ICDServiceImpl(ICDDao icdDao) {
+        this.icdDao = icdDao;
+    }
 
     public ICD getCodeICD(String code) throws IOException {
         ICD codeICD = icdDao.getCodeICD(code);

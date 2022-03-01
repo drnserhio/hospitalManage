@@ -88,7 +88,7 @@ public class UserServiceTest {
         user.setId(10L);
         user.setUsername(USERNAME_TEST);
         user.setRole(ROLE_FOR_TEST);
-        user.setIsActive(true);
+        user.setActive(true);
 
         given(userDao.updateUser(USERNAME_TEST, ROLE_FOR_TEST, true)).willReturn(user);
         User update = userService.updateUser(USERNAME_TEST, ROLE_FOR_TEST, true);
@@ -98,7 +98,7 @@ public class UserServiceTest {
         assertEquals(user.getId(), update.getId());
         assertEquals(user.getUsername(), update.getUsername());
         assertEquals(user.getRole(), update.getRole());
-        assertEquals(user.getIsActive(), update.getIsActive());
+        assertEquals(user.getActive(), update.getActive());
     }
 
     @Test
