@@ -61,39 +61,22 @@ Test uses a ~~H2 in-memory database~~. In test folder resources initial sql sche
 
 
 
-# Getting started
+# Getting started 
 
-You'll need Java 8 installed.
+You'll need Java 17 installed.
 
-    ./gradlew bootRun
+    deploy.sh
 
-To test that it works, open a browser tab at http://localhost:8080/tags .  
-Alternatively, you can run
+To test that it works, open a browser tab at http://localhost:4200 .  
 
-    curl http://localhost:8080/tags
 
 # Try it out with [Docker](https://www.docker.com/)
 
 You'll need Docker installed.
 	
-    ./gradlew bootBuildImage --imageName spring-boot-realworld-example-app
-    docker run -p 8081:8080 spring-boot-realworld-example-app
-
-# Try it out with a RealWorld frontend
-
-The entry point address of the backend API is at http://localhost:8080, **not** http://localhost:8080/api as some of the frontend documentation suggests.
-
-# Run test
-
-The repository contains a lot of test cases to cover both api test and repository test.
-
-    ./gradlew test
-
-# Code format
-
-Use spotless for code format.
-
-    ./gradlew spotlessJavaApply
+    deploy-docker.sh
+    
+To test that it works, open a browser tab at http://localhost:4200 .      
 
 # Help
 
