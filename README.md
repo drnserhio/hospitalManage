@@ -8,7 +8,7 @@ This is project for hospital center.Peopple can registartrion and after this the
 
 
  
-Clone backend
+Backend
 --------
 
 ```sh
@@ -16,7 +16,7 @@ git clone https://github.com/drnserhio/hospitalmanageAnnotation.git
 ```
 
 
-Clone frontend
+Frontend
 --------
 
 ```sh
