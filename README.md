@@ -1,6 +1,6 @@
 # Hospital Social App
 <p  align="center" >
-  <img width="800" height="400" src="https://github.com/drnserhio/hospitalManage/blob/master/img-readme/profile.png">
+  <img width="900" height="500" src="https://github.com/drnserhio/hospitalManage/blob/master/img-readme/profile.png">
 </p>
 
 
