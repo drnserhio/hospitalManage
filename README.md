@@ -20,7 +20,7 @@ git clone https://github.com/drnserhio/hospitalManage.git
 In this diagram you can see diagram entity user and relationships with one to many to (Analyze, Treatment, Video)
 
 <p align="center">
-  <img src="https://github.com/drnserhio/hospitalManage/blob/master/img-readme/diagram.png">
+  <img width="400" height="200" src="https://github.com/drnserhio/hospitalManage/blob/master/img-readme/diagram.png">
 </p>
 
 # How it works
