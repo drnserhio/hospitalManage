@@ -40,7 +40,7 @@ Spring Security was override and add other filter for jwt token process.
 
 The secret key is stored in `application.yml`.
 
-Role: 
+Role 🔑: 
 1. `Super Admin`
 2. `Admin`
 3. `Secretary`
