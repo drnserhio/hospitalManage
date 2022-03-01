@@ -51,7 +51,8 @@ When you start applicatiion you have 5 users.
 
 1. `Super Admin`
 ```sh
-login: rick password: 5600
+login: rick 
+password: 5600
 ```
 2. `Admin`
 ```sh
@@ -60,15 +61,18 @@ password: 5600
 ```
 4. `Secretary`
 ```sh
-login: betty password: 5600
+login: betty 
+password: 5600
 ```
 6. `Doctor`
 ```sh
-login: summer password: 5600
+login: summer 
+password: 5600
 ```
 8. `User`
 ```sh
-login: jerry password: 5600
+login: jerry 
+password: 5600
 ```
 
 
