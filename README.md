@@ -1,4 +1,7 @@
-# ![Hospital Social App](https://dz2cdn1.dzone.com/storage/temp/13881958-1598464861104.png)
+# ![Hospital Social App]
+<p width="800" height="400" align="center">
+  <img src="https://dz2cdn1.dzone.com/storage/temp/13881958-1598464861104.png">
+</p>
 
 
 
