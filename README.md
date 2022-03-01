@@ -1,4 +1,4 @@
-# ![Hospital Social App](https://dz2cdn1.dzone.com/storage/temp/13881958-1598464861104.png|width=50)
+# ![Hospital Social App](https://dz2cdn1.dzone.com/storage/temp/13881958-1598464861104.png|width=20)
 
 
 > ### Spring-boot Angular Docker.
