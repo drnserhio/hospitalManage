@@ -30,11 +30,9 @@ Full
 git clone https://github.com/drnserhio/hospitalManage.git
 ```
 
-# *NEW* GraphQL Support  
+# Diagram
 
-Following some DDD principles. REST or GraphQL is just a kind of adapter. And the domain layer will be consistent all the time. So this repository implement GraphQL and REST at the same time.
-
-The GraphQL schema is https://github.com/gothinkster/spring-boot-realworld-example-app/blob/master/src/main/resources/schema/schema.graphqls and the visualization looks like below.
+In this diagram you can see diagram entity user and relationship with one to many to (Analyze, Treatment, Video)
 
 <p align="center">
   <img src="https://github.com/drnserhio/hospitalManage/blob/master/img-readme/diagram.png">
