@@ -52,9 +52,9 @@ The application uses Spring Boot,Spring WebSocket, Java Mail, MySQL, Mongo, Angu
 
 # Security
 
-Integration with Spring Security and add other filter for jwt token process.
+Spring Security was override and add other filter for jwt token process.
 
-The secret key is stored in `application.properties`.
+The secret key is stored in `application.yml`.
 
 # Database
 
