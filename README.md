@@ -6,9 +6,8 @@
 
 This is project for hospital center.Peopple can registartrion and after this they are have account. In this account you have your complaint, diagnosis, treatment.Also if you want ask question, you can send chat message to doctor in application.
 
-This codebase was created to demonstrate a fully fledged full-stack application built with Spring boot + Mybatis including CRUD operations, authentication, routing, pagination, and more.
-
-For more information on how to this works with other frontends/backends, head over to the [RealWorld](https://github.com/gothinkster/realworld) repo.
+For more information about backend [RealWorld](https://github.com/drnserhio/hospitalmanageAnnotation) repo.
+For more information about frontend [RealWorld](https://github.com/drnserhio/hospitalManageFrontend) repo.
 
 # *NEW* GraphQL Support  
 
