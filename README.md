@@ -23,6 +23,13 @@ Frontend
 git clone https://github.com/drnserhio/hospitalManageFrontend.git
 ```
 
+Full
+--------
+
+```sh
+git clone https://github.com/drnserhio/hospitalManage.git
+```
+
 # *NEW* GraphQL Support  
 
 Following some DDD principles. REST or GraphQL is just a kind of adapter. And the domain layer will be consistent all the time. So this repository implement GraphQL and REST at the same time.
