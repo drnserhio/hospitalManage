@@ -15,19 +15,13 @@ import com.example.hospitalmanage.model.User;
 import com.example.hospitalmanage.model.Video;
 import com.example.hospitalmanage.role.Role;
 import com.example.hospitalmanage.service.impl.EmailService;
-import com.example.hospitalmanage.service.impl.UserServiceImpl;
 import com.example.hospitalmanage.util.RequestTableHelper;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hibernate.jpa.QueryHints;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -37,7 +31,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 import static com.example.hospitalmanage.constant.FileConstant.*;
 import static com.example.hospitalmanage.constant.UserConstant.*;
@@ -45,15 +44,16 @@ import static com.example.hospitalmanage.role.Role.ROLE_USER;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static com.example.hospitalmanage.constant.LoggerConstant.*;
+
 
 @Repository
-@Slf4j
 public class UserDaoImpl implements UserDao {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final EmailService emailService;
     private final EntityManagerFactory entityManagerFactory;
+    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
     public UserDaoImpl(BCryptPasswordEncoder bCryptPasswordEncoder,
                        EmailService emailService,
@@ -93,10 +93,13 @@ public class UserDaoImpl implements UserDao {
         user.setInfoDiagnosis(PUT_YOUR_INFORMATION);
         user.setHospiztalization(false);
         User save = saveUser(user);
+        LOGGER.info(REGISTER_USER_WITH_USERNAME + username + SUCCESFUL);
         try {
+            LOGGER.info(SEND_MSG_FOR_REGISTER_USER_SUCCESFULL_TO_EMAIL + email);
             emailService.sendMessageRegistartion(save.getFirstname(), save.getLastname(), save.getUsername(), save.getEmail());
         } catch (MessagingException e) {
-            e.printStackTrace();
+            LOGGER.error(MSG_SEND_FAILD);
+            LOGGER.error(e.getMessage());
         }
         return save;
     }
@@ -104,6 +107,7 @@ public class UserDaoImpl implements UserDao {
     private void validPassword(String password)
             throws PasswordLengthIsNotValid {
         if (password.length() < 8 || password.length() > 20) {
+            LOGGER.error(PASSWORD_HAS_INVALID_LENGTH + password.length());
             throw new PasswordLengthIsNotValid("You password has invalid length: " + password.length());
         }
     }
@@ -116,10 +120,13 @@ public class UserDaoImpl implements UserDao {
             transaction.begin();
             entityManager.persist(user);
             transaction.commit();
+            LOGGER.info(SAVE_USER_TO_DATABASE_SUCCESSFUL);
         } catch (Exception e) {
+            LOGGER.error(TRANSACTION_FAILED_GOT_ROLLBACK);
+            LOGGER.error(e.getMessage());
             transaction.rollback();
-            e.printStackTrace();
         } finally {
+            LOGGER.error(ENTITY_MANAGER_CLOSE_CONNECTION_FAILED);
             entityManager.close();
         }
         return user;
@@ -132,10 +139,13 @@ public class UserDaoImpl implements UserDao {
             transaction.begin();
             entityManager.merge(user);
             transaction.commit();
+            LOGGER.error(USER_UPDATE_WITH_USERNAME + user.getUsername());
         } catch (Exception e) {
+            LOGGER.error(TRANSACTION_FAILED_GOT_ROLLBACK);
+            LOGGER.error(e.getMessage());
             transaction.rollback();
-            e.printStackTrace();
         } finally {
+            LOGGER.error(ENTITY_MANAGER_CLOSE_CONNECTION_FAILED);
             entityManager.close();
         }
     }
@@ -190,6 +200,7 @@ public class UserDaoImpl implements UserDao {
         user.setRole(getRoleEnumName(role).name());
         user.setAuthorities(getRoleEnumName(role).getAuthorities());
         updateUser(user);
+        LOGGER.info(USER_UPDATE_WITH_USERNAME + username + SUCCESFUL);
         return user;
     }
 
@@ -204,11 +215,14 @@ public class UserDaoImpl implements UserDao {
                     .setParameter("username", username)
                     .executeUpdate();
             transaction.commit();
+            LOGGER.info(USER_DELETE_WITH_USERNAME + username + SUCCESFUL);
             this.emailService.sendMessageDeleteAccount(user.getFirstname(), user.getLastname(), user.getUsername(), user.getEmail());
         } catch (Exception e) {
+            LOGGER.error(TRANSACTION_FAILED_GOT_ROLLBACK);
+            LOGGER.error(e.getMessage());
             transaction.rollback();
-            log.info(e.getMessage());
         } finally {
+            LOGGER.error(ENTITY_MANAGER_CLOSE_CONNECTION_FAILED);
             entityManager.close();
         }
 
@@ -225,8 +239,9 @@ public class UserDaoImpl implements UserDao {
                     .setParameter("id", id);
             count = (long) query.getSingleResult();
         } catch (Exception e) {
+            LOGGER.error(ENTITY_MANAGER_CLOSE_CONNECTION_FAILED);
+            LOGGER.error(e.getMessage());
             entityManager.close();
-            e.printStackTrace();
         }
         return count == 1;
     }
@@ -237,11 +252,13 @@ public class UserDaoImpl implements UserDao {
         User user = validationNewUsernameAndEmail(username, null, null);
         saveProfileImage(user, profileImage);
         update(user);
+        LOGGER.info(UPDATE_PROFILE_WITH_USERNAME + username + SUCCESFUL);
         try {
             emailService
                     .sendMessageUpdateProfileImage(user.getFirstname(), user.getLastname(), user.getUsername(), user.getEmail());
         } catch (MessagingException e) {
-            e.printStackTrace();
+            LOGGER.error(MSG_SEND_FAILD);
+            LOGGER.error(e.getMessage());
         }
         return user;
     }
@@ -256,8 +273,9 @@ public class UserDaoImpl implements UserDao {
                     .setHint(QueryHints.HINT_READONLY, true);
             listUsers = (List<User>) query.getResultList();
         } catch (Exception e) {
+            LOGGER.error(ENTITY_MANAGER_CLOSE_CONNECTION_FAILED);
+            LOGGER.error(e.getMessage());
             entityManager.close();
-            log.info(e.getMessage());
         }
         return listUsers;
     }
@@ -286,11 +304,13 @@ public class UserDaoImpl implements UserDao {
         user.setInfoAboutComplaint(infoAboutComplaint);
         user.setInfoAboutSick(infoAboutSick);
         updateUser(user);
+        LOGGER.info(USER_UPDATE_PROFILE_WITH_USERNAME + username);
         try {
             emailService
                     .sendMessageUpdateProfile(user.getFirstname(), user.getLastname(), user.getUsername(), user.getEmail());
         } catch (MessagingException e) {
-            e.printStackTrace();
+            LOGGER.error(MSG_SEND_FAILD);
+            LOGGER.error(e.getMessage());
         }
         return user;
     }
@@ -302,20 +322,25 @@ public class UserDaoImpl implements UserDao {
         if (isNotBlank(currentUsername)) {
             User currentUser = findUserByUsername(currentUsername);
             if (currentUser == null) {
+                LOGGER.error(USER_NOT_FOUND_BY_USERNAME + currentUsername);
                 throw new UserNotFoundException(USER_NOT_FOUND_BY_USERNAME + currentUsername);
             }
             if (userByUsername != null && !currentUser.getId().equals(userByUsername.getId())) {
+                LOGGER.error(USERNAME_ALREADY_EXISTS);
                 throw new UserNameExistsException(USERNAME_ALREADY_EXISTS);
             }
             if (userByEmail != null && !currentUser.getId().equals(userByEmail.getId())) {
+                LOGGER.error(EMAIL_ALREADY_EXISTS);
                 throw new EmailExistsException(EMAIL_ALREADY_EXISTS);
             }
             return currentUser;
         } else {
             if (userByUsername != null) {
+                LOGGER.error(USERNAME_ALREADY_EXISTS);
                 throw new UserNameExistsException(USERNAME_ALREADY_EXISTS);
             }
             if (userByEmail != null) {
+                LOGGER.error(EMAIL_ALREADY_EXISTS);
                 throw new EmailExistsException(EMAIL_ALREADY_EXISTS);
             }
             return null;
@@ -342,17 +367,21 @@ public class UserDaoImpl implements UserDao {
         User usr = findUserByUsername(user.getUsername());
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         EntityTransaction transaction = entityManager.getTransaction();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm:ss dd/MM/yyyy");
         try {
             usr.setOnline(false);
             usr.setJoindDate(new Date());
             transaction.begin();
             updateUser(usr);
             transaction.commit();
+            LOGGER.info(LOG_OUT_USER_WITH_USERNAME + user.getUsername() + IN_DATE + formatter.format(LocalDateTime.now()));
             return true;
         } catch (Exception e) {
+            LOGGER.error(TRANSACTION_FAILED_GOT_ROLLBACK);
+            LOGGER.error(e.getMessage());
             transaction.rollback();
-            e.printStackTrace();
         } finally {
+            LOGGER.error(ENTITY_MANAGER_CLOSE_CONNECTION_FAILED);
             entityManager.close();
         }
         return false;
@@ -390,8 +419,9 @@ public class UserDaoImpl implements UserDao {
                     .setParameter("email", email);
             user = (User) query.getResultList().get(0);
         } catch (Exception e) {
+            LOGGER.error(ENTITY_MANAGER_CLOSE_CONNECTION_FAILED);
+            LOGGER.error(e.getMessage());
             entityManager.close();
-            log.info(e.getMessage());
         }
         return user;
     }
@@ -407,8 +437,9 @@ public class UserDaoImpl implements UserDao {
                     .setParameter("username", username);
             user = (User) query.getResultList().get(0);
         } catch (Exception e) {
+            LOGGER.error(ENTITY_MANAGER_CLOSE_CONNECTION_FAILED);
+            LOGGER.error(e.getMessage());
             entityManager.close();
-            log.info(e.getMessage());
         }
         return user;
     }
@@ -424,8 +455,9 @@ public class UserDaoImpl implements UserDao {
                     .setHint(QueryHints.HINT_READONLY, true);
             listUsers = (List<User>) query.getResultList();
         } catch (Exception e) {
+            LOGGER.error(ENTITY_MANAGER_CLOSE_CONNECTION_FAILED);
+            LOGGER.error(e.getMessage());
             entityManager.close();
-            log.info(e.getMessage());
         }
         return listUsers;
     }
@@ -443,9 +475,11 @@ public class UserDaoImpl implements UserDao {
                     .setFirstResult((request.getPage() - 1) * request.getSize())
                     .setMaxResults(request.getSize());
             users = userTypedQuery.getResultList();
+            LOGGER.info(FIND_USERS_SUCCESSFUL_SIZE + users.size());
         } catch (Exception e) {
+            LOGGER.error(ENTITY_MANAGER_CLOSE_CONNECTION_FAILED);
+            LOGGER.error(e.getMessage());
             entityManager.close();
-            log.info(e.getMessage());
         }
 
         int itemsSize = (int) countUsers();
@@ -457,6 +491,7 @@ public class UserDaoImpl implements UserDao {
         responseTable.setTotalPages(totalPages);
         responseTable.setColumnSort(request.getColumn());
         responseTable.setSort(request.getSort());
+        LOGGER.info(GENERATE_TABLE_USERS_CREATED_SUCCESSFUL);
         return responseTable;
 
     }
@@ -470,8 +505,9 @@ public class UserDaoImpl implements UserDao {
                     .setHint(QueryHints.HINT_READONLY, true);
             count = (Long) query.getSingleResult();
         } catch (Exception e) {
+            LOGGER.error(ENTITY_MANAGER_CLOSE_CONNECTION_FAILED);
+            LOGGER.error(e.getMessage());
             entityManager.close();
-            e.printStackTrace();
         }
         return count;
     }
@@ -489,9 +525,11 @@ public class UserDaoImpl implements UserDao {
                     .setFirstResult((request.getPage() - 1) * request.getSize())
                     .setMaxResults(request.getSize());
             treatments = query.getResultList();
+            LOGGER.info(FOUND_TREATMENTS_FOR_USER_WITH_ID + userId);
         } catch (Exception e) {
+            LOGGER.error(ENTITY_MANAGER_CLOSE_CONNECTION_FAILED);
+            LOGGER.error(e.getMessage());
             entityManager.close();
-            log.debug("Query exception result");
         }
 
         int itemsSize = countTreatmentsByUserId(userId);
@@ -503,7 +541,7 @@ public class UserDaoImpl implements UserDao {
         responseTable.setTotalPages(totalPages);
         responseTable.setColumnSort(request.getColumn());
         responseTable.setSort(request.getSort());
-
+        LOGGER.info(CREATED_TABLE_TREATMENTS_FOR_USER_WITH_ID + userId);
         return responseTable;
     }
 
@@ -520,9 +558,11 @@ public class UserDaoImpl implements UserDao {
                     .setFirstResult((request.getPage() - 1) * request.getSize())
                     .setMaxResults(request.getSize());
             videos = (List<Video>) query.getResultList();
+            LOGGER.info(FOUND_VIDEOS_FOR_USER_WITH_ID + userId);
         } catch (Exception e) {
+            LOGGER.error(ENTITY_MANAGER_CLOSE_CONNECTION_FAILED);
+            LOGGER.error(e.getMessage());
             entityManager.close();
-            log.debug("Query exception result");
         }
 
         int itemsSize = countVideosByUserId(userId);
@@ -534,6 +574,7 @@ public class UserDaoImpl implements UserDao {
         responseTable.setTotalPages(totalPages);
         responseTable.setColumnSort(request.getColumn());
         responseTable.setSort(request.getSort());
+        LOGGER.info(CREATED_TABLE_VIDEOS_FOR_USER_WITH_ID + userId);
         return responseTable;
     }
 
@@ -546,10 +587,13 @@ public class UserDaoImpl implements UserDao {
             entityManager
                     .merge(user);
             transaction.commit();
+            LOGGER.info(USER_UPDATE_WITH_USERNAME + user.getUsername()  + SUCCESFUL);
         } catch (Exception e) {
+            LOGGER.error(TRANSACTION_FAILED_GOT_ROLLBACK);
+            LOGGER.error(e.getMessage());
             transaction.rollback();
-            e.printStackTrace();
         } finally {
+            LOGGER.error(ENTITY_MANAGER_CLOSE_CONNECTION_FAILED);
             entityManager.close();
         }
     }
@@ -564,8 +608,9 @@ public class UserDaoImpl implements UserDao {
                     .setParameter("userId", userId);
             count = ((Number) query.getSingleResult()).intValue();
         } catch (Exception e) {
+            LOGGER.error(ENTITY_MANAGER_CLOSE_CONNECTION_FAILED);
+            LOGGER.error(e.getMessage());
             entityManager.close();
-            e.printStackTrace();
         }
         return count;
     }
@@ -580,8 +625,9 @@ public class UserDaoImpl implements UserDao {
                     .setParameter("userId", userId);
             count = ((Number) query.getSingleResult()).intValue();
         } catch (Exception e) {
+            LOGGER.error(ENTITY_MANAGER_CLOSE_CONNECTION_FAILED);
+            LOGGER.error(e.getMessage());
             entityManager.close();
-            e.printStackTrace();
         }
         return count;
     }
@@ -593,5 +639,4 @@ public class UserDaoImpl implements UserDao {
             return (itemSize / showEntity) + 1;
         }
     }
-
 }

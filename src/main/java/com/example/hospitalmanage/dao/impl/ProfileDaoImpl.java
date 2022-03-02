@@ -15,8 +15,6 @@ import com.example.hospitalmanage.model.Treatment;
 import com.example.hospitalmanage.model.User;
 import com.example.hospitalmanage.service.impl.EmailService;
 import com.example.hospitalmanage.util.RequestTableHelper;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.hibernate.jpa.QueryHints;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -34,18 +32,18 @@ import java.util.Date;
 import java.util.List;
 
 import static com.example.hospitalmanage.constant.HandlingExceptionConstant.PASSWORD_IS_NOT_VALID;
+import static com.example.hospitalmanage.constant.LoggerConstant.*;
 import static com.example.hospitalmanage.constant.UserConstant.USER_NOT_FOUND_BY_USERNAME;
 
 @Repository
-@Slf4j
 public class ProfileDaoImpl implements ProfileDao {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(getClass());
     private final UserDao userDao;
     private final DocXGenerator docXGenerator;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final EmailService emailService;
     private final EntityManagerFactory entityManagerFactory;
+    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
     public ProfileDaoImpl(UserDao userDao,
                           DocXGenerator docXGenerator,
@@ -63,8 +61,10 @@ public class ProfileDaoImpl implements ProfileDao {
             throws Exception {
         User findUser = userDao.findUserByUsername(username);
         if (findUser == null) {
+            LOGGER.error(USER_NOT_FOUND_BY_USERNAME + username);
             throw new UserNotFoundException(USER_NOT_FOUND_BY_USERNAME + username);
         }
+        LOGGER.info(DOCUMENT_GENERATE_FOR_USER_WITH_ID + findUser.getId() + AND_USERNAME +  username);
         return docXGenerator.createDocument(findUser);
     }
 
@@ -80,11 +80,14 @@ public class ProfileDaoImpl implements ProfileDao {
             analyzeICDDate.setDateAddAnalyze(new Date());
             entityManager.persist(analyzeICDDate);
             transaction.commit();
+            LOGGER.info(SAVE_DIAGNOS_SUCCESSFUL_TO_DATABASE_WITH_ID + analyzeICDDate.getId());
             insertDiagnosToUser(userId, analyzeICDDate.getId());
         } catch (Exception e) {
+            LOGGER.error(TRANSACTION_FAILED_GOT_ROLLBACK);
+            LOGGER.error(e.getMessage());
             transaction.rollback();
-            e.printStackTrace();
         } finally {
+            LOGGER.error(ENTITY_MANAGER_CLOSE_CONNECTION_FAILED);
             entityManager.close();
         }
     }
@@ -99,10 +102,13 @@ public class ProfileDaoImpl implements ProfileDao {
                     .setParameter("diagnosId", diagnosId)
                     .executeUpdate();
             transaction.commit();
+            LOGGER.error(SAVE_DIAGNOSIS_IN_USER_SUCCESSFUL_WITH_ID + diagnosId);
         } catch (Exception e) {
+            LOGGER.error(TRANSACTION_FAILED_GOT_ROLLBACK);
+            LOGGER.error(e.getMessage());
             transaction.rollback();
-            e.printStackTrace();
         } finally {
+            LOGGER.error(ENTITY_MANAGER_CLOSE_CONNECTION_FAILED);
             entityManager.close();
         }
     }
@@ -119,9 +125,11 @@ public class ProfileDaoImpl implements ProfileDao {
                     .setParameter("diagnos", analizeId)
                     .executeUpdate();
             transaction.commit();
+            LOGGER.info(DELETE_DIAGNOS_SUCCESFUL_WITH_ID + analizeId);
         } catch (Exception e) {
+            LOGGER.error(TRANSACTION_FAILED_GOT_ROLLBACK;
+            LOGGER.error(e.getMessage());
             transaction.rollback();
-            e.printStackTrace();
         }
         try {
             transaction.begin();
@@ -129,11 +137,14 @@ public class ProfileDaoImpl implements ProfileDao {
                     .setParameter("id", analizeId)
                     .executeUpdate();
             transaction.commit();
+            LOGGER.info(DELETE_DIAGNOS_FROM_DATABASE_WITH_ID + analizeId);
             return true;
         } catch (Exception e) {
+            LOGGER.error(TRANSACTION_FAILED_GOT_ROLLBACK);
+            LOGGER.error(e.getMessage());
             transaction.rollback();
-            e.printStackTrace();
         } finally {
+            LOGGER.error(ENTITY_MANAGER_CLOSE_CONNECTION_FAILED);
             entityManager.close();
         }
         return false;
@@ -146,14 +157,17 @@ public class ProfileDaoImpl implements ProfileDao {
         boolean isChange = false;
         User user = userDao.findUserByUsername(username);
         if (user == null) {
+            LOGGER.error(USER_NOT_FOUND_BY_USERNAME + username);
             throw new UserNotFoundException(USER_NOT_FOUND_BY_USERNAME + username);
         }
         if (!newPassword.equals(verifyPassword)) {
-            throw new PasswordChangeVerifyException("New password and verify don't same. Please entry correct new password.");
+            LOGGER.error(NEW_PASSWORD_AND_VERIFY_DON_T_SAME_PLEASE_ENTRY_CORRECT_NEW_PASSWORD);
+            throw new PasswordChangeVerifyException(NEW_PASSWORD_AND_VERIFY_DON_T_SAME_PLEASE_ENTRY_CORRECT_NEW_PASSWORD);
         }
         if (validOldPassword(oldPassword, user.getPassword())) {
             user.setPassword(encryptPassoword(newPassword));
             userDao.updateUser(user);
+            LOGGER.info(USER_WITH_USERNAME + username + CHANGE_PASSWORD_SUCCESFUL);
             isChange = true;
         }
 
@@ -161,12 +175,15 @@ public class ProfileDaoImpl implements ProfileDao {
                 verifyPassword.length() > 20 ||
                         newPassword.length() < 8 &&
                                 verifyPassword.length() < 8) {
+            LOGGER.error(PASSWORD_HAS + newPassword.length() + CHARACTER_IS_NOT_VALID_USER_WITH_USERTNAME + username);
             throw new PasswordLengthIsNotValid("You password has " + newPassword.length() + " character is not valid.");
         }
         try {
+            LOGGER.info(SEND_MESSAGE_USER_WITH_USERNAME + username);
             emailService.sendMessageUpdatePasswordProfile(user.getFirstname(), user.getLastname(), newPassword, user.getEmail());
         } catch (MessagingException e) {
-            e.printStackTrace();
+            LOGGER.error(ERROR_SEND_MSG_FOR_USER_WITH_USERNAME + username);
+            LOGGER.error(e.getMessage());
         }
         return isChange;
     }
@@ -176,6 +193,7 @@ public class ProfileDaoImpl implements ProfileDao {
         if (bCryptPasswordEncoder.matches(oldPassword, userPassword)) {
             return true;
         } else {
+            LOGGER.error(PASSWORD_IS_NOT_VALID + oldPassword);
             throw new PasswordNotValidException(PASSWORD_IS_NOT_VALID + oldPassword);
         }
     }
@@ -191,11 +209,14 @@ public class ProfileDaoImpl implements ProfileDao {
             newTreatment.setDateCreate(new Date());
             entityManager.persist(newTreatment);
             transaction.commit();
+            LOGGER.info(SAVE_TEATMENT_WITH_ID + newTreatment.getId() + SUCCESFUL);
             insertTreatmentToUser(userId, newTreatment.getId());
         } catch (Exception e) {
+            LOGGER.error(TRANSACTION_FAILED_GOT_ROLLBACK);
+            LOGGER.error(e.getMessage());
             transaction.rollback();
-            e.printStackTrace();
         } finally {
+            LOGGER.error(ENTITY_MANAGER_CLOSE_CONNECTION_FAILED);
             entityManager.close();
         }
     }
@@ -210,10 +231,13 @@ public class ProfileDaoImpl implements ProfileDao {
                     .setParameter("treatmentId", treatmentId)
                     .executeUpdate();
             transaction.commit();
+            LOGGER.error(SAVE_TREATMENT_IN_USER_SUCCESSFUL_WITH_ID +  treatmentId);
         } catch (Exception e) {
+            LOGGER.error(TRANSACTION_FAILED_GOT_ROLLBACK);
+            LOGGER.error(e.getMessage());
             transaction.rollback();
-            e.printStackTrace();
         } finally {
+            LOGGER.error(ENTITY_MANAGER_CLOSE_CONNECTION_FAILED);
             entityManager.close();
         }
     }
@@ -230,9 +254,11 @@ public class ProfileDaoImpl implements ProfileDao {
                     .executeUpdate();
             transaction.commit();
         } catch (Exception e) {
+            LOGGER.error(TRANSACTION_FAILED_GOT_ROLLBACK);
+            LOGGER.error(e.getMessage());
             transaction.rollback();
-            e.printStackTrace();
         } finally {
+            LOGGER.error(ENTITY_MANAGER_CLOSE_CONNECTION_FAILED);
             entityManager.close();
         }
         deleteTreatmentById(treatmentId);
@@ -248,10 +274,13 @@ public class ProfileDaoImpl implements ProfileDao {
                     .setParameter("treatmentId", treatmentId)
                     .executeUpdate();
             transaction.commit();
+            LOGGER.info(DELETE_TREATMENT_SUCCESFUL_WITH_ID + treatmentId);
         } catch (Exception e) {
+            LOGGER.error(TRANSACTION_FAILED_GOT_ROLLBACK);
+            LOGGER.error(e.getMessage());
             transaction.rollback();
-            e.printStackTrace();
         } finally {
+            LOGGER.error(ENTITY_MANAGER_CLOSE_CONNECTION_FAILED);
             entityManager.close();
         }
     }
@@ -260,6 +289,7 @@ public class ProfileDaoImpl implements ProfileDao {
         User user = userDao.findUserByUsername(username);
         user.setHospiztalization(jsonToBoolean(hospitalization));
         userDao.updateUser(user);
+        LOGGER.info(CHANGE_HOSPITANLIZATION_IN_USER_WITH_USERNAME + username);
         return user;
     }
 
@@ -280,9 +310,11 @@ public class ProfileDaoImpl implements ProfileDao {
                     .setFirstResult((request.getPage() - 1) * request.getSize())
                     .setMaxResults(request.getSize());
             content = (List<AnalyzeICDDate>) query.getResultList();
+            LOGGER.info(FIND_DIAGNOSIS_COUNT + content.size() + FOR_USER_WITH_ID + id);
         } catch (Exception e) {
+            LOGGER.error(ENTITY_MANAGER_CLOSE_CONNECTION_FAILED);
+            LOGGER.error(e.getMessage());
             entityManager.close();
-            e.printStackTrace();
         }
         int itemsSize = countAnaliziesForUserId(id);
         int totalPages = totalPageConverter(itemsSize, request.getSize());
@@ -293,6 +325,7 @@ public class ProfileDaoImpl implements ProfileDao {
         responseTable.setTotalPages(totalPages);
         responseTable.setColumnSort(request.getColumn());
         responseTable.setSort(request.getSort());
+        LOGGER.info(CREATE_TABLE_USER_FOR_USER_WITH_USER_ID + id);
         return responseTable;
     }
 
@@ -308,11 +341,14 @@ public class ProfileDaoImpl implements ProfileDao {
             entityManager
                     .merge(treatment);
             transaction.commit();
+            LOGGER.info(UPDATE_TREATMENT_WITH_ID + treatment.getId() + SUCCESFUL);
             update = true;
         } catch (Exception e) {
+            LOGGER.error(TRANSACTION_FAILED_GOT_ROLLBACK);
+            LOGGER.error(e.getMessage());
             transaction.rollback();
-            e.printStackTrace();
         } finally {
+            LOGGER.error(ENTITY_MANAGER_CLOSE_CONNECTION_FAILED);
             entityManager.close();
         }
         return update;

@@ -7,6 +7,8 @@ import com.example.hospitalmanage.model.ChatMessage;
 import com.example.hospitalmanage.model.MessageStatus;
 import com.example.hospitalmanage.repos.ChatMessageRepository;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
@@ -16,6 +18,8 @@ import org.springframework.data.mongodb.core.*;
 
 import java.util.*;
 
+import static com.example.hospitalmanage.constant.LoggerConstant.*;
+
 @Repository
 @Transactional
 public class ChatMessageDaoImpl implements ChatMessageDao {
@@ -23,6 +27,7 @@ public class ChatMessageDaoImpl implements ChatMessageDao {
     private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomDao chatRoomDao;
     private final MongoOperations mongoOperations;
+    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
     public ChatMessageDaoImpl(ChatMessageRepository chatMessageRepository,
                               ChatRoomDao chatRoomDao,
@@ -39,6 +44,7 @@ public class ChatMessageDaoImpl implements ChatMessageDao {
             chatMessage.setContent(convertContent(chatMessage.getContent()));
         }
         chatMessageRepository.save(chatMessage);
+        LOGGER.info(SAVE_MESSAGE_SUCCESSFUL_IN_CHAT_ID + chatMessage.getChatId());
         return chatMessage;
     }
 
@@ -71,6 +77,7 @@ public class ChatMessageDaoImpl implements ChatMessageDao {
         if (messages.size() > 0) {
             updateStatuses(senderId, recipientId, MessageStatus.DELIVERED);
         }
+        LOGGER.info(FOUND_MESSAGES_WITH_SENDER + senderId + AND_RECIPIENT + recipientId);
         return messages;
     }
 
@@ -92,5 +99,6 @@ public class ChatMessageDaoImpl implements ChatMessageDao {
                         .and("recipientId").is(recipientId));
         Update update = Update.update("status", status);
         mongoOperations.updateMulti(query, update, ChatMessage.class);
+        LOGGER.info(UPDATE_STATUS_MESSAGE);
     }
 }

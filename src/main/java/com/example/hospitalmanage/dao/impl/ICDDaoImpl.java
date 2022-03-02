@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.jpa.QueryHints;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
@@ -25,12 +27,12 @@ import java.util.Objects;
 import static com.example.hospitalmanage.constant.ICDConstant.*;
 
 @Repository
-@Slf4j
 public class ICDDaoImpl implements ICDDao {
 
     private final OAuthTokenProvider oAuthTokenProvider;
     private final RestTemplate restTemplate;
     private final EntityManagerFactory entityManagerFactory;
+    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
     public ICDDaoImpl(OAuthTokenProvider oAuthTokenProvider,
                       RestTemplate restTemplate,
@@ -40,6 +42,7 @@ public class ICDDaoImpl implements ICDDao {
         this.entityManagerFactory = entityManagerFactory;
     }
 
+    @Override
     public ICD getCodeICD(String code) throws IOException {
         HttpEntity<String> entity = new HttpEntity<>(getOAuthHeader());
         ResponseEntity<String> response = restTemplate.exchange(API_ICD_URI + code.toUpperCase(), HttpMethod.GET, entity, String.class);
@@ -72,6 +75,7 @@ public class ICDDaoImpl implements ICDDao {
         return httpHeaders;
     }
 
+    @Override
     public String getList()
             throws IOException {
         HttpEntity<String> entity = new HttpEntity<>(getOAuthHeader());
@@ -89,9 +93,11 @@ public class ICDDaoImpl implements ICDDao {
                     .setHint(QueryHints.HINT_READONLY, true)
                     .setParameter("code", code);
             icd = (ICD) query.getResultList().get(0);
+            LOGGER.info("Query return icd with id: " + icd.getId());
         } catch (Exception e) {
+            LOGGER.error("SQL error syntax in method findByCode in ICDDao");
+            LOGGER.error(e.getMessage());
             entityManager.close();
-            log.info(e.getMessage());
         }
         return icd;
     }
@@ -104,10 +110,13 @@ public class ICDDaoImpl implements ICDDao {
             transaction.begin();
             entityManager.persist(icd);
             transaction.commit();
+            LOGGER.info("Save icd with id:" + icd.getId() + " to database successful.");
         } catch (Exception e) {
+            LOGGER.error("Transaction failed, got rollback.");
+            LOGGER.error(e.getMessage());
             transaction.rollback();
-            e.printStackTrace();
         } finally {
+            LOGGER.error("EntityManager close connection failed.");
             entityManager.close();
         }
         return icd;

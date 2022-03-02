@@ -6,6 +6,8 @@ import com.example.hospitalmanage.model.User;
 import com.example.hospitalmanage.model.Video;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -29,14 +31,15 @@ import java.util.List;
 import java.util.Set;
 
 import static com.example.hospitalmanage.constant.FileConstant.DIRECTORY_VIDEO;
+import static com.example.hospitalmanage.constant.LoggerConstant.*;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 @Repository
-@Slf4j
 public class VideoDaoImpl implements VideoDao {
 
     private final UserDao userDao;
     private final EntityManagerFactory entityManagerFactory;
+    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
     public VideoDaoImpl(UserDao userDao, EntityManagerFactory entityManagerFactory) {
         this.userDao = userDao;
@@ -53,6 +56,7 @@ public class VideoDaoImpl implements VideoDao {
             Files.copy(file.getInputStream(), fileStorage, REPLACE_EXISTING);
             addVideoToUser(byUsername,fileName);
             fileNames.add(fileName);
+            LOGGER.info("Add new video files successful.");
         }
         return fileNames;
     }
@@ -68,9 +72,11 @@ public class VideoDaoImpl implements VideoDao {
             transaction.commit();
             insertVideoToUser(user.getId(), video.getId());
         } catch (Exception e) {
+            LOGGER.error(TRANSACTION_FAILED_GOT_ROLLBACK);
+            LOGGER.error(e.getMessage());
             transaction.rollback();
-            e.printStackTrace();
         } finally {
+            LOGGER.error(ENTITY_MANAGER_CLOSE_CONNECTION_FAILED);
             entityManager.close();
         }
     }
@@ -88,9 +94,11 @@ public class VideoDaoImpl implements VideoDao {
                     .executeUpdate();
             transaction.commit();
         } catch (Exception e) {
+            LOGGER.error(TRANSACTION_FAILED_GOT_ROLLBACK);
+            LOGGER.error(e.getMessage());
             transaction.rollback();
-            e.printStackTrace();
         } finally {
+            LOGGER.error(ENTITY_MANAGER_CLOSE_CONNECTION_FAILED);
             entityManager.close();
         }
     }
@@ -101,7 +109,8 @@ public class VideoDaoImpl implements VideoDao {
         User byUsername = userDao.findUserByUsername(username);
         if(fileIsExists(byUsername.getVideoFiles(), filename)) {
             if (!Files.exists(filePath)) {
-                throw new FileNotFoundException("File not found.");
+                LOGGER.error(FILE_NOT_FOUND);
+                throw new FileNotFoundException(FILE_NOT_FOUND);
             }
         }
 
@@ -120,7 +129,8 @@ public class VideoDaoImpl implements VideoDao {
                 return true;
             }
         }
-        throw new FileNotFoundException("User not have this file.");
+        LOGGER.error(USER_NOT_HAVE_THIS_FILE);
+        throw new FileNotFoundException(USER_NOT_HAVE_THIS_FILE);
     }
 
     public User removeFile(String username, String filename)
@@ -128,6 +138,7 @@ public class VideoDaoImpl implements VideoDao {
         User user = userDao.findUserByUsername(username);
         findVideoFileInSet(user, filename);
         userDao.updateUser(user);
+        LOGGER.info(REMOVE_FILE_SUCCESSFUL + filename);
         return user;
     }
 
@@ -135,7 +146,7 @@ public class VideoDaoImpl implements VideoDao {
             throws FileNotFoundException {
         Video findVideo = user.getVideoFiles().stream().filter(v -> v.getNameFile().equals(filename)).findFirst().get();
         if (findVideo == null) {
-            throw new FileNotFoundException("File not found.");
+            throw new FileNotFoundException(FILE_NOT_FOUND);
         }
         user.getVideoFiles().remove(findVideo);
     }
