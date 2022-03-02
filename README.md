@@ -1,6 +1,6 @@
 # Hospital Social App
 <p  align="center" >
-  <img width="900" height="450" src="img-readme/profile.png">
+  <img width="900" height="490" src="img-readme/profile.png">
 </p>
 
 
