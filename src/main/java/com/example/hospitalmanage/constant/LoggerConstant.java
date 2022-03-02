@@ -12,7 +12,7 @@ public final class LoggerConstant {
     public static final String AND_USERNAME = " and username: ";
     public static final String SAVE_DIAGNOS_SUCCESSFUL_TO_DATABASE_WITH_ID = "Save diagnos successful to database with id: ";
     public static final String TRANSACTION_FAILED_GOT_ROLLBACK = "Transaction failed, got rollback.";
-    public static final String ENTITY_MANAGER_CLOSE_CONNECTION_FAILED = "EntityManager close connection failed.";
+    public static final String ENTITY_MANAGER_CLOSE_CONNECTION_FAILED = "EntityManager close connection.";
     public static final String SAVE_DIAGNOSIS_IN_USER_SUCCESSFUL_WITH_ID = "Save diagnosis in user successful with id: ";
     public static final String DELETE_DIAGNOS_SUCCESFUL_WITH_ID = "Delete diagnos succesful with id: ";
     public static final String DELETE_DIAGNOS_FROM_DATABASE_WITH_ID = "Delete diagnos from database with id: ";

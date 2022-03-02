@@ -127,7 +127,7 @@ public class ProfileDaoImpl implements ProfileDao {
             transaction.commit();
             LOGGER.info(DELETE_DIAGNOS_SUCCESFUL_WITH_ID + analizeId);
         } catch (Exception e) {
-            LOGGER.error(TRANSACTION_FAILED_GOT_ROLLBACK;
+            LOGGER.error(TRANSACTION_FAILED_GOT_ROLLBACK);
             LOGGER.error(e.getMessage());
             transaction.rollback();
         }
